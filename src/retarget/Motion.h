@@ -12,7 +12,7 @@
 #include <Eigen/Dense>
 #include <memory>
 
-#define INTERNAL 1
+//#define INTERNAL 1
 
 #if INTERNAL
 #include "prmpath/CompleteScenario.h"
