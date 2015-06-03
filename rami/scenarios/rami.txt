@@ -1,0 +1,5 @@
+MODEL = ../rami/model/roms/cenglobed.obj ../rami/model/roms/roms.obj
+OBJECT = ../rami/scenes/car.obj
+PRMFILE = ../rami/prm/dummy.prm
+SIZ = 200 2 20
+VISIBILIT

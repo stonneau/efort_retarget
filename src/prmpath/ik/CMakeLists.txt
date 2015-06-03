@@ -1,0 +1,25 @@
+cmake_minimum_required(VERSION 2.6)
+PROJECT(manipulability)
+
+include_directories("${EIGEN3_INCLUDE_DIR}")
+include_directories("${RTQL8_INCLUDE_DIR}")
+include_directories("${COMP_CLIMB_ROOT}")
+include_directories("${ANT_TWEAK_BAR_INCLUDE_PATH}")
+
+if ( MSVC )
+	SET(CMAKE_DEBUG_POSTFIX d)
+endif ( MSVC )
+	
+LINK_DIRECTORIES(${EIGEN3_LIBRARY_DIR})
+LINK_DIRECTORIES(${RTQL8_LIBRARY_DIR})
+LINK_DIRECTORIES(${ANT_TWEAK_BAR_LIBRARY_DIR})
+
+
+FILE(GLOB ik_srcs "*.cpp")
+FILE(GLOB ik_hdrs "*.h")
+
+add_library(ik ${ik_srcs} ${ik_hdrs})
+
+SET_TARGET_PROPERTIES(ik PROPERTIES LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
+SET_TARGET_PROPERTIES(ik PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
+

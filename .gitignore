@@ -1,0 +1,9 @@
+# Build and Release Folders
+bin/
+lib/
+build/
+buildwin/
+build*
+# temp files
+.*~
+*.fuse*
