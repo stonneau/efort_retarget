@@ -173,8 +173,10 @@ Eigen::VectorXd Motion::Retarget(const std::size_t frameid, const Eigen::VectorX
             //if(!LimbColliding(limb,objects,false))
             {
                 contactMaintained = true;
+std::cout << "configuration maintained for limb" << limb->tag << std::endl;
             }
         }
+std::cout << "configuration invalid for limb" << limb->tag << std::endl;
         // otherwise, perform retarget
         if(!contactMaintained)
         {
