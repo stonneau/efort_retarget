@@ -327,7 +327,7 @@ cScenario->limbspeed.push_back(1); // TODO HAVE ACTUAL SPEED
         {
             limbnames.push_back((*cit)->tag);
         }
-        cScenario->scenario->model_.SortEnglobingByName(limbnames);
+        //cScenario->scenario->model_.SortEnglobingByName(limbnames);
 
         if(!recordedstates)
         {

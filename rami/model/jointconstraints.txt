@@ -34,4 +34,9 @@ constraint joint_name="LeftUpLeg_x_joint" min="60" max="210" default="180"
 
 constraint joint_name="LeftLeg_x_joint"   min="-180" max="-10" default="0"
 
+normal limb="RightArm_z_joint" normal="0 0 1"
+normal limb="LeftArm_z_joint" normal="0 0 1"
+normal limb="RightUpLeg_z_joint" normal="0 0 1"
+normal limb="LeftUpLeg_z_joint" normal="0 0 1"
+
 
