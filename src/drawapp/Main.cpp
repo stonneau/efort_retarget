@@ -568,7 +568,7 @@ void start()
         node->Update();
         postures.push_back(node);
     }*/
-    samples = cScenario->limbSamples[0];
+    samples = cScenario->limbSamples[3];
     states = cScenario->states.empty() ? planner::PostureSequence(*cScenario,3)
                                        : cScenario->states;
     motion = efort::LoadMotion(cScenario);
@@ -677,7 +677,7 @@ bool SavePath()
     return true;
 }
 
-void Retarget(const Eigen::Vector3d& delta)
+void Retarget(const Eigen::Vector3d& delta, const planner::Object* object)
 {
     totalOffset +=delta;
     std::vector<Eigen::Vector3d> targets;
@@ -691,8 +691,15 @@ void Retarget(const Eigen::Vector3d& delta)
     //states[current] = motion->Retarget(current, targets, cScenario->scenario->contactObjects_);
     //cScenario->robot = motion->Retarget(current, targets, cScenario->scenario->contactObjects_);
     efort::T_PointReplacement replacement;
-    motion->Retarget(current, planner::AsPosition(states[current]->value->node), replacement);
+    for(std::size_t i =0; i < 8; ++i)
+    {
+        Eigen::Vector3d res = cScenario->scenario->objDictionnary.points[i] + totalOffset;
+        replacement.push_back(std::make_pair(i, res));
+    }
+    planner::Robot* rob = motion->RetargetInternal(current, planner::AsPosition(states[current]->value->node), replacement);
     //states[current] = motion->Retarget(cScenario->robot, current, targets, cScenario->scenario->objects_);
+    delete states[current]->value;
+    states[current]->value = rob;
     cScenario->robot = states[current]->value;
     objectm->SetPosition(totalOffset);
     objectMotion.PushFrame(objectm);
@@ -794,6 +801,8 @@ void command(int cmd)   /**  key control function; */
             //cScenario->robot->SetConfiguration(cScenario->path[current]);
             cScenario->robot = states[current]->value;
             DumpIds(states[current]->value->node);
+            std::cout << "frame id" << current << std::endl;
+            std::cout << "position" << planner::AsPosition(cScenario->robot->node) << std::endl;
             //currentSample = 0;
             //samples = planner::GetPosturesInContact(*cScenario->robot, cScenario->limbs[0], cScenario->limbSamples[0], cScenario->scenario->objects_ );
             break;
@@ -815,7 +824,7 @@ void command(int cmd)   /**  key control function; */
         std::cout << " SAMPLES" << samples.size() << std::endl;
             if(samples.empty()) return;
             currentSample ++; if(samples.size() <= currentSample) currentSample = samples.size()-1;
-            planner::sampling::LoadSample(*(samples[currentSample]),planner::GetChild(cScenario->robot, "RightArm_z_joint"));
+            planner::sampling::LoadSample(*(samples[currentSample]),planner::GetChild(cScenario->robot, "LeftUpLeg_z_joint"));
             break;
         }
         break;
@@ -824,7 +833,7 @@ void command(int cmd)   /**  key control function; */
         std::cout << " SAMPLES" << samples.size() << std::endl;
             if(samples.empty()) return;
             currentSample --; if(currentSample < 0) currentSample = 0;
-            planner::sampling::LoadSample(*(samples[currentSample]),planner::GetChild(cScenario->robot, "RightArm_z_joint"));
+            planner::sampling::LoadSample(*(samples[currentSample]),planner::GetChild(cScenario->robot, "LeftUpLeg_z_joint"));
             break;
         }
         case 'm' :
@@ -834,26 +843,26 @@ void command(int cmd)   /**  key control function; */
         }
         case 'a' :
     {
-            cScenario->scenario->objects_[1]->SetPosition( cScenario->scenario->objects_[1]->GetPosition() + Eigen::Vector3d(0.1,0,0));
-            Retarget(Eigen::Vector3d(0.1,0,0));
+            cScenario->scenario->objects_[0]->SetPosition( cScenario->scenario->objects_[0]->GetPosition() + Eigen::Vector3d(0.1,0,0));
+            Retarget(Eigen::Vector3d(0.1,0,0), cScenario->scenario->objects_[0]);
         break;
     }
         case 'z' :
     {
-            cScenario->scenario->objects_[1]->SetPosition( cScenario->scenario->objects_[1]->GetPosition() - Eigen::Vector3d(0.1,0,0));
-            Retarget(Eigen::Vector3d(-0.1,0,0));
+            cScenario->scenario->objects_[0]->SetPosition( cScenario->scenario->objects_[0]->GetPosition() - Eigen::Vector3d(0.1,0,0));
+            Retarget(Eigen::Vector3d(-0.1,0,0), cScenario->scenario->objects_[0]);
         break;
     }
         case 'e' :
     {
-            cScenario->scenario->objects_[1]->SetPosition( cScenario->scenario->objects_[1]->GetPosition() + Eigen::Vector3d(0,0.1,0));
-            Retarget(Eigen::Vector3d(0,0.1,0));
+            cScenario->scenario->objects_[0]->SetPosition( cScenario->scenario->objects_[0]->GetPosition() + Eigen::Vector3d(0,0.1,0));
+            Retarget(Eigen::Vector3d(0,0.1,0), cScenario->scenario->objects_[0]);
         break;
     }
         case 'r' :
     {
-            cScenario->scenario->objects_[1]->SetPosition( cScenario->scenario->objects_[1]->GetPosition() + Eigen::Vector3d(0,-0.1,0));
-            Retarget(Eigen::Vector3d(0,-0.1,0));
+            cScenario->scenario->objects_[0]->SetPosition( cScenario->scenario->objects_[0]->GetPosition() + Eigen::Vector3d(0,-0.1,0));
+            Retarget(Eigen::Vector3d(0,-0.1,0), cScenario->scenario->objects_[0]);
     }
         break;
         case 'A' :

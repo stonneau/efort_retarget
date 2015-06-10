@@ -12,7 +12,7 @@
 #include <Eigen/Dense>
 #include <memory>
 
-//#define INTERNAL 1
+#define INTERNAL 1
 
 #if INTERNAL
 #include "prmpath/CompleteScenario.h"
@@ -71,6 +71,11 @@ struct Motion
     /// As first version, PQP object is recreated and retargetting is performed based on this new list.
     ///  \param return : The updated 3d joint location of each joint after retargetting if necessary.
     Eigen::VectorXd Retarget(const std::size_t frameid, const Eigen::VectorXd& framePositions, const T_PointReplacement& objectModifications) const;
+
+
+#if INTERNAL
+    planner::Robot* RetargetInternal(const std::size_t frameid, const Eigen::VectorXd& framePositions, const T_PointReplacement& objectModifications) const;
+#endif
 
     std::vector<Frame> frames_;
 private:

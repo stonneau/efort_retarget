@@ -29,7 +29,7 @@ constraint joint_name="RightUpLeg_x_joint" min="60" max="210" default="180"
 constraint joint_name="RightLeg_x_joint"   min="-180" max="-10" default="0"
 
 constraint joint_name="LeftUpLeg_z_joint" min="-165" max="-210" default="-180"
-constraint joint_name="LeftUpLeg_y_joint" min="130" max="210" default="180"
+constraint joint_name="LeftUpLeg_y_joint" min="150" max="230" default="180"
 constraint joint_name="LeftUpLeg_x_joint" min="60" max="210" default="180"
 
 constraint joint_name="LeftLeg_x_joint"   min="-180" max="-10" default="0"
