@@ -680,6 +680,8 @@ bool SavePath()
 void Retarget(const Eigen::Vector3d& delta, const planner::Object* object)
 {
     totalOffset +=delta;
+    planner::Robot robik (*(cScenario->states[current]->value));
+    std::vector<planner::Node*> iksLimbs;
     std::vector<Eigen::Vector3d> targets;
     for(std::vector<Eigen::Vector3d>::const_iterator cit = cScenario->states[current]->contactLimbPositions.begin();
         cit !=  cScenario->states[current]->contactLimbPositions.end(); ++cit)
@@ -687,6 +689,26 @@ void Retarget(const Eigen::Vector3d& delta, const planner::Object* object)
         targets.push_back(*cit + totalOffset);
         //targets.push_back(*cit);
     }
+    size_t id =0;
+    for(std::vector<planner::Node*>::const_iterator cit = cScenario->limbs.begin();
+        cit != cScenario->limbs.end(); ++cit, ++id)
+    {
+        if(cScenario->states[current]->InContact(id))
+        {
+            iksLimbs.push_back(planner::GetChild(&robik,(*cit)->id));
+        }
+    }
+    ik::IKSolver ik;
+    id =0;
+    for(std::vector<planner::Node*>::iterator cit = iksLimbs.begin();
+        cit != iksLimbs.end(); ++cit, ++id)
+    {
+        for(int i=0; i< 10; ++i)
+        {
+            ik.StepClamping(*cit,targets[id],targets[id]);
+        }
+    }
+
     ///delete(states[current]);
     //states[current] = motion->Retarget(current, targets, cScenario->scenario->contactObjects_);
     //cScenario->robot = motion->Retarget(current, targets, cScenario->scenario->contactObjects_);
@@ -696,10 +718,13 @@ void Retarget(const Eigen::Vector3d& delta, const planner::Object* object)
         Eigen::Vector3d res = cScenario->scenario->objDictionnary.points[i] + totalOffset;
         replacement.push_back(std::make_pair(i, res));
     }
-    planner::Robot* rob = motion->RetargetInternal(current, planner::AsPosition(states[current]->value->node), replacement);
+    std::vector<planner::Robot*> robs = motion->RetargetContactInternal(current, planner::AsPosition(robik.node), replacement);
     //states[current] = motion->Retarget(cScenario->robot, current, targets, cScenario->scenario->objects_);
-    delete states[current]->value;
-    states[current]->value = rob;
+    for(int i =0; i< robs.size(); ++i)
+    {
+        delete states[current+i]->value;
+        states[current+i]->value = robs[i];
+    }
     cScenario->robot = states[current]->value;
     objectm->SetPosition(totalOffset);
     objectMotion.PushFrame(objectm);

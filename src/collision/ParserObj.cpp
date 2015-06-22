@@ -158,7 +158,12 @@ namespace planner
                 {
                     long int idx = (strtol(termes[i*3].c_str(),NULL, 10)) - 1;
                     Vector3toArray(points_[(int)idx], points[i]);
-                    dic_.objectsLinkedToVertex[idx].push_back(dic_.dic.size()-1);
+                    std::size_t obj = dic_.dic.size() -1;
+                    if(std::find(dic_.objectsLinkedToVertex[idx].begin()
+                                , dic_.objectsLinkedToVertex[idx].end(), obj) == dic_.objectsLinkedToVertex[idx].end())
+                    {
+                        dic_.objectsLinkedToVertex[idx].push_back(obj);
+                    }
                     objtri.points[i] = idx;
                 }
                 currentModel_->AddTri(points[0], points[1], points[2], ++currentIndex_);

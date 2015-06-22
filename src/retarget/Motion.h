@@ -52,6 +52,13 @@ struct Frame
     std::vector<Contact> contacts_;
 };
 
+struct ContactUpdate
+{
+    std::size_t initFrame_;
+    std::size_t endframe_;
+    std::vector<Eigen::VectorXd> positions_;
+};
+
 typedef std::vector<std::pair<std::size_t, Eigen::Vector3d> > T_PointReplacement;
 
 /// \class Motion
@@ -72,9 +79,22 @@ struct Motion
     ///  \param return : The updated 3d joint location of each joint after retargetting if necessary.
     Eigen::VectorXd Retarget(const std::size_t frameid, const Eigen::VectorXd& framePositions, const T_PointReplacement& objectModifications) const;
 
+    ///  \brief Performs motion retargeting for the contacts of a given frame.
+    /// Given the joint positions, performs generalized IK to recompute joint angles.
+    /// Given environment modifications, performs contact retargetting if necessary.
+    /// repercuting contact location to all impacted frames.
+    ///  \param frameid : considered frame number
+    ///  \param framePositions : 3d location of each joint of the character, computed by
+    /// relationship descriptors.
+    /// \param objectModifications : std::vector of pair indicating for a given vertice id, its new location
+    /// As first version, PQP object is recreated and retargetting is performed based on this new list.
+    ///  \param return : The updated 3d joint location of each joint after retargetting if necessary.
+    ContactUpdate RetargetContact(const std::size_t frameid, const Eigen::VectorXd& framePositions, const T_PointReplacement& objectModifications) const;
+
 
 #if INTERNAL
     planner::Robot* RetargetInternal(const std::size_t frameid, const Eigen::VectorXd& framePositions, const T_PointReplacement& objectModifications) const;
+    std::vector<planner::Robot*> RetargetContactInternal(const std::size_t frameid, const Eigen::VectorXd& framePositions, const T_PointReplacement& objectModifications) const;
 #endif
 
     std::vector<Frame> frames_;

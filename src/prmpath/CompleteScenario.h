@@ -48,6 +48,19 @@ struct State
         }
         return false;
     }
+
+    bool InContact(int limb) const
+    {
+        int id = 0;
+        for(; id < contactLimbs.size(); ++id)
+        {
+            if(contactLimbs[id] == limb)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 };
 
 typedef std::vector<State*> T_State;
