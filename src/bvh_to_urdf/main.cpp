@@ -530,7 +530,7 @@ int main(int argc, char *argv[])
     }
 
     //export motion
-    std::string states = bvhpath + ".txt";
+    std::string states = bvhpath.substr(0, bvhpath.size()-3) + "states";
     std::stringstream outstream2;
     for(int i=0; i< motion.size(); ++i)
     {

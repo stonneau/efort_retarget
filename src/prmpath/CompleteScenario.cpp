@@ -340,6 +340,19 @@ timer.Stop();
         else
         {
             cScenario->states =planner::LoadStates(statefilepath, cScenario->robot);
+            // load manipulabilities
+            for(int i =0; i< cScenario->states.size(); ++i)
+            {
+                planner::State* res = cScenario->states[i];
+                // pushing manipulabilities references.
+                for(int nbc = 0; nbc!= res->contactLimbs.size(); ++nbc)
+                {
+                    planner::Node* limb = planner::GetChild(res->value, cScenario->limbs[res->contactLimbs[nbc]]->id);
+                    Eigen::Vector3d dir = res->value->currentRotation * res->contactLimbPositionsNormals[nbc];
+                    planner::sampling::Sample sit(limb);
+                    res->manipulabilities.push_back(planner::sampling::ForceManipulability(&sit, dir));
+                }
+            }
         }
         if(cScenario->path.empty())
         {

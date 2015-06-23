@@ -27,7 +27,7 @@ namespace
         planner::Object* effector = GetEffector(limb);
         for(planner::Object::T_Object::iterator oit = obstacles.begin(); oit != obstacles.end(); ++oit)
         {
-            if(effector->InContact(*oit,0.1, normal, projection))
+            if(effector->InContact(*oit,0.07, normal, projection))
                 return true;
         }
     }

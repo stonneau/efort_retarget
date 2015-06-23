@@ -345,6 +345,94 @@ Sample* planner::GetPosturesInContact(Robot& robot, Node* limb, const sampling::
     return res;
 }
 
+
+Sample* planner::GetPosturesInContact(Robot& robot, Node* limb, const sampling::T_Samples& samples
+                                         , Object::T_Object& obstacles, const Eigen::Vector3d& direction
+                                         , Eigen::Vector3d& position, Eigen::Vector3d& normalVector
+                                         , planner::CompleteScenario& scenario, const double targetManip, const std::vector<planner::Sphere*> next_rom, const planner::Sphere* current_rom)
+{
+    Sample* save = new Sample(limb);
+    Sample* res = 0;
+    Object* effector = GetEffector(limb);
+    //std::vector<Eigen::Vector3d> effectorPos = GetEffectorsRec(limb);
+    //Eigen::Vector3d effectorCentroid = planner::GetEffectorCenter(limb);
+    double bestManip = std::numeric_limits<double>::min();
+    double tmp_manip, tempweightedmanip;
+    std::size_t found = limb->tag.find("leg");
+    Eigen::Vector3d dir = direction;
+    dir.normalize();
+    //if(direction.y() < 0 ) dir = -direction;
+    Eigen::Vector3d dirn = dir;
+    /*if (found==std::string::npos)
+    {*/
+        dirn = Eigen::Vector3d(0,1.,0.);
+        dirn.normalize();
+    /*}*/
+    dir = robot.currentRotation * dir; //Eigen::Vector3d(0,1,0.);
+    dirn = robot.currentRotation * dirn; //Eigen::Vector3d(0,1,0.);
+    for(T_Samples::const_iterator sit = samples.begin(); sit != samples.end(); ++sit)
+    {
+//tmp_manip = direction.y() < 0 ?  planner::sampling::VelocityManipulability(*sit, dir) :  planner::sampling::ForceManipulability(*sit, dir);
+        tmp_manip = planner::sampling::ForceManipulability(*sit, dir);
+        if(tmp_manip > bestManip)
+        {
+            Eigen::Vector3d normal, projection;
+            LoadSample(*(*sit),limb);
+            if(!(planner::IsSelfColliding(&robot, limb) || LimbColliding(limb, obstacles)))
+            {
+                for(Object::T_Object::iterator oit = obstacles.begin(); oit != obstacles.end(); ++oit)
+                {
+//if(effector->InContact(*oit,epsilon, normal, projection) && !planner::IsSelfColliding(&robot, limb) && !LimbColliding(limb, obstacles))
+                    if(effector->InContact(*oit,epsilon, normal, projection) && planner::SafeTargetDistance(limb,projection,0.9) )//&& NextIsInRange(limb, projection, rom, scenario.scenario->point_))
+                    //if(planner::MinDistance(effectorCentroid, *oit, projection, normal) < epsilon && !planner::IsSelfColliding(&robot, limb) && !LimbColliding(limb, obstacles))
+                    {
+                        tempweightedmanip = (1 / std::abs(tmp_manip - targetManip))  * direction.dot(normal);
+                        tempweightedmanip *= 1 / CostMaintainContact(current_rom, next_rom, projection);
+                        //tempweightedmanip = 1 / CostMaintainContact(current_rom, next_rom, projection);
+                        //tempweightedmanip *= dir.dot(robot.currentRotation * normal);
+                        if(tempweightedmanip > bestManip)// && (planner::SafeTargetDistance(limb,projection,0.9)))
+                        {
+                            bestManip = tempweightedmanip;
+                            res = tempweightedmanip > 0.0 ? *sit : 0;
+                            //position = effector->GetPosition();
+                            normalVector = normal;
+                            position = projection;
+                           // break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    /*So we have our sample. Time to perform some IK to align pose*/
+    if(res)
+    {
+        LoadSample(*res,limb);
+        ik::VectorAlignmentConstraint constraint(normalVector);
+        std::vector<ik::PartialDerivativeConstraint*> constraints;
+        constraints.push_back(&constraint);
+        ik::IKSolver solver;
+        //solver.AddConstraint(ik::ForceManip);
+        {
+            int limit = 10;
+            //int limit2 = 100;
+            while(limit > 0 && !solver.StepClamping(limb, position, position, constraints, true))
+            {
+                //solver.StepClamping(limb, position, position, constraints, true);
+                //solver.StepClamping(limb, position, position, constraints, true);
+                limit--;
+            }
+        }
+    }
+    else
+    {
+        planner::sampling::LoadSample(*save, limb);
+    }
+
+    return res;
+}
+
+
 Sample* planner::GetPosturesInContact(Robot& robot, Node* limb, const sampling::T_Samples& samples
                                          , Object::T_Object& obstacles, const Eigen::Vector3d& direction, CompleteScenario &scenario)
 {

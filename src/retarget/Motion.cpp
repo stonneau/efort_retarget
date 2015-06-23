@@ -72,19 +72,20 @@ namespace
         return LimbColliding(limb->children[0], obstacles);
     }
 
-    void SolveIk(Node* limb, const Eigen::Vector3d& target, const Eigen::Vector3d& normal)
+    void SolveIk(Node* limb, const Eigen::Vector3d& target, const Eigen::Vector3d& normal, int limit=1000
+            , int limit2 = 200, bool normalconstraint = true)
     {
         ik::IKSolver solver;//(0.001f, 0.001f,0.1f);
         ik::VectorAlignmentConstraint constraint(normal);
         std::vector<ik::PartialDerivativeConstraint*> constraints;
-        int limit = 1000;
-        int limit2 = 200;
+        /*int limit = 100;
+        int limit2 = 2;*/
         while(limit > 0 && !solver.StepClamping(limb, target, normal, constraints, true))
         {
             limit--;
         }
         constraints.push_back(&constraint);
-        while(limit2 > 0 )
+        while(limit2 > 0 &&  normalconstraint)
         {
             limit2--;
             solver.StepClamping(limb, target, normal, constraints, true);
@@ -182,9 +183,10 @@ std::cout << "configuration maintained for limb" << limb->tag << std::endl;
 std::cout << "configuration invalid for limb" << limb->tag << std::endl;
             Eigen::Vector3d position, normal;
             std::vector<planner::Sphere*> dm;
+            double manipulability = pImpl_->states_[frameid]->manipulabilities[id];
             planner::sampling::Sample* nc =
                     planner::GetPosturesInContact(robot, limb, pImpl_->cScenario_->limbSamples[cit->limbIndex_],
-                                                  objects,cit->surfaceNormal_,position, normal, *(pImpl_->cScenario_), dm);
+                                                  objects,cit->surfaceNormal_,position, normal, *(pImpl_->cScenario_), manipulability,  dm, &sphereCurrent);
             if(nc) // new contact found
             {
                 planner::sampling::LoadSample(*nc, limb);
@@ -259,9 +261,11 @@ std::cout << "configuration maintained for limb" << limb->tag << std::endl;
 std::cout << "configuration invalid for limb" << limb->tag << std::endl;
             Eigen::Vector3d position, normal;
             std::vector<planner::Sphere*> dm;
+            double manipulability = pImpl_->states_[frameid]->manipulabilities[id];
             planner::sampling::Sample* nc =
                     planner::GetPosturesInContact(*robot, limb, pImpl_->cScenario_->limbSamples[cit->limbIndex_],
-                                                  objects,cit->surfaceNormal_,position, normal, *(pImpl_->cScenario_), dm);
+                                                  objects,cit->surfaceNormal_,position, normal, *(pImpl_->cScenario_), manipulability,  dm, &sphereCurrent);
+
             if(nc) // new contact found
             {
                 planner::sampling::LoadSample(*nc, limb);
@@ -288,7 +292,7 @@ std::cout << "no contact found contact" << limb->tag << std::endl;
     return robot;
 }
 
-std::vector<planner::Robot*> Motion::RetargetContactInternal(const std::size_t frameid, const Eigen::VectorXd& framePositions, const T_PointReplacement& objectModifications) const
+std::vector<planner::Robot*> Motion::RetargetContactInternal(const std::size_t frameid, const Eigen::VectorXd& framePositions, const T_PointReplacement& objectModifications, bool force) const
 {
     std::vector<planner::Robot*> res;
     // check how we are doing this frame
@@ -329,7 +333,7 @@ std::vector<planner::Robot*> Motion::RetargetContactInternal(const std::size_t f
         {
             //if(!LimbColliding(limb,objects,false))
             {
-                contactMaintained = true;
+                contactMaintained = true && !force;
 std::cout << "configuration maintained for limb" << limb->tag << std::endl;
             }
         }
@@ -346,10 +350,11 @@ std::cout << "configuration invalid for limb" << limb->tag << std::endl;
             Sphere sphereLastFram(robot->currentRotation * rLastFrame->constantRotation.transpose() * pImpl_->cScenario_->limbRoms[cit->limbIndex_].center_ + rLastFrame->currentPosition,
                                   pImpl_->cScenario_->limbRoms[cit->limbIndex_].radius_ * 1.5);
             dm.push_back(&sphereLastFram);
+            double manipulability = pImpl_->states_[frameid]->manipulabilities[id];
             //make sure position valid for all frames
             planner::sampling::Sample* nc =
                     planner::GetPosturesInContact(*robot, limb, pImpl_->cScenario_->limbSamples[cit->limbIndex_],
-                                                  objects,cit->surfaceNormal_,position, normal, *(pImpl_->cScenario_), dm);
+                                                  objects,cit->surfaceNormal_,position, normal, *(pImpl_->cScenario_),  dm, &sphereCurrent);
             if(nc) // new contact found
             {
                 planner::sampling::LoadSample(*nc, limb);
@@ -376,8 +381,11 @@ std::cout << "no contact found contact" << limb->tag << std::endl;
     }
     //Eigen::VectorXd res = framePositions;
     //res.tail(framePositions.rows()-3) =planner::AsPosition(robot->node->children[0]);
-    res.push_back(robot);
-    for(int i = frameid+1; i <furtherframe_; ++i)
+    //res.push_back(robot);
+    planner::Robot* r [100];
+    r[0] = robot;
+    //#pragma omp parallel for
+    for(int i = frameid; i <=furtherframe_; ++i)
     {
         planner::Robot* current = new planner::Robot(*pImpl_->states_[i]->value);
         std::size_t currentId(0);
@@ -386,11 +394,19 @@ std::cout << "no contact found contact" << limb->tag << std::endl;
             if(frames_[frameid].contacts_[currentId].endFrame_ >= i)
             {
                 planner::Node* limb = planner::GetChild(current,*ids);
-                SolveIk(limb, nextTargets[currentId], nextNormals[currentId]);
+                planner::Node* refLimb = planner::GetChild(robot,*ids);
+                sampling::Sample s(refLimb);
+                planner::sampling::LoadSample(s,limb);
+                SolveIk(limb, nextTargets[currentId], nextNormals[currentId],200,20, false);
             }
         }
-        res.push_back(current);
+        r[i-frameid] = current;
     }
+    for(std::size_t i=0; i<=furtherframe_-frameid;++i)
+    {
+        res.push_back(r[i]);
+    }
+    std::cout << "nbframes " << res.size() << std::endl;
     return res;
 }
 
@@ -424,7 +440,7 @@ namespace
                 if(!pImpl->contacts_[*cit].empty())
                 {
                     Contact& previous = pImpl->contacts_[*cit].back();
-                    if(previous.endFrame_ == numFrame-1 && (previous.worldPosition_ - cState.contactLimbPositions[cid]).norm() < 0.01)
+                    if(previous.endFrame_ == numFrame-1 && (previous.worldPosition_ - cState.contactLimbPositions[cid]).norm() < 0.15)
                     {
                         previous.endFrame_ = numFrame;
                         newContact = false;
@@ -477,11 +493,28 @@ Motion* efort::LoadMotion(const std::string& scenario)
 
 
 #if INTERNAL
+void DumpFrames(const std::vector< std::vector<Contact> >& ccontacts)
+{
+    for(int i =0; i < ccontacts.size(); ++i)
+    {
+        std::cout << " member " << i << std::endl;
+        const std::vector<Contact>& contacts = ccontacts[i];
+        for(std::vector<Contact>::const_iterator cit = contacts.begin();
+            cit != contacts.end(); ++cit)
+        {
+            const Contact& c = *cit;
+            std::cout << "\t contact " << c.startFrame_ << "to " << c.endFrame_ << std::endl;
+        }
+        std::cout << "end member " << i << std::endl;
+    }
+}
+
 Motion* efort::LoadMotion(CompleteScenario *scenario)
 {
     Motion* motion = new Motion;
     motion->pImpl_.reset(new PImpl(scenario));
     motion->frames_ = FramesFromStates(motion->pImpl_.get());
+    DumpFrames(motion->pImpl_->contacts_);
     return motion;
 }
 #endif

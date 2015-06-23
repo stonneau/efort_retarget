@@ -46,7 +46,7 @@ namespace
     bool drawNormals = false;
     bool solid = true;
     std::string outpath("../tests/testSerialization.txt");
-    std::string outstatepath("../tests/states.txt");
+    std::string outstatepath("../rami/bvh/rideCar.states");
     std::string outfilename ("../tests/entrance.path");
     Eigen::Matrix3d itompTransform;
     int current = 0;
@@ -718,7 +718,7 @@ void Retarget(const Eigen::Vector3d& delta, const planner::Object* object)
         Eigen::Vector3d res = cScenario->scenario->objDictionnary.points[i] + totalOffset;
         replacement.push_back(std::make_pair(i, res));
     }
-    std::vector<planner::Robot*> robs = motion->RetargetContactInternal(current, planner::AsPosition(robik.node), replacement);
+    std::vector<planner::Robot*> robs = motion->RetargetContactInternal(current, planner::AsPosition(robik.node), replacement, true);
     //states[current] = motion->Retarget(cScenario->robot, current, targets, cScenario->scenario->objects_);
     for(int i =0; i< robs.size(); ++i)
     {
@@ -816,7 +816,7 @@ void command(int cmd)   /**  key control function; */
         {
             std::cout << "loading states " << std::endl;
             states = planner::LoadStates(outstatepath, states[0]->value);
-            current = 0;
+            //current = 0;
             std::cout << "done " << std::endl;
             break;
         }

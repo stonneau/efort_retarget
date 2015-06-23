@@ -31,6 +31,7 @@ struct State
     std::vector<int> contactLimbs;
     std::vector<Eigen::Vector3d> contactLimbPositions;
     std::vector<Eigen::Vector3d> contactLimbPositionsNormals;
+    std::vector<double> manipulabilities;
     Robot* value;
     bool stable;
 
