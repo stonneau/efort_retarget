@@ -89,7 +89,7 @@ struct Motion
     /// \param objectModifications : std::vector of pair indicating for a given vertice id, its new location
     /// As first version, PQP object is recreated and retargetting is performed based on this new list.
     ///  \param return : The updated 3d joint location of each joint after retargetting if necessary.
-    ContactUpdate RetargetContact(const std::size_t frameid, const Eigen::VectorXd& framePositions, const T_PointReplacement& objectModifications) const;
+    std::vector<Eigen::VectorXd> RetargetContact(const std::size_t frameid, const Eigen::VectorXd& framePositions, const T_PointReplacement& objectModifications) const;
 
 
 #if INTERNAL
