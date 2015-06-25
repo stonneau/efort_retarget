@@ -373,7 +373,7 @@ Sample* planner::GetPosturesInContact(Robot& robot, Node* limb, const sampling::
     {
 //tmp_manip = direction.y() < 0 ?  planner::sampling::VelocityManipulability(*sit, dir) :  planner::sampling::ForceManipulability(*sit, dir);
         tmp_manip = planner::sampling::ForceManipulability(*sit, dir);
-        tempweightedmanip = 1 / std::abs(tmp_manip - targetManip);
+        tempweightedmanip = 1 / std::abs(tmp_manip - targetManip) + 1 / (position - save->effectorPosition).norm();
         if(tempweightedmanip > bestManip)
         {
             Eigen::Vector3d normal, projection;
@@ -391,6 +391,7 @@ Sample* planner::GetPosturesInContact(Robot& robot, Node* limb, const sampling::
                         if(dot != 0)
                         {
                             tempweightedmanip *= dot;
+//tempweightedmanip = dot;
                             //tempweightedmanip = (1 / std::abs(tmp_manip - targetManip))  * direction.dot(normal);
                             //tempweightedmanip *= 1 / CostMaintainContact(current_rom, next_rom, projection);
                             //tempweightedmanip = 1 / CostMaintainContact(current_rom, next_rom, projection);
