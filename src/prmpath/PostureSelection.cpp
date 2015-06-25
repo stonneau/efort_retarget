@@ -358,7 +358,6 @@ Sample* planner::GetPosturesInContact(Robot& robot, Node* limb, const sampling::
     //Eigen::Vector3d effectorCentroid = planner::GetEffectorCenter(limb);
     double bestManip = std::numeric_limits<double>::min();
     double tmp_manip, tempweightedmanip;
-    std::size_t found = limb->tag.find("leg");
     Eigen::Vector3d dir = direction;
     dir.normalize();
     //if(direction.y() < 0 ) dir = -direction;
@@ -374,7 +373,8 @@ Sample* planner::GetPosturesInContact(Robot& robot, Node* limb, const sampling::
     {
 //tmp_manip = direction.y() < 0 ?  planner::sampling::VelocityManipulability(*sit, dir) :  planner::sampling::ForceManipulability(*sit, dir);
         tmp_manip = planner::sampling::ForceManipulability(*sit, dir);
-        if(tmp_manip > bestManip)
+        tempweightedmanip = 1 / std::abs(tmp_manip - targetManip);
+        if(tempweightedmanip > bestManip)
         {
             Eigen::Vector3d normal, projection;
             LoadSample(*(*sit),limb);
@@ -383,21 +383,27 @@ Sample* planner::GetPosturesInContact(Robot& robot, Node* limb, const sampling::
                 for(Object::T_Object::iterator oit = obstacles.begin(); oit != obstacles.end(); ++oit)
                 {
 //if(effector->InContact(*oit,epsilon, normal, projection) && !planner::IsSelfColliding(&robot, limb) && !LimbColliding(limb, obstacles))
-                    if(effector->InContact(*oit,epsilon, normal, projection) && planner::SafeTargetDistance(limb,projection,0.9) )//&& NextIsInRange(limb, projection, rom, scenario.scenario->point_))
+                    if(effector->InContact(*oit,epsilon, normal, projection) && planner::SafeTargetDistance(limb,projection,0.9)
+                            && planner::Contains(*next_rom.front(), projection))//&& NextIsInRange(limb, projection, rom, scenario.scenario->point_))
                     //if(planner::MinDistance(effectorCentroid, *oit, projection, normal) < epsilon && !planner::IsSelfColliding(&robot, limb) && !LimbColliding(limb, obstacles))
                     {
-                        tempweightedmanip = (1 / std::abs(tmp_manip - targetManip))  * direction.dot(normal);
-                        tempweightedmanip *= 1 / CostMaintainContact(current_rom, next_rom, projection);
-                        //tempweightedmanip = 1 / CostMaintainContact(current_rom, next_rom, projection);
-                        //tempweightedmanip *= dir.dot(robot.currentRotation * normal);
-                        if(tempweightedmanip > bestManip)// && (planner::SafeTargetDistance(limb,projection,0.9)))
+                        double dot = direction.dot(normal);
+                        if(dot != 0)
                         {
-                            bestManip = tempweightedmanip;
-                            res = tempweightedmanip > 0.0 ? *sit : 0;
-                            //position = effector->GetPosition();
-                            normalVector = normal;
-                            position = projection;
-                           // break;
+                            tempweightedmanip *= dot;
+                            //tempweightedmanip = (1 / std::abs(tmp_manip - targetManip))  * direction.dot(normal);
+                            //tempweightedmanip *= 1 / CostMaintainContact(current_rom, next_rom, projection);
+                            //tempweightedmanip = 1 / CostMaintainContact(current_rom, next_rom, projection);
+                            //tempweightedmanip *= dir.dot(robot.currentRotation * normal);
+                            if(tempweightedmanip > bestManip)// && (planner::SafeTargetDistance(limb,projection,0.9)))
+                            {
+                                bestManip = tempweightedmanip;
+                                res = *sit; //tempweightedmanip > 0.0 ? *sit : 0;
+                                //position = effector->GetPosition();
+                                normalVector = normal;
+                                position = projection;
+                               // break;
+                            }
                         }
                     }
                 }

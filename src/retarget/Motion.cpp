@@ -471,7 +471,7 @@ std::cout << "configuration invalid for limb" << limb->tag << std::endl;
             //make sure position valid for all frames
             planner::sampling::Sample* nc =
                     planner::GetPosturesInContact(*robot, limb, pImpl_->cScenario_->limbSamples[cit->limbIndex_],
-                                                  objects,cit->surfaceNormal_,position, normal, *(pImpl_->cScenario_),  dm, &sphereCurrent);
+                                                  objects,cit->surfaceNormal_,position, normal, *(pImpl_->cScenario_), manipulability,  dm, &sphereCurrent);
             if(nc) // new contact found
             {
                 planner::sampling::LoadSample(*nc, limb);
@@ -479,6 +479,8 @@ std::cout << "configuration invalid for limb" << limb->tag << std::endl;
                 nextNormals.push_back(normal);
                 invalidIds.push_back(limb->id);
                 SolveIk(limb, position, normal);
+                pImpl_->cScenario_->states[frameid]->contactLimbPositions[id] = position;
+                pImpl_->cScenario_->states[frameid]->contactLimbPositionsNormals[id] = normal;
 std::cout << "found contact " << limb->tag << std::endl;
             }
             else // no contact found, just return a collision free posture
@@ -501,7 +503,7 @@ std::cout << "no contact found contact" << limb->tag << std::endl;
     //res.push_back(robot);
     planner::Robot* r [100];
     r[0] = robot;
-    //#pragma omp parallel for
+    #pragma omp parallel for
     for(int i = frameid; i <=furtherframe_; ++i)
     {
         planner::Robot* current = new planner::Robot(*pImpl_->states_[i]->value);

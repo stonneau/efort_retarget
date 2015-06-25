@@ -825,9 +825,9 @@ void command(int cmd)   /**  key control function; */
             current ++; if(states.size() <= current) current = states.size()-1;
             //cScenario->robot->SetConfiguration(cScenario->path[current]);
             cScenario->robot = states[current]->value;
-            DumpIds(states[current]->value->node);
+            /*DumpIds(states[current]->value->node);
             std::cout << "frame id" << current << std::endl;
-            std::cout << "position" << planner::AsPosition(cScenario->robot->node) << std::endl;
+            std::cout << "position" << planner::AsPosition(cScenario->robot->node) << std::endl;*/
             //currentSample = 0;
             //samples = planner::GetPosturesInContact(*cScenario->robot, cScenario->limbs[0], cScenario->limbSamples[0], cScenario->scenario->objects_ );
             break;
