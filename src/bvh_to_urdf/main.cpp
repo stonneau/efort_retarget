@@ -498,7 +498,9 @@ int main(int argc, char *argv[])
     std::string urdfpath = argv[2];
     std::string scenariopath = argv[3];
     std::string scale = (argc > 4)  ? (argv[4]) : (std::string ("1"));
+    std::string streshold = (argc > 5)  ? (argv[5]) : (std::string ("0.01"));
     double s = StrToD(scale);
+    double treshold = StrToD(streshold);
     std::ifstream myfile (bvhpath);
     // first parse bvh and get structure
     if (myfile.is_open())
@@ -549,6 +551,6 @@ int main(int argc, char *argv[])
         return false;
     }
     //generate contacts
-    gen_contacts::GenerateContacts(scenariopath, states);
+    gen_contacts::GenerateContacts(scenariopath, states, treshold);
     return 0;
 }
