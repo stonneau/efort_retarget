@@ -11,6 +11,7 @@
 
 #include <Eigen/Dense>
 #include <memory>
+#include <stdexcept>
 
 #define INTERNAL 1
 
@@ -52,6 +53,38 @@ struct Frame
     std::vector<Contact> contacts_;
 };
 
+struct FrameReport
+{
+    std::size_t frameId_;
+    Eigen::VectorXd pose_;
+    // true if retargeting modified frame
+    bool retargeted_;
+    // if limb i in contact, contactStates[i] == 1; 0 otherwise
+    std::vector<std::size_t> contactStates;
+    // exhaustive info of contacts, ordered
+    std::vector<Contact> contacts_;
+
+    //returns contact associated to limb
+    // throws exception if limb not in contact
+    const Contact& getContact(std::size_t limbId)
+    {
+        if(contactStates[limbId] == 0)
+            throw(std::runtime_error("No contact defined for limb " + limbId));
+        std::size_t id(0);
+        std::vector<Contact>::const_iterator cc =contacts_.begin();
+        for(std::vector<std::size_t>::const_iterator cs = contactStates.begin();
+            cs != contactStates.end(); ++cs, ++id)
+        {
+            if(id == limbId)
+                return *cc;
+            if((*cs) == 1)
+            {
+                ++cc;
+            }
+        }
+    }
+};
+
 struct ContactUpdate
 {
     std::size_t initFrame_;
@@ -91,10 +124,13 @@ struct Motion
     ///  \param return : The updated 3d joint location of each joint after retargetting if necessary.
     std::vector<Eigen::VectorXd> RetargetContact(const std::size_t frameid, const Eigen::VectorXd& framePositions, const T_PointReplacement& objectModifications) const;
 
+    std::vector<FrameReport> RetargetMotion(const std::vector<Eigen::VectorXd>& framePositions, const T_PointReplacement& objectModifications, const std::size_t frameStart = 0) const;
+
 
 #if INTERNAL
     planner::Robot* RetargetInternal(const std::size_t frameid, const Eigen::VectorXd& framePositions, const T_PointReplacement& objectModifications) const;
     std::vector<planner::Robot*> RetargetContactInternal(const std::size_t frameid, const Eigen::VectorXd& framePositions, const T_PointReplacement& objectModifications, bool force = false) const;
+    std::vector<planner::Robot*> RetargetMotion(const std::vector<Eigen::VectorXd>& newPositions, const T_PointReplacement& objectModifications, const std::size_t frameStart, bool force = false) const;
 #endif
 
     std::vector<Frame> frames_;
