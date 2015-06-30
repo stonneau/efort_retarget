@@ -159,7 +159,6 @@ namespace
         // cloning reference robot from frame.
         // moving robot to new position
         robot.SetPosition(framePositions.head<3>(), true);
-        std::cout << "position \n" << framePositions.head<3>() << std::endl;
         // performing ik to reconstruct joint variation:
         PerformFullIk(robot, framePositions, pImpl_->fullBodyIkSolver_);
         // retrieve effector targets
@@ -172,9 +171,9 @@ namespace
             // Approximating ROM with a sphere to check whether point belongs
             Sphere sphereCurrent(robot.currentRotation * robot.constantRotation.transpose() * pImpl_->cScenario_->limbRoms[cit->limbIndex_].center_ + robot.currentPosition,
                                   pImpl_->cScenario_->limbRoms[cit->limbIndex_].radius_ * 1.5);
-            if(force || (!Contains(sphereCurrent, targets[id])
-                    && failedContacts.end() !=
-                       std::find_if(failedContacts.begin(), failedContacts.end(), EqualityCheck(*cit)))) // point is contained: v0 accept configuration
+            if((!Contains(sphereCurrent, targets[id]) || force)
+                    && failedContacts.end() ==
+                       std::find_if(failedContacts.begin(), failedContacts.end(), EqualityCheck(*cit))) // point is contained: v0 accept configuration
             {
                 failedContacts.push_back(*cit);
                 //nextFrameToCheck = std::max((int)nextFrameToCheck, (*cit).endFrame_);
@@ -397,7 +396,7 @@ bool RetargetLimbContact(const efort::PImpl* pImpl_, planner::Robot* r[], const 
     Node* limb = planner::GetChild(robot,pImpl_->cScenario_->limbs[contact.limbIndex_]->id);
     // Approximating ROM with a sphere to check whether point belongs
     Sphere sphereCurrent(robot->currentRotation * robot->constantRotation.transpose() * pImpl_->cScenario_->limbRoms[contact.limbIndex_].center_ + robot->currentPosition,
-                          pImpl_->cScenario_->limbRoms[contact.limbIndex_].radius_ * 2);
+                          pImpl_->cScenario_->limbRoms[contact.limbIndex_].radius_ * 1.5);
 
     // perform retarget
 std::cout << "configuration invalid for limb" << limb->tag << std::endl;
@@ -406,7 +405,7 @@ std::cout << "configuration invalid for limb" << limb->tag << std::endl;
     //push last frame sphere
     planner::Robot * rLastFrame = pImpl_->states_[contact.endFrame_]->value;
     Sphere sphereLastFram(robot->currentRotation * rLastFrame->constantRotation.transpose() * pImpl_->cScenario_->limbRoms[contact.limbIndex_].center_ + rLastFrame->currentPosition,
-                          pImpl_->cScenario_->limbRoms[contact.limbIndex_].radius_ * 2);
+                          pImpl_->cScenario_->limbRoms[contact.limbIndex_].radius_ * 1.5);
     dm.push_back(&sphereLastFram);
     double manipulability = pImpl_->states_[frameid]->manipulabilities[id];
     //make sure position valid for all frames
@@ -415,7 +414,7 @@ std::cout << "configuration invalid for limb" << limb->tag << std::endl;
                                           objects,contact.surfaceNormal_,position, normal, *(pImpl_->cScenario_), manipulability,  dm, &sphereCurrent);
     if(nc) // new contact found
     {
-        planner::sampling::LoadSample(*nc, limb);
+        //planner::sampling::LoadSample(*nc, limb);
         nextTargets.push_back(position);
         nextNormals.push_back(normal);
         invalidIds.push_back(limb->id);
@@ -445,9 +444,9 @@ std::cout << "no contact found for" << limb->tag << std::endl;
             fr.contactStates[contact.limbIndex_] = 1;
             fr.retargeted_ = true;
             planner::Node* limb = planner::GetChild(current,*ids);
-            planner::Node* refLimb = planner::GetChild(robot,*ids);
-            sampling::Sample s(refLimb);
-            planner::sampling::LoadSample(s,limb);
+            //planner::Node* refLimb = planner::GetChild(robot,*ids);
+            //sampling::Sample s(refLimb);
+            //planner::sampling::LoadSample(s,limb);
             SolveIk(limb, nextTargets[currentId], nextNormals[currentId],200,20, false);
         }
     }
@@ -461,7 +460,6 @@ std::vector<FrameReport> Motion::RetargetMotion(const std::vector<Eigen::VectorX
     // create robot for each frame;
     int nbLimbs = pImpl_->cScenario_->limbs.size();
     planner::Robot* r [400];
-    #pragma omp parallel for
     for(std::size_t i = frameStart; i < frameStart + framePositions.size(); ++i)
     {
         r[i] = new planner::Robot(*pImpl_->states_[i]->value);
@@ -473,7 +471,7 @@ std::vector<FrameReport> Motion::RetargetMotion(const std::vector<Eigen::VectorX
     std::vector<Eigen::Vector3d> targets;
     for(std::size_t i = frameStart; i < frameStart + framePositions.size();)
     {
-        i = FrameInvalid(pImpl_.get(), *r[i],failedContacts, *this, i, framePositions[i-frameStart],targets);
+        i = FrameInvalid(pImpl_.get(), *r[i],failedContacts, *this, i, framePositions[i-frameStart],targets,false);
     }
 
     //collect object updates
@@ -482,6 +480,7 @@ std::vector<FrameReport> Motion::RetargetMotion(const std::vector<Eigen::VectorX
     std::vector<std::size_t> newObjectIds;
     planner::Object::T_Object objects =  dictionnary.recreate(objectModifications, pImpl_->cScenario_->scenario->objects_, newObjectIds);
 
+std::cout << "size contacts" << failedContacts.size() << std::endl;
     // all wrong contacts are pushed in failedContacts, can now run IK and find new contacts
     for(T_FailedContact::const_iterator cit = failedContacts.begin();
         cit != failedContacts.end(); ++cit)
@@ -538,6 +537,7 @@ std::vector<planner::Robot*> Motion::RetargetMotionInternal(const std::vector<Ei
     std::vector<std::size_t> newObjectIds;
     planner::Object::T_Object objects =  dictionnary.recreate(objectModifications, pImpl_->cScenario_->scenario->objects_, newObjectIds);
 
+std::cout << "size contacts" << failedContacts.size() << std::endl;
     // all wrong contacts are pushed in failedContacts, can now run IK and find new contacts
     for(T_FailedContact::const_iterator cit = failedContacts.begin();
         cit != failedContacts.end(); ++cit)
@@ -797,7 +797,7 @@ namespace
                 if(!pImpl->contacts_[*cit].empty())
                 {
                     Contact& previous = pImpl->contacts_[*cit].back();
-                    if(previous.endFrame_ == numFrame-1 && (previous.worldPosition_ - cState.contactLimbPositions[cid]).norm() < 0.15)
+                    if(previous.endFrame_ == numFrame-1) // && (previous.worldPosition_ - cState.contactLimbPositions[cid]).norm() < 0.15)
                     {
                         previous.endFrame_ = numFrame;
                         newContact = false;
