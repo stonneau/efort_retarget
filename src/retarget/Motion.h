@@ -53,8 +53,20 @@ struct Frame
     std::vector<Contact> contacts_;
 };
 
+// if retargeted_ is false,
+// other states are undefined
 struct FrameReport
 {
+    FrameReport(const std::size_t id, const int nbC):
+        frameId_(id), retargeted_(false)
+    {
+        //init all contacts to false
+        for(int i=0; i< nbC; ++i)
+        {
+            contactStates.push_back(0);
+        }
+    }
+
     std::size_t frameId_;
     Eigen::VectorXd pose_;
     // true if retargeting modified frame
@@ -130,7 +142,7 @@ struct Motion
 #if INTERNAL
     planner::Robot* RetargetInternal(const std::size_t frameid, const Eigen::VectorXd& framePositions, const T_PointReplacement& objectModifications) const;
     std::vector<planner::Robot*> RetargetContactInternal(const std::size_t frameid, const Eigen::VectorXd& framePositions, const T_PointReplacement& objectModifications, bool force = false) const;
-    std::vector<planner::Robot*> RetargetMotion(const std::vector<Eigen::VectorXd>& newPositions, const T_PointReplacement& objectModifications, const std::size_t frameStart, bool force = false) const;
+    std::vector<planner::Robot*> RetargetMotionInternal(const std::vector<Eigen::VectorXd>& newPositions, const T_PointReplacement& objectModifications, const std::size_t frameStart, bool force = false) const;
 #endif
 
     std::vector<Frame> frames_;

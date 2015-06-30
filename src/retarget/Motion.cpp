@@ -139,18 +139,27 @@ namespace
         return targets;
     }
 
+
+    struct EqualityCheck
+    {
+      EqualityCheck(const Contact & st) : st_(st) { }
+      const Contact & st_;
+      bool operator()(const Contact& lhs) const { return st_.equals(lhs); }
+    };
+
     typedef std::vector<Contact> T_FailedContact;
 
     //index of next frame to checks
     std::size_t FrameInvalid(const efort::PImpl* pImpl_, Robot& robot, T_FailedContact& failedContacts, const Motion& motion, const std::size_t frameid, const Eigen::VectorXd& framePositions,
-                      std::vector<Eigen::Vector3d>& targets)
+                      std::vector<Eigen::Vector3d>& targets, bool force=false)
     {
-        std::size_t nextFrameToCheck(frameid +1);
+        std::size_t nextFrameToCheck(frameid +1); // todo
         // retrieving frame
         const Frame& cframe = motion.frames_[frameid];
         // cloning reference robot from frame.
         // moving robot to new position
         robot.SetPosition(framePositions.head<3>(), true);
+        std::cout << "position \n" << framePositions.head<3>() << std::endl;
         // performing ik to reconstruct joint variation:
         PerformFullIk(robot, framePositions, pImpl_->fullBodyIkSolver_);
         // retrieve effector targets
@@ -163,10 +172,12 @@ namespace
             // Approximating ROM with a sphere to check whether point belongs
             Sphere sphereCurrent(robot.currentRotation * robot.constantRotation.transpose() * pImpl_->cScenario_->limbRoms[cit->limbIndex_].center_ + robot.currentPosition,
                                   pImpl_->cScenario_->limbRoms[cit->limbIndex_].radius_ * 1.5);
-            if(!Contains(sphereCurrent, targets[id])) // point is contained: v0 accept configuration
+            if(force || (!Contains(sphereCurrent, targets[id])
+                    && failedContacts.end() !=
+                       std::find_if(failedContacts.begin(), failedContacts.end(), EqualityCheck(*cit)))) // point is contained: v0 accept configuration
             {
                 failedContacts.push_back(*cit);
-                nextFrameToCheck = std::max((int)nextFrameToCheck, (*cit).endFrame_);
+                //nextFrameToCheck = std::max((int)nextFrameToCheck, (*cit).endFrame_);
             }
         }
         return nextFrameToCheck;
@@ -369,22 +380,24 @@ std::cout << "no contact found contact" << limb->tag << std::endl;
 }
 
 
-void RetargetLimbContact(const efort::PImpl* pImpl_, planner::Robot* r[], const Contact& contact,  planner::Object::T_Object& objects)
+bool RetargetLimbContact(const efort::PImpl* pImpl_, planner::Robot* r[], const Contact& contact,  planner::Object::T_Object& objects, std::vector<FrameReport>& res
+                         , const std::size_t frameStart, const std::size_t frameEnd)
 {
     std::vector<std::size_t> invalidIds;
     std::vector<Eigen::Vector3d> nextTargets;
     std::vector<Eigen::Vector3d> nextNormals;
+    bool contactfound(false);
 
     //initial robot:
-    planner::Robot* robot = r[contact.startFrame_];
-    std::size_t frameid(contact.startFrame_);
+    std::size_t frameid(std::max(contact.startFrame_,(int)frameStart));
+    planner::Robot* robot = r[frameid];
     //v0: just find a contact satisfied for all contact frames (first and last)
     std::size_t id(0);
     // get corresponding limb with contact
     Node* limb = planner::GetChild(robot,pImpl_->cScenario_->limbs[contact.limbIndex_]->id);
     // Approximating ROM with a sphere to check whether point belongs
     Sphere sphereCurrent(robot->currentRotation * robot->constantRotation.transpose() * pImpl_->cScenario_->limbRoms[contact.limbIndex_].center_ + robot->currentPosition,
-                          pImpl_->cScenario_->limbRoms[contact.limbIndex_].radius_ * 1.5);
+                          pImpl_->cScenario_->limbRoms[contact.limbIndex_].radius_ * 2);
 
     // perform retarget
 std::cout << "configuration invalid for limb" << limb->tag << std::endl;
@@ -393,7 +406,7 @@ std::cout << "configuration invalid for limb" << limb->tag << std::endl;
     //push last frame sphere
     planner::Robot * rLastFrame = pImpl_->states_[contact.endFrame_]->value;
     Sphere sphereLastFram(robot->currentRotation * rLastFrame->constantRotation.transpose() * pImpl_->cScenario_->limbRoms[contact.limbIndex_].center_ + rLastFrame->currentPosition,
-                          pImpl_->cScenario_->limbRoms[contact.limbIndex_].radius_ * 1.5);
+                          pImpl_->cScenario_->limbRoms[contact.limbIndex_].radius_ * 2);
     dm.push_back(&sphereLastFram);
     double manipulability = pImpl_->states_[frameid]->manipulabilities[id];
     //make sure position valid for all frames
@@ -410,6 +423,7 @@ std::cout << "configuration invalid for limb" << limb->tag << std::endl;
         pImpl_->cScenario_->states[frameid]->contactLimbPositions[id] = position;
         pImpl_->cScenario_->states[frameid]->contactLimbPositionsNormals[id] = normal;
 std::cout << "found contact " << limb->tag << std::endl;
+        contactfound = true;
     }
     else // no contact found, just return a collision free posture
     {
@@ -421,12 +435,15 @@ std::cout << "no contact found for" << limb->tag << std::endl;
     //res.tail(framePositions.rows()-3) =planner::AsPosition(robot->node->children[0]);
     //res.push_back(robot);
     #pragma omp parallel for
-    for(int i = frameid; i <=contact.endFrame_; ++i)
+    for(int i = frameid; i <= std::min(contact.endFrame_, (int)frameEnd); ++i)
     {
         planner::Robot* current = r[i];
         std::size_t currentId(0);
         for(std::vector<std::size_t>::const_iterator ids = invalidIds.begin(); ids != invalidIds.end(); ++ids, ++currentId)
         {
+            FrameReport& fr = res[i-frameid];
+            fr.contactStates[contact.limbIndex_] = 1;
+            fr.retargeted_ = true;
             planner::Node* limb = planner::GetChild(current,*ids);
             planner::Node* refLimb = planner::GetChild(robot,*ids);
             sampling::Sample s(refLimb);
@@ -434,6 +451,7 @@ std::cout << "no contact found for" << limb->tag << std::endl;
             SolveIk(limb, nextTargets[currentId], nextNormals[currentId],200,20, false);
         }
     }
+    return contactfound;
 }
 
 std::vector<FrameReport> Motion::RetargetMotion(const std::vector<Eigen::VectorXd>& framePositions, const T_PointReplacement& objectModifications, const std::size_t frameStart) const
@@ -441,11 +459,13 @@ std::vector<FrameReport> Motion::RetargetMotion(const std::vector<Eigen::VectorX
     std::vector<FrameReport> res;
     assert(framePositions.size() + frameStart  < this->frames_.size());
     // create robot for each frame;
+    int nbLimbs = pImpl_->cScenario_->limbs.size();
     planner::Robot* r [400];
     #pragma omp parallel for
     for(std::size_t i = frameStart; i < frameStart + framePositions.size(); ++i)
     {
         r[i] = new planner::Robot(*pImpl_->states_[i]->value);
+        res.push_back(FrameReport(i, nbLimbs));
     }
     // now find invalid states
     // i incremented by frameInvalid
@@ -466,7 +486,17 @@ std::vector<FrameReport> Motion::RetargetMotion(const std::vector<Eigen::VectorX
     for(T_FailedContact::const_iterator cit = failedContacts.begin();
         cit != failedContacts.end(); ++cit)
     {
-        RetargetLimbContact(this->pImpl_.get(), r, *cit, objects);
+        RetargetLimbContact(this->pImpl_.get(), r, *cit, objects, res, frameStart, frameStart + framePositions.size()-1);
+    }
+
+    std::vector<FrameReport>::iterator cit = res.begin();
+    for(; cit !=res.end(); ++cit)
+    {
+        if(cit->retargeted_)
+        {
+            cit->pose_ = planner::AsPosition(r[cit->frameId_]->node->children[0]);
+        }
+        delete r[cit->frameId_];
     }
 
     // delete newly created objects
@@ -478,6 +508,68 @@ std::vector<FrameReport> Motion::RetargetMotion(const std::vector<Eigen::VectorX
 
     return res;
 }
+
+#if INTERNAL
+std::vector<planner::Robot*> Motion::RetargetMotionInternal(const std::vector<Eigen::VectorXd>& framePositions, const T_PointReplacement& objectModifications,
+                                                            const std::size_t frameStart, bool force) const
+{
+    std::vector<FrameReport> res;
+    assert(framePositions.size() + frameStart  < this->frames_.size());
+    // create robot for each frame;
+    int nbLimbs = pImpl_->cScenario_->limbs.size();
+    planner::Robot* r [400];
+    for(std::size_t i = frameStart; i < frameStart + framePositions.size(); ++i)
+    {
+        r[i] = new planner::Robot(*pImpl_->states_[i]->value);
+        res.push_back(FrameReport(i, nbLimbs));
+    }
+    // now find invalid states
+    // i incremented by frameInvalid
+    T_FailedContact failedContacts;
+    std::vector<Eigen::Vector3d> targets;
+    for(std::size_t i = frameStart; i < frameStart + framePositions.size();)
+    {
+        i = FrameInvalid(pImpl_.get(), *r[i],failedContacts, *this, i, framePositions[i-frameStart],targets,force);
+    }
+
+    //collect object updates
+    //retrieving updated objects
+    const ObjectDictionary& dictionnary = pImpl_->cScenario_->scenario->objDictionnary;
+    std::vector<std::size_t> newObjectIds;
+    planner::Object::T_Object objects =  dictionnary.recreate(objectModifications, pImpl_->cScenario_->scenario->objects_, newObjectIds);
+
+    // all wrong contacts are pushed in failedContacts, can now run IK and find new contacts
+    for(T_FailedContact::const_iterator cit = failedContacts.begin();
+        cit != failedContacts.end(); ++cit)
+    {
+        RetargetLimbContact(this->pImpl_.get(), r, *cit, objects, res, frameStart, frameStart + framePositions.size()-1);
+    }
+
+    std::vector<FrameReport>::iterator cit = res.begin();
+    for(; cit !=res.end(); ++cit)
+    {
+        if(cit->retargeted_)
+        {
+            cit->pose_ = planner::AsPosition(r[cit->frameId_]->node->children[0]);
+        }
+        //delete r[cit->frameId_];
+    }
+
+    // delete newly created objects
+    for(std::vector<std::size_t>::const_iterator cit = newObjectIds.begin();
+        cit != newObjectIds.end(); ++cit)
+    {
+        delete objects[*cit];
+    }
+
+    std::vector<planner::Robot*> robots;
+    for(std::size_t i=frameStart; i<frameStart + framePositions.size();++i)
+    {
+        robots.push_back(r[i]);
+    }
+    return robots;
+}
+#endif
 
 
 #if INTERNAL

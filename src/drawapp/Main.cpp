@@ -718,7 +718,14 @@ void Retarget(const Eigen::Vector3d& delta, const planner::Object* object)
         Eigen::Vector3d res = cScenario->scenario->objDictionnary.points[i] + totalOffset;
         replacement.push_back(std::make_pair(i, res));
     }
-    std::vector<planner::Robot*> robs = motion->RetargetContactInternal(current, planner::AsPosition(robik.node), replacement, true);
+    std::vector<Eigen::VectorXd> res;
+    res.push_back(planner::AsPosition(robik.node));
+    for(int i = 1; i< states.size() - current - 1; ++i)
+    {
+        res.push_back(planner::AsPosition(states[current+i]->value->node));
+    }
+    std::vector<planner::Robot*> robs = motion->RetargetMotionInternal(res, replacement, current, true);
+    //std::vector<planner::Robot*> robs = motion->RetargetContactInternal(current, planner::AsPosition(robik.node), replacement, true);
     //states[current] = motion->Retarget(cScenario->robot, current, targets, cScenario->scenario->objects_);
     for(int i =0; i< robs.size(); ++i)
     {

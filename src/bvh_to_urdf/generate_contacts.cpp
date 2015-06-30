@@ -83,6 +83,60 @@ namespace
             }
         }
     }
+
+    // remove any contact that lasts less than 10 frames.
+    void CleanStates(planner::CompleteScenario& cs)
+    {
+        //maintain current nb vectors for each limb
+        std::vector<int> framesPerLimb;
+        for(int i=0; i< cs.limbs.size(); ++i)
+        {
+            framesPerLimb.push_back(0);
+        }
+        planner::T_State& states = cs.states;
+        std::size_t frameid(0);
+        for(planner::T_State::iterator it = states.begin();
+            it != states.end(); ++it, ++frameid)
+        {
+            planner::State* state = *it;
+            for(int i=0; i< framesPerLimb.size(); ++i)
+            {
+                // contact found
+                if(std::find(state->contactLimbs.begin()
+                             ,state->contactLimbs.end()
+                             ,i) != state->contactLimbs.end())
+                {
+                    // contact not already existing
+                    framesPerLimb[i] += 1;
+                }
+                else // no contact
+                {
+                    int nbFrames = framesPerLimb[i];
+                    if(nbFrames > 0 && nbFrames < 10)
+                    {
+                        // remove previous contacts which are
+                        // obviously not long enough
+                        for(int s = frameid - nbFrames; s < frameid; ++s)
+                        {
+                            // find contact index.
+                            planner::State* current = states[s];
+                            for(int cid1 =0; cid1 < current->contactLimbs.size(); ++cid1)
+                            {
+                                if(current->contactLimbs[cid1] == i)
+                                {
+                                    //current->manipulabilities.erase(current->manipulabilities.begin()+i);
+                                    current->contactLimbs.erase(current->contactLimbs.begin()+cid1);
+                                    current->contactLimbPositions.erase(current->contactLimbPositions.begin()+cid1);
+                                    current->contactLimbPositionsNormals.erase(current->contactLimbPositionsNormals.begin()+cid1);
+                                }
+                            }
+                        }
+                    }
+                    framesPerLimb[i] = 0;
+                }
+            }
+        }
+    }
 }
 
 void gen_contacts::GenerateContacts(const std::string& scenarioFile, const std::string& statefile, const double treshold)
@@ -96,5 +150,6 @@ void gen_contacts::GenerateContacts(const std::string& scenarioFile, const std::
         ContactForState(*cs,*(sit-1), *sit, *(sit+1), treshold);
     }
     ContactForState(*cs, *(cs->states.end()-2),cs->states.back(),cs->states.back(), treshold);
+    CleanStates(*cs);
     planner::SaveStates(cs->states,statefile);
 }
