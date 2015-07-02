@@ -444,9 +444,9 @@ std::cout << "no contact found for" << limb->tag << std::endl;
             fr.contactStates[contact.limbIndex_] = 1;
             fr.retargeted_ = true;
             planner::Node* limb = planner::GetChild(current,*ids);
-            //planner::Node* refLimb = planner::GetChild(robot,*ids);
-            //sampling::Sample s(refLimb);
-            //planner::sampling::LoadSample(s,limb);
+            planner::Node* refLimb = planner::GetChild(robot,*ids);
+            sampling::Sample s(refLimb);
+            planner::sampling::LoadSample(s,limb);
             SolveIk(limb, nextTargets[currentId], nextNormals[currentId],200,20, false);
         }
     }
@@ -504,7 +504,6 @@ std::cout << "size contacts" << failedContacts.size() << std::endl;
     {
         delete objects[*cit];
     }
-
     return res;
 }
 
@@ -552,7 +551,19 @@ std::cout << "size contacts" << failedContacts.size() << std::endl;
         {
             cit->pose_ = planner::AsPosition(r[cit->frameId_]->node->children[0]);
         }
+// load robot TMP
         //delete r[cit->frameId_];
+    }
+
+
+    for(std::vector<FrameReport>::const_iterator cit = res.begin(); cit != res.end(); ++cit)
+    {
+        const FrameReport& fr = *cit;
+        if(fr.retargeted_)
+        {
+            std::cout << " frame retargeted " << fr.frameId_ << std::endl;
+            //std::cout << "configuration \n " << fr.pose_ << std::endl;
+        }
     }
 
     // delete newly created objects

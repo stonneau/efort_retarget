@@ -832,6 +832,7 @@ void command(int cmd)   /**  key control function; */
             current ++; if(states.size() <= current) current = states.size()-1;
             //cScenario->robot->SetConfiguration(cScenario->path[current]);
             cScenario->robot = states[current]->value;
+std::cout << "frame id" << current << std::endl;
             /*DumpIds(states[current]->value->node);
             std::cout << "frame id" << current << std::endl;
             std::cout << "position" << planner::AsPosition(cScenario->robot->node) << std::endl;*/
