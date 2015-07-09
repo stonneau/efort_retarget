@@ -493,7 +493,10 @@ std::cout << "size contacts" << failedContacts.size() << std::endl;
     {
         if(cit->retargeted_)
         {
-            cit->pose_ = planner::AsPosition(r[cit->frameId_]->node->children[0]);
+            //cit->pose_ = planner::AsPosition(r[cit->frameId_]->node->children[0]);
+            cit->pose_ = framePositions[0];
+            cit->pose_.head(3) = r[cit->frameId_]->currentPosition;
+            cit->pose_.tail(cit->pose_.rows()-3) = planner::AsPosition(r[cit->frameId_]->node->children[0]);
         }
         delete r[cit->frameId_];
     }
