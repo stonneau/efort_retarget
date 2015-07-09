@@ -21,6 +21,16 @@
 
 namespace efort
 {
+
+//to pass both collision and reachability
+// pass RetargetType::collision | RetargetType::reachability
+enum RetargetType
+{
+    collision = 0x00001,
+    reachability = 0x00002
+};
+
+
 /// \class PImpl
 /// \brief private implementation of Motion class hiding internal object representation.
 struct PImpl;
@@ -136,13 +146,14 @@ struct Motion
     ///  \param return : The updated 3d joint location of each joint after retargetting if necessary.
     std::vector<Eigen::VectorXd> RetargetContact(const std::size_t frameid, const Eigen::VectorXd& framePositions, const T_PointReplacement& objectModifications) const;
 
-    std::vector<FrameReport> RetargetMotion(const std::vector<Eigen::VectorXd>& framePositions, const T_PointReplacement& objectModifications, const std::size_t frameStart = 0) const;
+    ///parameter retargetType help you choose collision and or / reachability for retargetting decision
+    std::vector<FrameReport> RetargetMotion(const std::vector<Eigen::VectorXd>& framePositions, const T_PointReplacement& objectModifications, const int retargetType, const std::size_t frameStart = 0) const;
 
 
 #if INTERNAL
     planner::Robot* RetargetInternal(const std::size_t frameid, const Eigen::VectorXd& framePositions, const T_PointReplacement& objectModifications) const;
     std::vector<planner::Robot*> RetargetContactInternal(const std::size_t frameid, const Eigen::VectorXd& framePositions, const T_PointReplacement& objectModifications, bool force = false) const;
-    std::vector<planner::Robot*> RetargetMotionInternal(const std::vector<Eigen::VectorXd>& newPositions, const T_PointReplacement& objectModifications, const std::size_t frameStart, bool force = false) const;
+    std::vector<planner::Robot*> RetargetMotionInternal(const std::vector<Eigen::VectorXd>& newPositions, const T_PointReplacement& objectModifications, const std::size_t frameStart, const int retargetType, bool force = false) const;
 #endif
 
     std::vector<Frame> frames_;
