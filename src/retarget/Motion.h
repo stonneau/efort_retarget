@@ -143,11 +143,31 @@ struct Motion
     /// relationship descriptors.
     /// \param objectModifications : std::vector of pair indicating for a given vertice id, its new location
     /// As first version, PQP object is recreated and retargetting is performed based on this new list.
+    /// \param force : if set to true, force retargetting of all limbs
     ///  \param return : The updated 3d joint location of each joint after retargetting if necessary.
-    std::vector<Eigen::VectorXd> RetargetContact(const std::size_t frameid, const Eigen::VectorXd& framePositions, const T_PointReplacement& objectModifications) const;
+    std::vector<Eigen::VectorXd> RetargetContact(const std::size_t frameid, const Eigen::VectorXd& framePositions,
+                                                 const T_PointReplacement& objectModifications, bool force = false) const;
+
+    ///  \brief Performs motion retargeting for the contacts of a given frame.
+    /// Given the joint positions, performs generalized IK to recompute joint angles.
+    /// Given environment modifications, performs contact retargetting if necessary.
+    /// repercuting contact location to all impacted frames.
+    ///  \param frameid : considered frame number
+    ///  \param framePositions : 3d location of each joint of the character, computed by
+    /// relationship descriptors.
+    /// \param objectModifications : std::vector of pair indicating for a given vertice id, its new location
+    /// As first version, PQP object is recreated and retargetting is performed based on this new list.
+    /// \param forcemask : vector of bool which has the same size than each number of limbs. If a limb entry is set to
+    /// true then the limb will be retargeted
+    ///  \param return : The updated 3d joint location of each joint after retargetting if necessary.
+    std::vector<Eigen::VectorXd> RetargetContact(const std::size_t frameid, const Eigen::VectorXd& framePositions,
+                                                 const T_PointReplacement& objectModifications, const std::vector<bool>& forcemask) const;
 
     ///parameter retargetType help you choose collision and or / reachability for retargetting decision
-    std::vector<FrameReport> RetargetMotion(const std::vector<Eigen::VectorXd>& framePositions, const T_PointReplacement& objectModifications, const int retargetType, const std::size_t frameStart = 0) const;
+    std::vector<FrameReport> RetargetMotion(const std::vector<Eigen::VectorXd>& framePositions, const T_PointReplacement& objectModifications,
+                                            const int retargetType, const std::size_t frameStart = 0, bool force = false) const;
+    std::vector<FrameReport> RetargetMotion(const std::vector<Eigen::VectorXd>& framePositions, const T_PointReplacement& objectModifications,
+                                            const int retargetType, const std::size_t frameStart, const std::vector<bool>& forcemask) const;
 
 
 #if INTERNAL
