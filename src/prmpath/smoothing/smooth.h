@@ -63,6 +63,9 @@ struct SplinePath : public ParamFunction
     std::vector<double> knots_;
     double scale_;
 };
+SplinePath makeSpline(Collider& collider, const Model& model, const ParamFunction* initPath,
+                        double maxSpeed, double maxAcceleration);
+
 // Jia Pan Collision Free and Curvature Continuous Path Smoothing in cluttered environment
 SplinePath SplineFromPath(Collider& collider, CT_Model& path, double maxSpeed, double maxAcceleration, bool normalize = true);
 SplinePath SplineShortCut(Collider& collider, CT_Model& path, double maxSpeed, double maxAcceleration, int nbSteps);

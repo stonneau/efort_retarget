@@ -20,6 +20,28 @@ namespace
         return std::make_pair(state.value->currentPosition, emap.log());
     }
 
+    planner::C2_Point MakeConfiguration(const planner::Object* state)
+    {
+        matrices::ExpMap emap(state->GetOrientation());
+        return std::make_pair(state->GetPosition(), emap.log());
+    }
+
+    planner::Object* GetEffector(planner::Node* limb, int& id)
+    {
+        if(limb->current)
+            id = limb->id;
+        if(limb->children.size() != 0)
+        {
+            planner::Object* res = GetEffector(limb->children[0], id);
+            if(res)
+            {
+                return res;
+            }
+        }
+        return limb->current;
+    }
+
+
     struct InterpolateLine
     {
         InterpolateLine(const Eigen::Vector3d& from, const Eigen::Vector3d& to)
@@ -39,6 +61,35 @@ namespace
         Eigen::Vector3d from_;
         Eigen::Vector3d to_;
     };
+
+    struct InterpolateSpline
+    {
+        InterpolateSpline(const ParamFunction* path, Collider& collider, const Model& model)
+            : spline_(planner::makeSpline(collider, model,path,2,2))
+            , path_(path){}
+        ~InterpolateSpline(){/*delete path_;*/}
+
+        Eigen::Vector3d operator () (double t) const
+        {
+            return spline_.Evaluate(t).first;
+        }
+
+        double distance() const
+        {
+            return (spline_.max().first - spline_.min().first).norm();
+        }
+
+        planner::SplinePath spline_;
+        const ParamFunction* path_;
+    };
+
+    ParamFunction* createInitPath(const State& from, const State& to, Collider& collider, const Model& model, const int effectorid)
+    {
+        const planner::Node* limbFrom = planner::GetChild(from.value, effectorid);
+        const planner::Node* limbTo = planner::GetChild(to.value, effectorid);
+        return new planner::InterpolatePath(MakeConfiguration(limbFrom->current),MakeConfiguration(limbTo->current),0,1);
+
+    }
 
     struct DoIk
     {
@@ -80,7 +131,7 @@ namespace
                 cit != state->contactLimbs.end(); ++cit, ++posit, ++normit, ++limbId)
             {
                 planner::Node* limb =  planner::GetChild(state->value,scenario.limbs[*cit]->id);
-                int limite = 200;
+                int limite = 10;
                 while(limite > 0 && !solver.StepClamping(limb, *posit, *posit, allconstraints[limbId], true))
                 {
                     limite--;
@@ -142,10 +193,29 @@ namespace
         return res;
     }
 
-    double GetMinTime(const planner::CompleteScenario& scenario, const std::vector<InterpolateLine>& lines)
+    std::vector<InterpolateSpline> ContactSplineInterpolation(const std::vector<int>& contacts, const planner::CompleteScenario& scenario, const planner::State& from, const planner::State& to)
+    {
+        std::vector<InterpolateSpline> res;
+        for(std::vector<int>::const_iterator cit = contacts.begin();
+            cit != contacts.end(); ++cit)
+        {
+            int limbindex = to.contactLimbs[*cit];
+            // Find position in initial Configuration
+            //create Model
+            int effId(-1);
+            planner::Node * limb = planner::GetChild(from.value, scenario.limbs[limbindex]->id);
+            planner::Object* obj = GetEffector(limb, effId);
+            Collider collider(scenario.scenario->objects_);
+            Model model; model.englobed = new planner::Object(*obj);
+            res.push_back(InterpolateSpline( createInitPath(from, to, collider, model, effId), collider, model));
+        }
+        return res;
+    }
+
+    double GetMinTime(const planner::CompleteScenario& scenario, const std::vector<InterpolateSpline>& lines)
     {
         double min = 0;
-        for(std::vector<InterpolateLine>::const_iterator cit = lines.begin()
+        for(std::vector<InterpolateSpline>::const_iterator cit = lines.begin()
             ; cit != lines.end(); ++cit)
         {
             double time = std::min (cit->distance() / (scenario.limbspeed.front() + 0.000000000001), 4.); // TODO
@@ -161,7 +231,7 @@ namespace
     {
         InterpolateContacts(const planner::CompleteScenario& scenario, const planner::State& from, const planner::State& to)
             :involvedContacts_(GetModifiedContacts(from, to))
-            ,contactInterpolation_(ContactInterpolation(involvedContacts_, scenario, from, to))
+            ,contactInterpolation_(ContactSplineInterpolation(involvedContacts_, scenario, from, to))
             , minTime_(GetMinTime(scenario, contactInterpolation_))
         {
             // NOTHING
@@ -169,7 +239,7 @@ namespace
         ~InterpolateContacts(){}
         void operator ()(planner::State& current, double time) const
         {
-            std::vector<InterpolateLine>::const_iterator intit = contactInterpolation_.begin();
+            std::vector<InterpolateSpline>::const_iterator intit = contactInterpolation_.begin();
             for(std::vector<int>::const_iterator cit = involvedContacts_.begin();
                 cit!= involvedContacts_.end(); ++cit, ++intit)
             {
@@ -177,7 +247,7 @@ namespace
             }
         }
         const std::vector<int> involvedContacts_;
-        const std::vector<InterpolateLine> contactInterpolation_;
+        const std::vector<InterpolateSpline> contactInterpolation_;
         const double minTime_;
     };
 

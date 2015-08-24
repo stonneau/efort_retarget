@@ -46,7 +46,7 @@ namespace
     bool drawNormals = false;
     bool solid = true;
     std::string outpath("../tests/testSerialization.txt");
-    std::string outstatepath("../rami/bvh/rideCar.states");
+    std::string outstatepath("../tests/test.states");
     std::string outfilename ("../tests/entrance.path");
     Eigen::Matrix3d itompTransform;
     int current = 0;
@@ -539,8 +539,8 @@ void start()
     //cScenario = planner::CompleteScenarioFromFile("../humandes/fullscenarios/truck_front.scen");
     //cScenario = planner::CompleteScenarioFromFile("../humandes/fullscenarios/truck_test.scen");
     //cScenario = planner::CompleteScenarioFromFile("../humandes/fullscenarios/race2.scen");
-    //cScenario = planner::CompleteScenarioFromFile("../humandes/fullscenarios/between.scen");
-    cScenario = planner::CompleteScenarioFromFile("../rami/scenarios/rami.scen");
+    cScenario = planner::CompleteScenarioFromFile("../humandes/fullscenarios/between.scen");
+    //cScenario = planner::CompleteScenarioFromFile("../rami/scenarios/rami.scen");
     //cScenario = planner::CompleteScenarioFromFile("../rami/scenarios/statestest.scen");
     //cScenario = planner::CompleteScenarioFromFile("../humandes/fullscenarios/race_climb.scen");
     //cScenario = planner::CompleteScenarioFromFile("../humandes/fullscenarios/climbing.scen");

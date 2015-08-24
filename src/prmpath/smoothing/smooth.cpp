@@ -508,6 +508,16 @@ namespace
 
 }
 
+
+
+planner::SplinePath planner::makeSpline(Collider& collider, const Model& model, const ParamFunction* initPath,
+                        double maxSpeed, double maxAcceleration)
+{
+    bool success = false;
+    bool normalier = false;
+    return createSpline(collider,model,initPath,0, maxSpeed, maxAcceleration, 0, initPath->tmax(), 1, 3, success, normalier, false );
+}
+
 planner::SplinePath planner::SplineFromPath(Collider& collider, CT_Model& path, double maxSpeed, double maxAcceleration, bool normalize)
 {
     int m = path.size();

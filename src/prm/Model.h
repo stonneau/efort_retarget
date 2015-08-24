@@ -151,7 +151,7 @@ struct Model
     {
         collisionIndexes.clear();
         size_t id = 0;
-        bool englobingCollision = false;
+        bool englobingCollision = englobing.size() == 0;
         for(Object::T_Object::iterator it = englobing.begin();
             it != englobing.end() && !englobingCollision; ++it, ++id)
         {
