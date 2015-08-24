@@ -7,6 +7,8 @@
 
 #include "tools/ExpMap.h"
 
+#include "spline/exact_cubic.h"
+
 #include <vector>
 
 using namespace std;
@@ -14,6 +16,12 @@ using namespace planner;
 
 namespace
 {
+    typedef Eigen::Vector3d point_t;
+    typedef spline::exact_cubic <double, double, 3, true, point_t> exact_cubic_t;
+//    /typedef bezier_curve  <double, double, 3, true, point_t> bezier_curve_t;
+    typedef std::pair<double, point_t> Waypoint;
+    typedef std::vector<Waypoint> T_Waypoint;
+
     planner::C2_Point MakeConfiguration(const planner::State& state)
     {
         matrices::ExpMap emap(state.value->currentRotation);
@@ -62,24 +70,35 @@ namespace
         Eigen::Vector3d to_;
     };
 
+    exact_cubic_t* createSpline(const ParamFunction* path)
+    {
+        T_Waypoint waypoints;
+        waypoints.push_back(std::make_pair(0,path->Evaluate(0).first));
+        waypoints.push_back(std::make_pair(1.,path->max().first));
+        return new exact_cubic_t(waypoints.begin(),waypoints.end());
+    }
+
     struct InterpolateSpline
     {
         InterpolateSpline(const ParamFunction* path, Collider& collider, const Model& model)
-            : spline_(planner::makeSpline(collider, model,path,2,2))
-            , path_(path){}
-        ~InterpolateSpline(){/*delete path_;*/}
+            : cspline_(createSpline(path))
+            , path_(path)
+        {
+
+        }
+        ~InterpolateSpline(){delete cspline_;delete path_;}
 
         Eigen::Vector3d operator () (double t) const
         {
-            return spline_.Evaluate(t).first;
+            return (*cspline_)(t);
         }
 
         double distance() const
         {
-            return (spline_.max().first - spline_.min().first).norm();
+            return ((*cspline_)(1) - (*cspline_)(0)).norm();
         }
-
-        planner::SplinePath spline_;
+        exact_cubic_t* cspline_;
+        //planner::SplinePath spline_;
         const ParamFunction* path_;
     };
 
@@ -193,9 +212,9 @@ namespace
         return res;
     }
 
-    std::vector<InterpolateSpline> ContactSplineInterpolation(const std::vector<int>& contacts, const planner::CompleteScenario& scenario, const planner::State& from, const planner::State& to)
+    std::vector<InterpolateSpline*> ContactSplineInterpolation(const std::vector<int>& contacts, const planner::CompleteScenario& scenario, const planner::State& from, const planner::State& to)
     {
-        std::vector<InterpolateSpline> res;
+        std::vector<InterpolateSpline*> res;
         for(std::vector<int>::const_iterator cit = contacts.begin();
             cit != contacts.end(); ++cit)
         {
@@ -207,18 +226,18 @@ namespace
             planner::Object* obj = GetEffector(limb, effId);
             Collider collider(scenario.scenario->objects_);
             Model model; model.englobed = new planner::Object(*obj);
-            res.push_back(InterpolateSpline( createInitPath(from, to, collider, model, effId), collider, model));
+            res.push_back(new InterpolateSpline( createInitPath(from, to, collider, model, effId), collider, model));
         }
         return res;
     }
 
-    double GetMinTime(const planner::CompleteScenario& scenario, const std::vector<InterpolateSpline>& lines)
+    double GetMinTime(const planner::CompleteScenario& scenario, const std::vector<InterpolateSpline*>& lines)
     {
         double min = 0;
-        for(std::vector<InterpolateSpline>::const_iterator cit = lines.begin()
+        for(std::vector<InterpolateSpline*>::const_iterator cit = lines.begin()
             ; cit != lines.end(); ++cit)
         {
-            double time = std::min (cit->distance() / (scenario.limbspeed.front() + 0.000000000001), 4.); // TODO
+            double time = std::min ((*cit)->distance() / (scenario.limbspeed.front() + 0.000000000001), 4.); // TODO
             if(time > min)
             {
                 min = time;
@@ -236,18 +255,25 @@ namespace
         {
             // NOTHING
         }
-        ~InterpolateContacts(){}
+        ~InterpolateContacts()
+        {
+            for(std::vector<InterpolateSpline*>::const_iterator cit = contactInterpolation_.begin()
+                ; cit != contactInterpolation_.end(); ++cit)
+            {
+                delete *cit;
+            }
+        }
         void operator ()(planner::State& current, double time) const
         {
-            std::vector<InterpolateSpline>::const_iterator intit = contactInterpolation_.begin();
+            std::vector<InterpolateSpline*>::const_iterator intit = contactInterpolation_.begin();
             for(std::vector<int>::const_iterator cit = involvedContacts_.begin();
                 cit!= involvedContacts_.end(); ++cit, ++intit)
             {
-                current.contactLimbPositions[*cit] = (*intit)(time);
+                current.contactLimbPositions[*cit] = (**intit)(time);
             }
         }
         const std::vector<int> involvedContacts_;
-        const std::vector<InterpolateSpline> contactInterpolation_;
+        const std::vector<InterpolateSpline*> contactInterpolation_;
         const double minTime_;
     };
 
