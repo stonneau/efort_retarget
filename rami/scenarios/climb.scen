@@ -10,6 +10,6 @@ LIMB joint_name="upper_right_arm_z_joint" SPHERE="-0.3275 -0.1005 0.3404 0.5929"
 LIMB joint_name="upper_left_arm_z_joint"  SPHERE="0.4072 -0.0600 0.3756 0.5394"	
 LIMB joint_name="upper_right_leg_z_joint" SPHERE="-0.10791 -0.1046 -0.39344 0.5910"
 LIMB joint_name="upper_left_leg_z_joint"  SPHERE="0.08362 -0.1046 -0.39344 0.5910" 
-NBSAMPLES N="0"
+NBSAMPLES N="10000"
 INITCONTACTS 
 
