@@ -134,7 +134,7 @@ bool IKSolver::StepClamping(planner::Node* limb, const Eigen::Vector3d& target, 
     if(force.norm () < treshold_) // reached treshold
     {
         ret = true;
-        return true;
+        //return true;
     }
     VectorXd velocities;
     MatrixXd J = jacobian.GetJacobian(); int colsJ = J.cols(); int rowsJ = J.rows();

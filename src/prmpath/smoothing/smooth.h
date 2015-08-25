@@ -21,6 +21,8 @@ struct Model;
 typedef std::vector<const Model*> CT_Model;
 typedef std::pair<Eigen::Vector3d, Eigen::Matrix3d> Configuration;
 typedef std::pair<Eigen::Vector3d, Eigen::Vector3d> C2_Point;
+typedef std::vector<C2_Point> T_C2_Point;
+typedef T_C2_Point::const_iterator CIT_C2_Point;
 typedef std::pair<double, C2_Point> MilePoint;
 typedef std::vector<MilePoint> T_MilePoint;
 
@@ -37,6 +39,7 @@ struct ParamFunction
 struct InterpolatePath : public ParamFunction
 {
     InterpolatePath(const CT_Model& path);
+    InterpolatePath(const T_C2_Point& path, const bool normalize = false);
     InterpolatePath(const C2_Point& from, const C2_Point& to, const double startTime, const double endTime);
     ~InterpolatePath();
     virtual C2_Point operator()(double t) const;

@@ -7,6 +7,7 @@
 
 #include "tools/ExpMap.h"
 
+#include "spline/bezier_curve.h"
 #include "spline/exact_cubic.h"
 
 #include <vector>
@@ -17,9 +18,10 @@ using namespace planner;
 namespace
 {
     typedef Eigen::Vector3d point_t;
-    typedef spline::exact_cubic <double, double, 3, true, point_t> exact_cubic_t;
-//    /typedef bezier_curve  <double, double, 3, true, point_t> bezier_curve_t;
-    typedef std::pair<double, point_t> Waypoint;
+    //typedef spline::exact_cubic <double, double, 3, true, point_t> exact_cubic_t;
+    typedef spline::bezier_curve  <double, double, 3, true, point_t> exact_cubic_t;
+    //typedef std::pair<double, point_t> Waypoint;
+    typedef point_t Waypoint;
     typedef std::vector<Waypoint> T_Waypoint;
 
     planner::C2_Point MakeConfiguration(const planner::State& state)
@@ -70,17 +72,22 @@ namespace
         Eigen::Vector3d to_;
     };
 
-    exact_cubic_t* createSpline(const ParamFunction* path)
+    exact_cubic_t* createSpline(const InterpolatePath* path)
     {
         T_Waypoint waypoints;
-        waypoints.push_back(std::make_pair(0,path->Evaluate(0).first));
-        waypoints.push_back(std::make_pair(1.,path->max().first));
+        for(T_MilePoint::const_iterator cit = path->milePoints_.begin();
+            cit != path->milePoints_.end(); ++cit)
+        {
+            //waypoints.push_back(std::make_pair(cit->first,cit->second.first));
+            waypoints.push_back(cit->second.first);
+        }
+        //waypoints.push_back(std::make_pair(1.,path->max().first));
         return new exact_cubic_t(waypoints.begin(),waypoints.end());
     }
 
     struct InterpolateSpline
     {
-        InterpolateSpline(const ParamFunction* path, Collider& collider, const Model& model)
+        InterpolateSpline(const InterpolatePath* path, Collider& collider, const Model& model)
             : cspline_(createSpline(path))
             , path_(path)
         {
@@ -102,12 +109,69 @@ namespace
         const ParamFunction* path_;
     };
 
-    ParamFunction* createInitPath(const State& from, const State& to, Collider& collider, const Model& model, const int effectorid)
+    bool CheckPathRec(Collider& collider, planner::Object& object, const planner::InterpolatePath& path, const double step, double& start)
+    {
+        start += step; if(start >= 1) return true;
+        const Configuration c=  path.Evaluate(start);
+        object.SetOrientation(c.second);
+        object.SetPosition(c.first);
+        if(collider.IsColliding(&object))
+        {
+            return false;
+        }
+        return CheckPathRec(collider, object, path, step, start);
+    }
+
+    InterpolatePath* createInitPath(const State& from, const State& to, Collider& collider, Model& model, const int effectorid)
     {
         const planner::Node* limbFrom = planner::GetChild(from.value, effectorid);
         const planner::Node* limbTo = planner::GetChild(to.value, effectorid);
-        return new planner::InterpolatePath(MakeConfiguration(limbFrom->current),MakeConfiguration(limbTo->current),0,1);
 
+        const planner::Node* parent = limbTo;
+        while(parent->position == limbTo->position)
+        {
+            parent = parent->parent;
+        }
+        std::vector<C2_Point> res; res.push_back(MakeConfiguration(limbFrom->current));
+        Eigen::Vector3d offset = parent->position - limbTo->position;
+        offset =  Eigen::Vector3d (0,1,0);
+        offset.normalize();
+        planner::InterpolatePath* initpath = new  planner::InterpolatePath(MakeConfiguration(limbFrom->current),MakeConfiguration(limbTo->current),0,1);
+        double start(0);
+        bool collisionFree(false);
+        int nbsteps = (int)((limbFrom->position - limbTo->position).norm() * 20.);
+        int step = 0;
+        double stepsize = 0.05;
+        while(step < nbsteps && !collisionFree)
+        {
+            if(CheckPathRec(collider,*model.englobed,*initpath,stepsize,start))
+            {
+                collisionFree = true;
+            }
+            else // collision
+            {
+                bool ok(false);
+                for (int i = 0; i<1 && !ok; ++i)
+                {
+                    model.SetPosition(model.GetPosition() + 1* offset);
+                    ok = collider.IsColliding(model.englobed);
+                    std::cout << "col " << ok << std::endl;
+                }
+                if(true)
+                {
+                    res.push_back(MakeConfiguration(model.englobed));
+                    delete initpath;
+                    initpath = new planner::InterpolatePath(MakeConfiguration(model.englobed),MakeConfiguration(limbTo->current),0,1);
+                    start = 0;
+                    stepsize = 0.05 * nbsteps / (nbsteps - step); // adjusting stepsize to reduced path
+                    collisionFree = true;
+                }
+            }
+        }
+        delete initpath;
+        res.push_back(MakeConfiguration(limbTo->current));
+        std::cout << "res" << res.size() << std::endl;
+        return new planner::InterpolatePath(res, true);
     }
 
     struct DoIk

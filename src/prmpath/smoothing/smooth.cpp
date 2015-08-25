@@ -60,6 +60,34 @@ T_MilePoint CreateMilePoints(const CT_Model& path)
     return res;
 }
 
+T_MilePoint CreateMilePoints(const T_C2_Point& path, bool normalize)
+{
+    T_MilePoint res;
+    // simple distance heuristic for starters, it is not important
+    std::vector<double> distances;
+    double totalDistance = 0;
+    CIT_C2_Point cit = path.begin();
+    CIT_C2_Point cit2 = path.begin(); ++cit2;
+    distances.push_back(0);
+    for(; cit2 != path.end(); ++cit, ++cit2)
+    {
+        totalDistance+= (cit2->first - cit->first).norm();
+        distances.push_back(totalDistance);
+    }
+
+    std::vector<double>::const_iterator dit = distances.begin();
+    cit = path.begin();
+    for(; cit != path.end(); ++cit, ++dit)
+    {
+        if(normalize)
+            res.push_back(std::make_pair((*dit) / totalDistance, *cit));
+        else
+            res.push_back(std::make_pair((*dit), *cit));
+    }
+    return res;
+}
+
+
 T_MilePoint CreateMilePoints(const C2_Point& from, const C2_Point& to, const double startTime, const double endTime)
 {
     T_MilePoint res;
@@ -183,6 +211,10 @@ using namespace planner;
 
 InterpolatePath::InterpolatePath(const CT_Model& path)
     : milePoints_(CreateMilePoints(path))
+{}
+
+InterpolatePath::InterpolatePath(const T_C2_Point &path, const bool normalize)
+    : milePoints_(CreateMilePoints(path, normalize))
 {}
 
 InterpolatePath::InterpolatePath(const C2_Point& from, const C2_Point& to, const double startTime, const double endTime)
