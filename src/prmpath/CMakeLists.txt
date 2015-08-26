@@ -40,6 +40,7 @@ set(SOURCES
     Export/FileHandler.h Export/FileHandler.cpp
     ik/IKSolver.h ik/IKSolver.cpp
     smoothing/smooth.h smoothing/smooth.cpp
+    smoothing/InterpolateRRT.h smoothing/InterpolateRRT.cpp
     ik/PartialDerivativeConstraint.h ik/PartialDerivativeConstraint.cpp
     ik/MatchTargetConstraint.h ik/MatchTargetConstraint.cpp
     ik/VectorAlignmentConstraint.h ik/VectorAlignmentConstraint.cpp

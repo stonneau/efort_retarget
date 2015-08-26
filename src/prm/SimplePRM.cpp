@@ -37,7 +37,7 @@ namespace planner
         return 0.6f * p + 0.4f * q;
         //return p + q;
     }
-	
+
     typedef PRM<Model, planner::Generator, LocalPlanner, float, 10000> prm_t;
 
 	struct PImpl

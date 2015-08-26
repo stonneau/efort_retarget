@@ -234,7 +234,7 @@ private:
     {
         int ntry = 0;
         Components guards;
-		int id = -1;
+        int id = -1;
         while(ntry < M)
         {
             bool foundGvis = false;
@@ -265,8 +265,8 @@ private:
                             guards.AddConnection(id, gvis);
                             guards.AddConnection(id, g); // auto merge en thoerie
                             connect = true;
-							git = guards.components.begin();
-							break;
+                            git = guards.components.begin();
+                            break;
                         }
                     }
                 }
@@ -281,7 +281,7 @@ private:
             {
                 ++ntry;
             }
-			size_ = id;
+            size_ = id;
         }
     }
 

@@ -26,6 +26,8 @@ typedef T_C2_Point::const_iterator CIT_C2_Point;
 typedef std::pair<double, C2_Point> MilePoint;
 typedef std::vector<MilePoint> T_MilePoint;
 
+C2_Point MakeConfiguration(const Model* model);
+
 struct ParamFunction
 {
     ParamFunction(){}

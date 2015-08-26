@@ -63,13 +63,15 @@ public:
 	///  If AllowCycles is set to false, then the edge is not added if it indtroduces a cycle 
 	///  \param a index of one connected node
 	///  \param b index of the other connected node
+    ///  \param ordered if false, vertexes added in both direction (a->b, b->a)
 	///  \param return : true if the insertion was successful, false otherwise
-	bool AddEdge(Index a, Index b)
+    bool AddEdge(Index a, Index b, bool ordered=false)
 	{
 		if(std::find(edges_[a].begin(), edges_[a].end(), b) == edges_[a].end())
 		{
 			edges_[a].push_back(b);
-			edges_[b].push_back(a);
+            if(!ordered)
+                edges_[b].push_back(a);
 			if(AllowCycles || !HasCycle())
 				return true;
 			else

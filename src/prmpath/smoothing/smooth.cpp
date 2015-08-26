@@ -17,8 +17,6 @@ typedef CT_Model::const_iterator CIT_Model;
 typedef std::pair<double, C2_Point> MilePoint;
 typedef std::vector<MilePoint> T_MilePoint;
 
-
-
 C2_Point MakeConfiguration(const Model* model)
 {
     matrices::ExpMap emap(model->GetOrientation());
