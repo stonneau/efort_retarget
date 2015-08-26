@@ -40,13 +40,39 @@ double Distance(const LimbNode* obj1, const LimbNode* obj2)
 
 class LimbGenerator
 {
+public:
      LimbGenerator(planner::Robot* robot, planner::Node* limb, std::vector<planner::Object*>& objects, const sampling::T_Samples& samples, Collider& collider, const ParamFunction* interpolate)
          : samples_(samples)
          , collider_(collider)
          , robot_(robot)
          , limb_(limb)
          , objects_(objects)
-         , interpolate_(interpolate){}
+         , interpolate_(interpolate)
+     {
+        // init weights
+         float w = 9;
+         float totalWeight = 0;
+         planner::Node* node = limb_;
+         int nbIt = samples.front()->values.size();
+         while(nbIt>0)
+         {
+             if(node->id != limb_->id && node->offset.norm() != 0)
+             {
+                 w *= 2 / 3;
+             }
+             weights.push_back(w);
+             totalWeight += w;
+             node = node->children[0];
+             --nbIt;
+         }
+         // normalize
+         totalWeight*=2;
+         for(int i = 0; i< weights.size(); ++i)
+         {
+             weights[i] /= totalWeight;
+         }
+         weights.push_back(0.5); // position of effector counts half
+     }
 
     ~LimbGenerator(){}
      const sampling::T_Samples& samples_;
@@ -108,6 +134,7 @@ bool StraightLine(Collider& collider, Object* obj, const Configuration& a, const
 
 class LimbPlanner
 {
+public:
     LimbPlanner(Object::T_Object& objects, Collider& collider, double distanceStep, const ParamFunction* interpolate)
         : collider_(collider), objects_(objects), dStep_(distanceStep), interpolate_(interpolate)
     {
@@ -118,7 +145,10 @@ class LimbPlanner
 
     bool operator ()(const LimbNode *ma, const LimbNode *mb)
     {
-        double inc = Distance(ma,mb) / dStep_;
+        if(ma->t_ > mb->t_) return false;
+        double distance = Distance(ma,mb);
+        if(distance / (mb->t_ - ma->t_) > 1) return false; // too fast
+        double inc = distance / dStep_;
         std::vector<planner::Configuration> cas;
         std::vector<planner::Configuration> cbs;
         ma->robot_->SetPosition(ma->configuration_.first,false);
@@ -159,4 +189,31 @@ class LimbPlanner
 };
 
 typedef RRT<LimbNode, LimbGenerator, LimbPlanner, double, true, 1000> rrt_t;
+
+#include "tools/ExpMap.h"
+sampling::T_Samples computeKeyFrames(InterpolateRRT& rrt, const planner::Robot* robotFrom, const planner::Robot* robotTo, const sampling::Sample& froms, const sampling::Sample& tos)
+{
+    matrices::ExpMap emap(robotFrom->currentRotation);
+    C2_Point a = std::make_pair(robotFrom->currentPosition, emap.log());
+
+    matrices::ExpMap emap2(robotTo->currentRotation);
+    C2_Point b = std::make_pair(robotTo->currentPosition, emap2.log());
+    ParamFunction* path = new InterpolatePath(a,b,0,1);
+
+    LimbGenerator generator(rrt.robot_,rrt.limb_,rrt.limbObjects,rrt.samples_,rrt.collider_,path);
+    LimbPlanner localPlanner(rrt.limbObjects,rrt.collider_,0.01,path);
+    LimbNode* from = new LimbNode(rrt.robot_,rrt.limb_,rrt.limbObjects,generator.weights,0, std::make_pair(robotFrom->currentPosition, robotFrom->constantRotation));
+    from->sample_ = new planner::sampling::Sample(froms);
+    LimbNode* to = new LimbNode(rrt.robot_,rrt.limb_,rrt.limbObjects,generator.weights,0, std::make_pair(robotTo->currentPosition, robotTo->constantRotation));
+    to->sample_ = new planner::sampling::Sample(tos);
+    rrt_t plan(&generator, &localPlanner, from, to, Distance, 10, 1000,10,true);
+    sampling::T_Samples res;
+    for(rrt_t::T_NodeContentPath::const_iterator cit = plan.path_.begin();
+        cit != plan.path_.end(); ++cit)
+    {
+        res.push_back((*cit)->sample_);
+    }
+    delete path;
+    return res;
+}
 }

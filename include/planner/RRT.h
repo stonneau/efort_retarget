@@ -35,8 +35,7 @@ public:
     /// \brief Constructor
     /// \param size max number of nodes to be generated
     RRT(int size = Dim)
-        : graph_t()
-        , size_(size)
+        : size_(size)
     {
         // NOTHING
     }
@@ -53,13 +52,12 @@ public:
     /// \param size max number of nodes to be generated
     /// \param k maximum number of neighbours for a given Node. Default value is 10
     /// \param biRRT use single RRT or bi-RRT to solve problem
-    RRT(Generator* generator, LocalPlanner* localPlanner, const NodeContent* from, const NodeContent* to, Distance distance, const Numeric neighbourDistance, int size = Dim, int k=10, bool biRRT=false)
-        : graph_t()
-        , from_(from)
+    RRT(Generator* generator, LocalPlanner* localPlanner, NodeContent* from, NodeContent* to, Distance distance, const Numeric neighbourDistance, int size = Dim, int k=10, bool biRRT=false)
+        : from_(from)
         , to_(to)
         , size_(size)
-        , path_(biRRT ? GenerateRRT(generator, localPlanner, distance, neighbourDistance, k) :
-                        GenerateBiRRT(generator, localPlanner, distance, neighbourDistance, k))
+        , path_(biRRT ? GenerateRRT(generator, localPlanner, distance, neighbourDistance) :
+                        GenerateBiRRT(generator, localPlanner, distance, neighbourDistance))
     {
         // NOTHING
     }
@@ -70,8 +68,8 @@ public:
 
 private:
     typedef astar::AStar<NodeContent, Numeric, Dim, int, true> astar_t;
-    const NodeContent* from_;
-    const NodeContent* to_;
+    NodeContent* from_;
+    NodeContent* to_;
     int size_;
     graph_t g1_;
     graph_t g2_;
@@ -85,8 +83,8 @@ private:
         Numeric min_distance = std::numeric_limits<Numeric>::max();
         int current_index = 0;
         int closest_index = -1;
-        for(typename RRT::T_NodeContentPtr::const_iterator it = graph_t::nodeContents_.begin();
-                it != graph_t::nodeContents_.end() && current_index < size_;
+        for(typename graph_t::T_NodeContentPtr::const_iterator it = g.nodeContents_.begin();
+                it != g.nodeContents_.end() && current_index < size_;
                 ++it, ++current_index)
         {
             Numeric current_distance = dist(node,*it);
@@ -108,12 +106,12 @@ private:
             astar_t astar(g);
             if(astar.ComputePath(from, to, path, dist))
             {
-                res.push_back(graph_t::nodeContents_[from]);
+                res.push_back(g.nodeContents_[from]);
                 for(std::list<int>::const_iterator it = path.begin(); it != path.end(); ++it)
                 {
-                    res.push_back(graph_t::nodeContents_[*it]);
+                    res.push_back(g.nodeContents_[*it]);
                 }
-                res.push_back(graph_t::nodeContents_[to]);
+                res.push_back(g.nodeContents_[to]);
             }
          }
          return res;
@@ -126,7 +124,7 @@ private:
 
     ExtendRet Extend(NodeContent* node, graph_t& g, LocalPlanner* localPlanner, Distance distance, const Numeric neighbourDistance)
     {
-        const int& nearestId = GetClosestPointInGraph(g, node, distance, neighbourDistance);
+        const int& nearestId = GetClosestPointInGraph(g, node, distance, localPlanner, neighbourDistance, true);
         NodeContent* nearest = g.nodeContents_[nearestId];
         if((*localPlanner) (nearest,node))
         {
@@ -151,14 +149,14 @@ private:
         {
             NodeContent* node = (*generator)();
             if(node == 0) break;
-                if(Extend(node,g1_) != trapped)
+                if(Extend(node,g1_,localPlanner, distance, neighbourDistance) != trapped)
                 {
                     int nodeId = g1_.currentIndex_;
                     if ((*localPlanner)(node, to_))
                     {
                         int endId = g1_.AddNode(to_);
                         g1_.AddEdge(nodeId,endId,Ordered);
-                        return ComputePath(g1_,startId,endId,distance,localPlanner,neighbourDistance,true);
+                        return ComputePath(g1_,startId,endId,distance);
                     }
                 }
         }
@@ -170,9 +168,9 @@ private:
     {
         int startId = g1_.AddNode(from_);
         int endId = g2_.AddNode(to_);
-        graph_t* ga, gb, gtmp;
-        ga = &g1_;
-        gb = &g2_;
+        graph_t* gtmp;
+        graph_t* ga = &g1_;
+        graph_t* gb = &g2_;
         for(int k = 0; k < size_; ++k)
         {
             NodeContent* node = (*generator)();
@@ -182,8 +180,8 @@ private:
                 if(Extend(node,*gb,localPlanner, distance, neighbourDistance) == reached)
                 {
                     int nodeId = ga->currentIndex_;
-                    T_NodeContentPath res1 = ComputePath(g1_, startId,nodeId,distance,localPlanner,neighbourDistance,true);
-                    T_NodeContentPath res2 = ComputePath(g1_, nodeId,endId,distance,localPlanner,neighbourDistance,true);
+                    T_NodeContentPath res1 = ComputePath(g1_, startId,nodeId,distance);
+                    T_NodeContentPath res2 = ComputePath(g2_, nodeId,endId,distance);
                     res1.pop_back();
                     res1.insert(res1.end(), res2.begin(), res2.end());
                     return res1;
