@@ -159,14 +159,14 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="../rocketboxmale/torso.obj"/>
+        <mesh filename="../rami/model/torso_x_joint.obj"/>
       </geometry>
       <material name="Blue"/>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="../rocketboxmale/torso.obj"/>
+        <mesh filename="../rami/model/torso_x_joint.obj"/>
       </geometry>
     </collision>
     <inertial>
@@ -204,14 +204,14 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="../rocketboxmale/head.obj"/>
+        <mesh filename="../rami/model/head_x_joint.obj"/>
       </geometry>
       <material name="Blue"/>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="../rocketboxmale/head.obj"/>
+        <mesh filename="../rami/model/head_x_joint.obj"/>
       </geometry>
     </collision>
     <inertial>
@@ -274,14 +274,14 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="../rocketboxmale/l_lupperleg.obj"/>
+        <mesh filename="../rami/model/upper_left_leg_x_joint.obj"/>
       </geometry>
       <material name="Blue"/>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="../rocketboxmale/l_lupperleg.obj"/>
+        <mesh filename="../rami/model/upper_left_leg_x_joint.obj"/>
       </geometry>
     </collision>
     <inertial>
@@ -303,14 +303,14 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="../rocketboxmale/l_lowerleg.obj"/>
+        <mesh filename="../rami/model/lower_left_leg_joint.obj"/>
       </geometry>
       <material name="Blue"/>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="../rocketboxmale/l_lowerleg.obj"/>
+        <mesh filename="../rami/model/lower_left_leg_joint.obj"/>
       </geometry>
     </collision>
     <inertial>
@@ -348,14 +348,14 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="../rocketboxmale/l_foot.obj"/>
+        <mesh filename="../rami/model/left_foot_x_joint.obj"/>
       </geometry>
       <material name="Blue"/>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="../rocketboxmale/l_foot.obj"/>
+        <mesh filename="../rami/model/left_foot_x_joint.obj"/>
       </geometry>
     </collision>
     <inertial>
@@ -414,14 +414,14 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="../rocketboxmale/r_upperleg.obj"/>
+        <mesh filename="../rami/model/upper_right_leg_x_joint.obj"/>
       </geometry>
       <material name="Blue"/>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="../rocketboxmale/r_upperleg.obj"/>
+        <mesh filename="../rami/model/upper_right_leg_x_joint.obj"/>
       </geometry>
     </collision>
     <inertial>
@@ -443,14 +443,14 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="../rocketboxmale/r_lowerleg.obj"/>
+        <mesh filename="../rami/model/lower_right_leg_joint.obj"/>
       </geometry>
       <material name="Blue"/>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="../rocketboxmale/r_lowerleg.obj"/>
+        <mesh filename="../rami/model/lower_right_leg_joint.obj"/>
       </geometry>
     </collision>
     <inertial>
@@ -488,14 +488,14 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="../rocketboxmale/r_foot.obj"/>
+        <mesh filename="../rami/model/right_foot_x_joint.obj"/>
       </geometry>
       <material name="Blue"/>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="../rocketboxmale/r_foot.obj"/>
+        <mesh filename="../rami/model/right_foot_x_joint.obj"/>
       </geometry>
     </collision>
     <inertial>
@@ -561,14 +561,14 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="../rocketboxmale/l_upperarm.obj"/>
+        <mesh filename="../rami/model/upper_left_arm_x_joint.obj"/>
       </geometry>
       <material name="Blue"/>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="../rocketboxmale/l_upperarm.obj"/>
+        <mesh filename="../rami/model/upper_left_arm_x_joint.obj"/>
       </geometry>
     </collision>
     <inertial>
@@ -590,14 +590,14 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="../rocketboxmale/l_forearm.obj"/>
+        <mesh filename="../rami/model/lower_left_arm_joint.obj"/>
       </geometry>
       <material name="Blue"/>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="../rocketboxmale/l_forearm.obj"/>
+        <mesh filename="../rami/model/lower_left_arm_joint.obj"/>
       </geometry>
     </collision>
     <inertial>
@@ -635,14 +635,14 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="../rocketboxmale/l_hand.obj"/>
+        <mesh filename="../rami/model/left_hand_x_joint.obj"/>
       </geometry>
       <material name="Blue"/>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="../rocketboxmale/l_hand.obj"/>
+        <mesh filename="../rami/model/left_hand_x_joint.obj"/>
       </geometry>
     </collision>
     <inertial>
@@ -715,14 +715,14 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="../rocketboxmale/r_upperarm.obj"/>
+        <mesh filename="../rami/model/upper_right_arm_x_joint.obj"/>
       </geometry>
       <material name="Blue"/>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="../rocketboxmale/r_upperarm.obj"/>
+        <mesh filename="../rami/model/upper_right_arm_x_joint.obj"/>
       </geometry>
     </collision>
     <inertial>
@@ -744,14 +744,14 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="../rocketboxmale/r_forearm.obj"/>
+        <mesh filename="../rami/model/lower_right_arm_joint.obj"/>
       </geometry>
       <material name="Blue"/>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="../rocketboxmale/r_forearm.obj"/>
+        <mesh filename="../rami/model/lower_right_arm_joint.obj"/>
       </geometry>
     </collision>
     <inertial>
@@ -789,14 +789,14 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="../rocketboxmale/r_hand.obj"/>
+        <mesh filename="../rami/model/right_hand_x_joint.obj"/>
       </geometry>
       <material name="Blue"/>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="../rocketboxmale/r_hand.obj"/>
+        <mesh filename="../rami/model/right_hand_x_joint.obj"/>
       </geometry>
     </collision>
     <inertial>

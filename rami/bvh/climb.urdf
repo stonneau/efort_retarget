@@ -116,1981 +116,1981 @@
         <child link="pelvis_link"/>
       </joint>
       <link name="pelvis_link"/>
-      <link name="torso_z_link"/>
-      <link name="torso_y_link"/>
-      <link name="torso_x_link">
+      <link name="torso_x_joint_z_link"/>
+      <link name="torso_x_joint_y_link"/>
+      <link name="torso_x_joint_x_link">
         <visual>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/torso.obj"/>
+            <mesh filename="../rami/model/torso_x_joint.obj"/>
           </geometry>
           <material name="Blue"/>
         </visual>
         <collision>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/torso.obj"/>
+            <mesh filename="../rami/model/torso_x_joint.obj"/>
           </geometry>
         </collision>
       </link>
-      <joint name="torso_z_joint" type ="revolute">
+      <joint name="torso_x_joint_z_joint" type ="revolute">
           <axis xyz="0 0 1"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0.010284 0.327936"/>
           <parent link="pelvis_link"/>
-          <child link="torso_z_link"/>
+          <child link="torso_x_joint_z_link"/>
       </joint>
-      <joint name="torso_y_joint" type ="revolute">
+      <joint name="torso_x_joint_y_joint" type ="revolute">
           <axis xyz="0 1 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="torso_z_link"/>
-          <child link="torso_y_link"/>
+          <parent link="torso_x_joint_z_link"/>
+          <child link="torso_x_joint_y_link"/>
       </joint>
-      <joint name="torso_x_joint" type ="revolute">
+      <joint name="torso_x_joint_x_joint" type ="revolute">
           <axis xyz="1 0 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="torso_y_link"/>
-          <child link="torso_x_link"/>
+          <parent link="torso_x_joint_y_link"/>
+          <child link="torso_x_joint_x_link"/>
       </joint>
-      <link name="head_z_link"/>
-      <link name="head_y_link"/>
-      <link name="head_x_link">
+      <link name="head_x_joint_z_link"/>
+      <link name="head_x_joint_y_link"/>
+      <link name="head_x_joint_x_link">
         <visual>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/head.obj"/>
+            <mesh filename="../rami/model/head_x_joint.obj"/>
           </geometry>
           <material name="Blue"/>
         </visual>
         <collision>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/head.obj"/>
+            <mesh filename="../rami/model/head_x_joint.obj"/>
           </geometry>
         </collision>
       </link>
-      <joint name="head_z_joint" type ="revolute">
+      <joint name="head_x_joint_z_joint" type ="revolute">
           <axis xyz="0 0 1"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 -0.020052 0.50232"/>
-          <parent link="torso_x_link"/>
-          <child link="head_z_link"/>
+          <parent link="torso_x_joint_x_link"/>
+          <child link="head_x_joint_z_link"/>
       </joint>
-      <joint name="head_y_joint" type ="revolute">
+      <joint name="head_x_joint_y_joint" type ="revolute">
           <axis xyz="0 1 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="head_z_link"/>
-          <child link="head_y_link"/>
+          <parent link="head_x_joint_z_link"/>
+          <child link="head_x_joint_y_link"/>
       </joint>
-      <joint name="head_x_joint" type ="revolute">
+      <joint name="head_x_joint_x_joint" type ="revolute">
           <axis xyz="1 0 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="head_y_link"/>
-          <child link="head_x_link"/>
+          <parent link="head_x_joint_y_link"/>
+          <child link="head_x_joint_x_link"/>
       </joint>
-      <link name="upper_left_specula_z_link"/>
-      <link name="upper_left_specula_y_link"/>
-      <link name="upper_left_specula_x_link">
+      <link name="upper_left_specula_joint_z_link"/>
+      <link name="upper_left_specula_joint_y_link"/>
+      <link name="upper_left_specula_joint_x_link">
         <visual>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/upper_left_specula.obj"/>
+            <mesh filename="../rami/model/upper_left_specula_joint.obj"/>
           </geometry>
           <material name="Blue"/>
         </visual>
         <collision>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/upper_left_specula.obj"/>
+            <mesh filename="../rami/model/upper_left_specula_joint.obj"/>
           </geometry>
         </collision>
       </link>
-      <joint name="upper_left_specula_z_joint" type ="revolute">
+      <joint name="upper_left_specula_joint_z_joint" type ="revolute">
           <axis xyz="0 0 1"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="-0.0873828 0.0381 -0.153156"/>
-          <parent link="head_x_link"/>
-          <child link="upper_left_specula_z_link"/>
+          <parent link="head_x_joint_x_link"/>
+          <child link="upper_left_specula_joint_z_link"/>
       </joint>
-      <joint name="upper_left_specula_y_joint" type ="revolute">
+      <joint name="upper_left_specula_joint_y_joint" type ="revolute">
           <axis xyz="0 1 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="upper_left_specula_z_link"/>
-          <child link="upper_left_specula_y_link"/>
+          <parent link="upper_left_specula_joint_z_link"/>
+          <child link="upper_left_specula_joint_y_link"/>
       </joint>
-      <joint name="upper_left_specula_x_joint" type ="revolute">
+      <joint name="upper_left_specula_joint_x_joint" type ="revolute">
           <axis xyz="1 0 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="upper_left_specula_y_link"/>
-          <child link="upper_left_specula_x_link"/>
+          <parent link="upper_left_specula_joint_y_link"/>
+          <child link="upper_left_specula_joint_x_link"/>
       </joint>
-      <link name="upper_left_arm_z_link"/>
-      <link name="upper_left_arm_y_link"/>
-      <link name="upper_left_arm_x_link">
+      <link name="upper_left_arm_x_joint_z_link"/>
+      <link name="upper_left_arm_x_joint_y_link"/>
+      <link name="upper_left_arm_x_joint_x_link">
         <visual>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/upper_left_arm.obj"/>
+            <mesh filename="../rami/model/upper_left_arm_x_joint.obj"/>
           </geometry>
           <material name="Blue"/>
         </visual>
         <collision>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/upper_left_arm.obj"/>
+            <mesh filename="../rami/model/upper_left_arm_x_joint.obj"/>
           </geometry>
         </collision>
       </link>
-      <joint name="upper_left_arm_z_joint" type ="revolute">
+      <joint name="upper_left_arm_x_joint_z_joint" type ="revolute">
           <axis xyz="0 0 1"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="-0.169296 0 0"/>
-          <parent link="upper_left_specula_x_link"/>
-          <child link="upper_left_arm_z_link"/>
+          <parent link="upper_left_specula_joint_x_link"/>
+          <child link="upper_left_arm_x_joint_z_link"/>
       </joint>
-      <joint name="upper_left_arm_y_joint" type ="revolute">
+      <joint name="upper_left_arm_x_joint_y_joint" type ="revolute">
           <axis xyz="0 1 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="upper_left_arm_z_link"/>
-          <child link="upper_left_arm_y_link"/>
+          <parent link="upper_left_arm_x_joint_z_link"/>
+          <child link="upper_left_arm_x_joint_y_link"/>
       </joint>
-      <joint name="upper_left_arm_x_joint" type ="revolute">
+      <joint name="upper_left_arm_x_joint_x_joint" type ="revolute">
           <axis xyz="1 0 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="upper_left_arm_y_link"/>
-          <child link="upper_left_arm_x_link"/>
+          <parent link="upper_left_arm_x_joint_y_link"/>
+          <child link="upper_left_arm_x_joint_x_link"/>
       </joint>
-      <link name="lower_left_arm_z_link"/>
-      <link name="lower_left_arm_y_link"/>
-      <link name="lower_left_arm_x_link">
+      <link name="lower_left_arm_joint_z_link"/>
+      <link name="lower_left_arm_joint_y_link"/>
+      <link name="lower_left_arm_joint_x_link">
         <visual>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/lower_left_arm.obj"/>
+            <mesh filename="../rami/model/lower_left_arm_joint.obj"/>
           </geometry>
           <material name="Blue"/>
         </visual>
         <collision>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/lower_left_arm.obj"/>
+            <mesh filename="../rami/model/lower_left_arm_joint.obj"/>
           </geometry>
         </collision>
       </link>
-      <joint name="lower_left_arm_z_joint" type ="revolute">
+      <joint name="lower_left_arm_joint_z_joint" type ="revolute">
           <axis xyz="0 0 1"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="-0.001464 -0.00114 -0.34296"/>
-          <parent link="upper_left_arm_x_link"/>
-          <child link="lower_left_arm_z_link"/>
+          <parent link="upper_left_arm_x_joint_x_link"/>
+          <child link="lower_left_arm_joint_z_link"/>
       </joint>
-      <joint name="lower_left_arm_y_joint" type ="revolute">
+      <joint name="lower_left_arm_joint_y_joint" type ="revolute">
           <axis xyz="0 1 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="lower_left_arm_z_link"/>
-          <child link="lower_left_arm_y_link"/>
+          <parent link="lower_left_arm_joint_z_link"/>
+          <child link="lower_left_arm_joint_y_link"/>
       </joint>
-      <joint name="lower_left_arm_x_joint" type ="revolute">
+      <joint name="lower_left_arm_joint_x_joint" type ="revolute">
           <axis xyz="1 0 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="lower_left_arm_y_link"/>
-          <child link="lower_left_arm_x_link"/>
+          <parent link="lower_left_arm_joint_y_link"/>
+          <child link="lower_left_arm_joint_x_link"/>
       </joint>
-      <link name="left_hand_z_link"/>
-      <link name="left_hand_y_link"/>
-      <link name="left_hand_x_link">
+      <link name="left_hand_x_joint_z_link"/>
+      <link name="left_hand_x_joint_y_link"/>
+      <link name="left_hand_x_joint_x_link">
         <visual>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/left_hand.obj"/>
+            <mesh filename="../rami/model/left_hand_x_joint.obj"/>
           </geometry>
           <material name="Blue"/>
         </visual>
         <collision>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/left_hand.obj"/>
+            <mesh filename="../rami/model/left_hand_x_joint.obj"/>
           </geometry>
         </collision>
       </link>
-      <joint name="left_hand_z_joint" type ="revolute">
+      <joint name="left_hand_x_joint_z_joint" type ="revolute">
           <axis xyz="0 0 1"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="-0.001728 -0.004992 -0.325056"/>
-          <parent link="lower_left_arm_x_link"/>
-          <child link="left_hand_z_link"/>
+          <parent link="lower_left_arm_joint_x_link"/>
+          <child link="left_hand_x_joint_z_link"/>
       </joint>
-      <joint name="left_hand_y_joint" type ="revolute">
+      <joint name="left_hand_x_joint_y_joint" type ="revolute">
           <axis xyz="0 1 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="left_hand_z_link"/>
-          <child link="left_hand_y_link"/>
+          <parent link="left_hand_x_joint_z_link"/>
+          <child link="left_hand_x_joint_y_link"/>
       </joint>
-      <joint name="left_hand_x_joint" type ="revolute">
+      <joint name="left_hand_x_joint_x_joint" type ="revolute">
           <axis xyz="1 0 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="left_hand_y_link"/>
-          <child link="left_hand_x_link"/>
+          <parent link="left_hand_x_joint_y_link"/>
+          <child link="left_hand_x_joint_x_link"/>
       </joint>
-      <link name="left_hand_endeffector_z_link"/>
-      <link name="left_hand_endeffector_y_link"/>
-      <link name="left_hand_endeffector_x_link">
+      <link name="left_hand_endeffector_joint_z_link"/>
+      <link name="left_hand_endeffector_joint_y_link"/>
+      <link name="left_hand_endeffector_joint_x_link">
         <visual>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/left_hand_endeffector.obj"/>
+            <mesh filename="../rami/model/left_hand_endeffector_joint.obj"/>
           </geometry>
           <material name="Blue"/>
         </visual>
         <collision>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/left_hand_endeffector.obj"/>
+            <mesh filename="../rami/model/left_hand_endeffector_joint.obj"/>
           </geometry>
         </collision>
       </link>
-      <joint name="left_hand_endeffector_z_joint" type ="revolute">
+      <joint name="left_hand_endeffector_joint_z_joint" type ="revolute">
           <axis xyz="0 0 1"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="-0.009816 0.007404 -0.21684"/>
-          <parent link="left_hand_x_link"/>
-          <child link="left_hand_endeffector_z_link"/>
+          <parent link="left_hand_x_joint_x_link"/>
+          <child link="left_hand_endeffector_joint_z_link"/>
       </joint>
-      <joint name="left_hand_endeffector_y_joint" type ="revolute">
+      <joint name="left_hand_endeffector_joint_y_joint" type ="revolute">
           <axis xyz="0 1 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="left_hand_endeffector_z_link"/>
-          <child link="left_hand_endeffector_y_link"/>
+          <parent link="left_hand_endeffector_joint_z_link"/>
+          <child link="left_hand_endeffector_joint_y_link"/>
       </joint>
-      <joint name="left_hand_endeffector_x_joint" type ="revolute">
+      <joint name="left_hand_endeffector_joint_x_joint" type ="revolute">
           <axis xyz="1 0 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="left_hand_endeffector_y_link"/>
-          <child link="left_hand_endeffector_x_link"/>
+          <parent link="left_hand_endeffector_joint_y_link"/>
+          <child link="left_hand_endeffector_joint_x_link"/>
       </joint>
-      <link name="left_hand_endeffectorendsite_z_link"/>
-      <link name="left_hand_endeffectorendsite_y_link"/>
-      <link name="left_hand_endeffectorendsite_x_link">
+      <link name="left_hand_endeffector_jointendsite_z_link"/>
+      <link name="left_hand_endeffector_jointendsite_y_link"/>
+      <link name="left_hand_endeffector_jointendsite_x_link">
         <visual>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/left_hand_endeffectorendsite.obj"/>
+            <mesh filename="../rami/model/left_hand_endeffector_jointendsite.obj"/>
           </geometry>
           <material name="Blue"/>
         </visual>
         <collision>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/left_hand_endeffectorendsite.obj"/>
+            <mesh filename="../rami/model/left_hand_endeffector_jointendsite.obj"/>
           </geometry>
         </collision>
       </link>
-      <joint name="left_hand_endeffectorendsite_z_joint" type ="revolute">
+      <joint name="left_hand_endeffector_jointendsite_z_joint" type ="revolute">
           <axis xyz="0 0 1"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="-2.25979e-05 1.70451e-05 -0.000499198"/>
-          <parent link="left_hand_endeffector_x_link"/>
-          <child link="left_hand_endeffectorendsite_z_link"/>
+          <parent link="left_hand_endeffector_joint_x_link"/>
+          <child link="left_hand_endeffector_jointendsite_z_link"/>
       </joint>
-      <joint name="left_hand_endeffectorendsite_y_joint" type ="revolute">
+      <joint name="left_hand_endeffector_jointendsite_y_joint" type ="revolute">
           <axis xyz="0 1 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="left_hand_endeffectorendsite_z_link"/>
-          <child link="left_hand_endeffectorendsite_y_link"/>
+          <parent link="left_hand_endeffector_jointendsite_z_link"/>
+          <child link="left_hand_endeffector_jointendsite_y_link"/>
       </joint>
-      <joint name="left_hand_endeffectorendsite_x_joint" type ="revolute">
+      <joint name="left_hand_endeffector_jointendsite_x_joint" type ="revolute">
           <axis xyz="1 0 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="left_hand_endeffectorendsite_y_link"/>
-          <child link="left_hand_endeffectorendsite_x_link"/>
+          <parent link="left_hand_endeffector_jointendsite_y_link"/>
+          <child link="left_hand_endeffector_jointendsite_x_link"/>
       </joint>
-      <link name="left_hand_cp_1_z_link"/>
-      <link name="left_hand_cp_1_y_link"/>
-      <link name="left_hand_cp_1_x_link">
+      <link name="left_hand_cp_1_joint_z_link"/>
+      <link name="left_hand_cp_1_joint_y_link"/>
+      <link name="left_hand_cp_1_joint_x_link">
         <visual>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/left_hand_cp_1.obj"/>
+            <mesh filename="../rami/model/left_hand_cp_1_joint.obj"/>
           </geometry>
           <material name="Blue"/>
         </visual>
         <collision>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/left_hand_cp_1.obj"/>
+            <mesh filename="../rami/model/left_hand_cp_1_joint.obj"/>
           </geometry>
         </collision>
       </link>
-      <joint name="left_hand_cp_1_z_joint" type ="revolute">
+      <joint name="left_hand_cp_1_joint_z_joint" type ="revolute">
           <axis xyz="0 0 1"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0.01757 0.0606 -0.22569"/>
-          <parent link="left_hand_x_link"/>
-          <child link="left_hand_cp_1_z_link"/>
+          <parent link="left_hand_x_joint_x_link"/>
+          <child link="left_hand_cp_1_joint_z_link"/>
       </joint>
-      <joint name="left_hand_cp_1_y_joint" type ="revolute">
+      <joint name="left_hand_cp_1_joint_y_joint" type ="revolute">
           <axis xyz="0 1 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="left_hand_cp_1_z_link"/>
-          <child link="left_hand_cp_1_y_link"/>
+          <parent link="left_hand_cp_1_joint_z_link"/>
+          <child link="left_hand_cp_1_joint_y_link"/>
       </joint>
-      <joint name="left_hand_cp_1_x_joint" type ="revolute">
+      <joint name="left_hand_cp_1_joint_x_joint" type ="revolute">
           <axis xyz="1 0 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="left_hand_cp_1_y_link"/>
-          <child link="left_hand_cp_1_x_link"/>
+          <parent link="left_hand_cp_1_joint_y_link"/>
+          <child link="left_hand_cp_1_joint_x_link"/>
       </joint>
-      <link name="left_hand_cp_1endsite_z_link"/>
-      <link name="left_hand_cp_1endsite_y_link"/>
-      <link name="left_hand_cp_1endsite_x_link">
+      <link name="left_hand_cp_1_jointendsite_z_link"/>
+      <link name="left_hand_cp_1_jointendsite_y_link"/>
+      <link name="left_hand_cp_1_jointendsite_x_link">
         <visual>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/left_hand_cp_1endsite.obj"/>
+            <mesh filename="../rami/model/left_hand_cp_1_jointendsite.obj"/>
           </geometry>
           <material name="Blue"/>
         </visual>
         <collision>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/left_hand_cp_1endsite.obj"/>
+            <mesh filename="../rami/model/left_hand_cp_1_jointendsite.obj"/>
           </geometry>
         </collision>
       </link>
-      <joint name="left_hand_cp_1endsite_z_joint" type ="revolute">
+      <joint name="left_hand_cp_1_jointendsite_z_joint" type ="revolute">
           <axis xyz="0 0 1"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="3.74876e-05 0.000129297 -0.000481536"/>
-          <parent link="left_hand_cp_1_x_link"/>
-          <child link="left_hand_cp_1endsite_z_link"/>
+          <parent link="left_hand_cp_1_joint_x_link"/>
+          <child link="left_hand_cp_1_jointendsite_z_link"/>
       </joint>
-      <joint name="left_hand_cp_1endsite_y_joint" type ="revolute">
+      <joint name="left_hand_cp_1_jointendsite_y_joint" type ="revolute">
           <axis xyz="0 1 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="left_hand_cp_1endsite_z_link"/>
-          <child link="left_hand_cp_1endsite_y_link"/>
+          <parent link="left_hand_cp_1_jointendsite_z_link"/>
+          <child link="left_hand_cp_1_jointendsite_y_link"/>
       </joint>
-      <joint name="left_hand_cp_1endsite_x_joint" type ="revolute">
+      <joint name="left_hand_cp_1_jointendsite_x_joint" type ="revolute">
           <axis xyz="1 0 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="left_hand_cp_1endsite_y_link"/>
-          <child link="left_hand_cp_1endsite_x_link"/>
+          <parent link="left_hand_cp_1_jointendsite_y_link"/>
+          <child link="left_hand_cp_1_jointendsite_x_link"/>
       </joint>
-      <link name="left_hand_cp_2_z_link"/>
-      <link name="left_hand_cp_2_y_link"/>
-      <link name="left_hand_cp_2_x_link">
+      <link name="left_hand_cp_2_joint_z_link"/>
+      <link name="left_hand_cp_2_joint_y_link"/>
+      <link name="left_hand_cp_2_joint_x_link">
         <visual>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/left_hand_cp_2.obj"/>
+            <mesh filename="../rami/model/left_hand_cp_2_joint.obj"/>
           </geometry>
           <material name="Blue"/>
         </visual>
         <collision>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/left_hand_cp_2.obj"/>
+            <mesh filename="../rami/model/left_hand_cp_2_joint.obj"/>
           </geometry>
         </collision>
       </link>
-      <joint name="left_hand_cp_2_z_joint" type ="revolute">
+      <joint name="left_hand_cp_2_joint_z_joint" type ="revolute">
           <axis xyz="0 0 1"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0.01757 -0.06468 -0.22569"/>
-          <parent link="left_hand_x_link"/>
-          <child link="left_hand_cp_2_z_link"/>
+          <parent link="left_hand_x_joint_x_link"/>
+          <child link="left_hand_cp_2_joint_z_link"/>
       </joint>
-      <joint name="left_hand_cp_2_y_joint" type ="revolute">
+      <joint name="left_hand_cp_2_joint_y_joint" type ="revolute">
           <axis xyz="0 1 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="left_hand_cp_2_z_link"/>
-          <child link="left_hand_cp_2_y_link"/>
+          <parent link="left_hand_cp_2_joint_z_link"/>
+          <child link="left_hand_cp_2_joint_y_link"/>
       </joint>
-      <joint name="left_hand_cp_2_x_joint" type ="revolute">
+      <joint name="left_hand_cp_2_joint_x_joint" type ="revolute">
           <axis xyz="1 0 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="left_hand_cp_2_y_link"/>
-          <child link="left_hand_cp_2_x_link"/>
+          <parent link="left_hand_cp_2_joint_y_link"/>
+          <child link="left_hand_cp_2_joint_x_link"/>
       </joint>
-      <link name="left_hand_cp_2endsite_z_link"/>
-      <link name="left_hand_cp_2endsite_y_link"/>
-      <link name="left_hand_cp_2endsite_x_link">
+      <link name="left_hand_cp_2_jointendsite_z_link"/>
+      <link name="left_hand_cp_2_jointendsite_y_link"/>
+      <link name="left_hand_cp_2_jointendsite_x_link">
         <visual>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/left_hand_cp_2endsite.obj"/>
+            <mesh filename="../rami/model/left_hand_cp_2_jointendsite.obj"/>
           </geometry>
           <material name="Blue"/>
         </visual>
         <collision>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/left_hand_cp_2endsite.obj"/>
+            <mesh filename="../rami/model/left_hand_cp_2_jointendsite.obj"/>
           </geometry>
         </collision>
       </link>
-      <joint name="left_hand_cp_2endsite_z_joint" type ="revolute">
+      <joint name="left_hand_cp_2_jointendsite_z_joint" type ="revolute">
           <axis xyz="0 0 1"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="3.73144e-05 -0.000137365 -0.000479311"/>
-          <parent link="left_hand_cp_2_x_link"/>
-          <child link="left_hand_cp_2endsite_z_link"/>
+          <parent link="left_hand_cp_2_joint_x_link"/>
+          <child link="left_hand_cp_2_jointendsite_z_link"/>
       </joint>
-      <joint name="left_hand_cp_2endsite_y_joint" type ="revolute">
+      <joint name="left_hand_cp_2_jointendsite_y_joint" type ="revolute">
           <axis xyz="0 1 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="left_hand_cp_2endsite_z_link"/>
-          <child link="left_hand_cp_2endsite_y_link"/>
+          <parent link="left_hand_cp_2_jointendsite_z_link"/>
+          <child link="left_hand_cp_2_jointendsite_y_link"/>
       </joint>
-      <joint name="left_hand_cp_2endsite_x_joint" type ="revolute">
+      <joint name="left_hand_cp_2_jointendsite_x_joint" type ="revolute">
           <axis xyz="1 0 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="left_hand_cp_2endsite_y_link"/>
-          <child link="left_hand_cp_2endsite_x_link"/>
+          <parent link="left_hand_cp_2_jointendsite_y_link"/>
+          <child link="left_hand_cp_2_jointendsite_x_link"/>
       </joint>
-      <link name="left_hand_cp_3_z_link"/>
-      <link name="left_hand_cp_3_y_link"/>
-      <link name="left_hand_cp_3_x_link">
+      <link name="left_hand_cp_3_joint_z_link"/>
+      <link name="left_hand_cp_3_joint_y_link"/>
+      <link name="left_hand_cp_3_joint_x_link">
         <visual>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/left_hand_cp_3.obj"/>
+            <mesh filename="../rami/model/left_hand_cp_3_joint.obj"/>
           </geometry>
           <material name="Blue"/>
         </visual>
         <collision>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/left_hand_cp_3.obj"/>
+            <mesh filename="../rami/model/left_hand_cp_3_joint.obj"/>
           </geometry>
         </collision>
       </link>
-      <joint name="left_hand_cp_3_z_joint" type ="revolute">
+      <joint name="left_hand_cp_3_joint_z_joint" type ="revolute">
           <axis xyz="0 0 1"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0.01757 -0.06468 -0.02705"/>
-          <parent link="left_hand_x_link"/>
-          <child link="left_hand_cp_3_z_link"/>
+          <parent link="left_hand_x_joint_x_link"/>
+          <child link="left_hand_cp_3_joint_z_link"/>
       </joint>
-      <joint name="left_hand_cp_3_y_joint" type ="revolute">
+      <joint name="left_hand_cp_3_joint_y_joint" type ="revolute">
           <axis xyz="0 1 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="left_hand_cp_3_z_link"/>
-          <child link="left_hand_cp_3_y_link"/>
+          <parent link="left_hand_cp_3_joint_z_link"/>
+          <child link="left_hand_cp_3_joint_y_link"/>
       </joint>
-      <joint name="left_hand_cp_3_x_joint" type ="revolute">
+      <joint name="left_hand_cp_3_joint_x_joint" type ="revolute">
           <axis xyz="1 0 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="left_hand_cp_3_y_link"/>
-          <child link="left_hand_cp_3_x_link"/>
+          <parent link="left_hand_cp_3_joint_y_link"/>
+          <child link="left_hand_cp_3_joint_x_link"/>
       </joint>
-      <link name="left_hand_cp_3endsite_z_link"/>
-      <link name="left_hand_cp_3endsite_y_link"/>
-      <link name="left_hand_cp_3endsite_x_link">
+      <link name="left_hand_cp_3_jointendsite_z_link"/>
+      <link name="left_hand_cp_3_jointendsite_y_link"/>
+      <link name="left_hand_cp_3_jointendsite_x_link">
         <visual>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/left_hand_cp_3endsite.obj"/>
+            <mesh filename="../rami/model/left_hand_cp_3_jointendsite.obj"/>
           </geometry>
           <material name="Blue"/>
         </visual>
         <collision>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/left_hand_cp_3endsite.obj"/>
+            <mesh filename="../rami/model/left_hand_cp_3_jointendsite.obj"/>
           </geometry>
         </collision>
       </link>
-      <joint name="left_hand_cp_3endsite_z_joint" type ="revolute">
+      <joint name="left_hand_cp_3_jointendsite_z_joint" type ="revolute">
           <axis xyz="0 0 1"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0.000121547 -0.000447448 -0.000187128"/>
-          <parent link="left_hand_cp_3_x_link"/>
-          <child link="left_hand_cp_3endsite_z_link"/>
+          <parent link="left_hand_cp_3_joint_x_link"/>
+          <child link="left_hand_cp_3_jointendsite_z_link"/>
       </joint>
-      <joint name="left_hand_cp_3endsite_y_joint" type ="revolute">
+      <joint name="left_hand_cp_3_jointendsite_y_joint" type ="revolute">
           <axis xyz="0 1 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="left_hand_cp_3endsite_z_link"/>
-          <child link="left_hand_cp_3endsite_y_link"/>
+          <parent link="left_hand_cp_3_jointendsite_z_link"/>
+          <child link="left_hand_cp_3_jointendsite_y_link"/>
       </joint>
-      <joint name="left_hand_cp_3endsite_x_joint" type ="revolute">
+      <joint name="left_hand_cp_3_jointendsite_x_joint" type ="revolute">
           <axis xyz="1 0 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="left_hand_cp_3endsite_y_link"/>
-          <child link="left_hand_cp_3endsite_x_link"/>
+          <parent link="left_hand_cp_3_jointendsite_y_link"/>
+          <child link="left_hand_cp_3_jointendsite_x_link"/>
       </joint>
-      <link name="left_hand_cp_4_z_link"/>
-      <link name="left_hand_cp_4_y_link"/>
-      <link name="left_hand_cp_4_x_link">
+      <link name="left_hand_cp_4_joint_z_link"/>
+      <link name="left_hand_cp_4_joint_y_link"/>
+      <link name="left_hand_cp_4_joint_x_link">
         <visual>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/left_hand_cp_4.obj"/>
+            <mesh filename="../rami/model/left_hand_cp_4_joint.obj"/>
           </geometry>
           <material name="Blue"/>
         </visual>
         <collision>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/left_hand_cp_4.obj"/>
+            <mesh filename="../rami/model/left_hand_cp_4_joint.obj"/>
           </geometry>
         </collision>
       </link>
-      <joint name="left_hand_cp_4_z_joint" type ="revolute">
+      <joint name="left_hand_cp_4_joint_z_joint" type ="revolute">
           <axis xyz="0 0 1"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0.01757 0.0606 -0.02705"/>
-          <parent link="left_hand_x_link"/>
-          <child link="left_hand_cp_4_z_link"/>
+          <parent link="left_hand_x_joint_x_link"/>
+          <child link="left_hand_cp_4_joint_z_link"/>
       </joint>
-      <joint name="left_hand_cp_4_y_joint" type ="revolute">
+      <joint name="left_hand_cp_4_joint_y_joint" type ="revolute">
           <axis xyz="0 1 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="left_hand_cp_4_z_link"/>
-          <child link="left_hand_cp_4_y_link"/>
+          <parent link="left_hand_cp_4_joint_z_link"/>
+          <child link="left_hand_cp_4_joint_y_link"/>
       </joint>
-      <joint name="left_hand_cp_4_x_joint" type ="revolute">
+      <joint name="left_hand_cp_4_joint_x_joint" type ="revolute">
           <axis xyz="1 0 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="left_hand_cp_4_y_link"/>
-          <child link="left_hand_cp_4_x_link"/>
+          <parent link="left_hand_cp_4_joint_y_link"/>
+          <child link="left_hand_cp_4_joint_x_link"/>
       </joint>
-      <link name="left_hand_cp_4endsite_z_link"/>
-      <link name="left_hand_cp_4endsite_y_link"/>
-      <link name="left_hand_cp_4endsite_x_link">
+      <link name="left_hand_cp_4_jointendsite_z_link"/>
+      <link name="left_hand_cp_4_jointendsite_y_link"/>
+      <link name="left_hand_cp_4_jointendsite_x_link">
         <visual>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/left_hand_cp_4endsite.obj"/>
+            <mesh filename="../rami/model/left_hand_cp_4_jointendsite.obj"/>
           </geometry>
           <material name="Blue"/>
         </visual>
         <collision>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/left_hand_cp_4endsite.obj"/>
+            <mesh filename="../rami/model/left_hand_cp_4_jointendsite.obj"/>
           </geometry>
         </collision>
       </link>
-      <joint name="left_hand_cp_4endsite_z_joint" type ="revolute">
+      <joint name="left_hand_cp_4_jointendsite_z_joint" type ="revolute">
           <axis xyz="0 0 1"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0.000127969 0.000441372 -0.000197015"/>
-          <parent link="left_hand_cp_4_x_link"/>
-          <child link="left_hand_cp_4endsite_z_link"/>
+          <parent link="left_hand_cp_4_joint_x_link"/>
+          <child link="left_hand_cp_4_jointendsite_z_link"/>
       </joint>
-      <joint name="left_hand_cp_4endsite_y_joint" type ="revolute">
+      <joint name="left_hand_cp_4_jointendsite_y_joint" type ="revolute">
           <axis xyz="0 1 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="left_hand_cp_4endsite_z_link"/>
-          <child link="left_hand_cp_4endsite_y_link"/>
+          <parent link="left_hand_cp_4_jointendsite_z_link"/>
+          <child link="left_hand_cp_4_jointendsite_y_link"/>
       </joint>
-      <joint name="left_hand_cp_4endsite_x_joint" type ="revolute">
+      <joint name="left_hand_cp_4_jointendsite_x_joint" type ="revolute">
           <axis xyz="1 0 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="left_hand_cp_4endsite_y_link"/>
-          <child link="left_hand_cp_4endsite_x_link"/>
+          <parent link="left_hand_cp_4_jointendsite_y_link"/>
+          <child link="left_hand_cp_4_jointendsite_x_link"/>
       </joint>
-      <link name="upper_right_specula_z_link"/>
-      <link name="upper_right_specula_y_link"/>
-      <link name="upper_right_specula_x_link">
+      <link name="upper_right_specula_joint_z_link"/>
+      <link name="upper_right_specula_joint_y_link"/>
+      <link name="upper_right_specula_joint_x_link">
         <visual>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/upper_right_specula.obj"/>
+            <mesh filename="../rami/model/upper_right_specula_joint.obj"/>
           </geometry>
           <material name="Blue"/>
         </visual>
         <collision>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/upper_right_specula.obj"/>
+            <mesh filename="../rami/model/upper_right_specula_joint.obj"/>
           </geometry>
         </collision>
       </link>
-      <joint name="upper_right_specula_z_joint" type ="revolute">
+      <joint name="upper_right_specula_joint_z_joint" type ="revolute">
           <axis xyz="0 0 1"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0.0873852 0.0381 -0.153312"/>
-          <parent link="head_x_link"/>
-          <child link="upper_right_specula_z_link"/>
+          <parent link="head_x_joint_x_link"/>
+          <child link="upper_right_specula_joint_z_link"/>
       </joint>
-      <joint name="upper_right_specula_y_joint" type ="revolute">
+      <joint name="upper_right_specula_joint_y_joint" type ="revolute">
           <axis xyz="0 1 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="upper_right_specula_z_link"/>
-          <child link="upper_right_specula_y_link"/>
+          <parent link="upper_right_specula_joint_z_link"/>
+          <child link="upper_right_specula_joint_y_link"/>
       </joint>
-      <joint name="upper_right_specula_x_joint" type ="revolute">
+      <joint name="upper_right_specula_joint_x_joint" type ="revolute">
           <axis xyz="1 0 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="upper_right_specula_y_link"/>
-          <child link="upper_right_specula_x_link"/>
+          <parent link="upper_right_specula_joint_y_link"/>
+          <child link="upper_right_specula_joint_x_link"/>
       </joint>
-      <link name="upper_right_arm_z_link"/>
-      <link name="upper_right_arm_y_link"/>
-      <link name="upper_right_arm_x_link">
+      <link name="upper_right_arm_x_joint_z_link"/>
+      <link name="upper_right_arm_x_joint_y_link"/>
+      <link name="upper_right_arm_x_joint_x_link">
         <visual>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/upper_right_arm.obj"/>
+            <mesh filename="../rami/model/upper_right_arm_x_joint.obj"/>
           </geometry>
           <material name="Blue"/>
         </visual>
         <collision>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/upper_right_arm.obj"/>
+            <mesh filename="../rami/model/upper_right_arm_x_joint.obj"/>
           </geometry>
         </collision>
       </link>
-      <joint name="upper_right_arm_z_joint" type ="revolute">
+      <joint name="upper_right_arm_x_joint_z_joint" type ="revolute">
           <axis xyz="0 0 1"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0.16926 0.003768 -0.0003"/>
-          <parent link="upper_right_specula_x_link"/>
-          <child link="upper_right_arm_z_link"/>
+          <parent link="upper_right_specula_joint_x_link"/>
+          <child link="upper_right_arm_x_joint_z_link"/>
       </joint>
-      <joint name="upper_right_arm_y_joint" type ="revolute">
+      <joint name="upper_right_arm_x_joint_y_joint" type ="revolute">
           <axis xyz="0 1 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="upper_right_arm_z_link"/>
-          <child link="upper_right_arm_y_link"/>
+          <parent link="upper_right_arm_x_joint_z_link"/>
+          <child link="upper_right_arm_x_joint_y_link"/>
       </joint>
-      <joint name="upper_right_arm_x_joint" type ="revolute">
+      <joint name="upper_right_arm_x_joint_x_joint" type ="revolute">
           <axis xyz="1 0 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="upper_right_arm_y_link"/>
-          <child link="upper_right_arm_x_link"/>
+          <parent link="upper_right_arm_x_joint_y_link"/>
+          <child link="upper_right_arm_x_joint_x_link"/>
       </joint>
-      <link name="lower_right_arm_z_link"/>
-      <link name="lower_right_arm_y_link"/>
-      <link name="lower_right_arm_x_link">
+      <link name="lower_right_arm_joint_z_link"/>
+      <link name="lower_right_arm_joint_y_link"/>
+      <link name="lower_right_arm_joint_x_link">
         <visual>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/lower_right_arm.obj"/>
+            <mesh filename="../rami/model/lower_right_arm_joint.obj"/>
           </geometry>
           <material name="Blue"/>
         </visual>
         <collision>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/lower_right_arm.obj"/>
+            <mesh filename="../rami/model/lower_right_arm_joint.obj"/>
           </geometry>
         </collision>
       </link>
-      <joint name="lower_right_arm_z_joint" type ="revolute">
+      <joint name="lower_right_arm_joint_z_joint" type ="revolute">
           <axis xyz="0 0 1"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="-0.005592 -0.007404 -0.342828"/>
-          <parent link="upper_right_arm_x_link"/>
-          <child link="lower_right_arm_z_link"/>
+          <parent link="upper_right_arm_x_joint_x_link"/>
+          <child link="lower_right_arm_joint_z_link"/>
       </joint>
-      <joint name="lower_right_arm_y_joint" type ="revolute">
+      <joint name="lower_right_arm_joint_y_joint" type ="revolute">
           <axis xyz="0 1 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="lower_right_arm_z_link"/>
-          <child link="lower_right_arm_y_link"/>
+          <parent link="lower_right_arm_joint_z_link"/>
+          <child link="lower_right_arm_joint_y_link"/>
       </joint>
-      <joint name="lower_right_arm_x_joint" type ="revolute">
+      <joint name="lower_right_arm_joint_x_joint" type ="revolute">
           <axis xyz="1 0 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="lower_right_arm_y_link"/>
-          <child link="lower_right_arm_x_link"/>
+          <parent link="lower_right_arm_joint_y_link"/>
+          <child link="lower_right_arm_joint_x_link"/>
       </joint>
-      <link name="right_hand_z_link"/>
-      <link name="right_hand_y_link"/>
-      <link name="right_hand_x_link">
+      <link name="right_hand_x_joint_z_link"/>
+      <link name="right_hand_x_joint_y_link"/>
+      <link name="right_hand_x_joint_x_link">
         <visual>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/right_hand.obj"/>
+            <mesh filename="../rami/model/right_hand_x_joint.obj"/>
           </geometry>
           <material name="Blue"/>
         </visual>
         <collision>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/right_hand.obj"/>
+            <mesh filename="../rami/model/right_hand_x_joint.obj"/>
           </geometry>
         </collision>
       </link>
-      <joint name="right_hand_z_joint" type ="revolute">
+      <joint name="right_hand_x_joint_z_joint" type ="revolute">
           <axis xyz="0 0 1"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="-0.004728 -0.003084 -0.325056"/>
-          <parent link="lower_right_arm_x_link"/>
-          <child link="right_hand_z_link"/>
+          <parent link="lower_right_arm_joint_x_link"/>
+          <child link="right_hand_x_joint_z_link"/>
       </joint>
-      <joint name="right_hand_y_joint" type ="revolute">
+      <joint name="right_hand_x_joint_y_joint" type ="revolute">
           <axis xyz="0 1 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="right_hand_z_link"/>
-          <child link="right_hand_y_link"/>
+          <parent link="right_hand_x_joint_z_link"/>
+          <child link="right_hand_x_joint_y_link"/>
       </joint>
-      <joint name="right_hand_x_joint" type ="revolute">
+      <joint name="right_hand_x_joint_x_joint" type ="revolute">
           <axis xyz="1 0 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="right_hand_y_link"/>
-          <child link="right_hand_x_link"/>
+          <parent link="right_hand_x_joint_y_link"/>
+          <child link="right_hand_x_joint_x_link"/>
       </joint>
-      <link name="right_hand_endeffector_z_link"/>
-      <link name="right_hand_endeffector_y_link"/>
-      <link name="right_hand_endeffector_x_link">
+      <link name="right_hand_endeffector_joint_z_link"/>
+      <link name="right_hand_endeffector_joint_y_link"/>
+      <link name="right_hand_endeffector_joint_x_link">
         <visual>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/right_hand_endeffector.obj"/>
+            <mesh filename="../rami/model/right_hand_endeffector_joint.obj"/>
           </geometry>
           <material name="Blue"/>
         </visual>
         <collision>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/right_hand_endeffector.obj"/>
+            <mesh filename="../rami/model/right_hand_endeffector_joint.obj"/>
           </geometry>
         </collision>
       </link>
-      <joint name="right_hand_endeffector_z_joint" type ="revolute">
+      <joint name="right_hand_endeffector_joint_z_joint" type ="revolute">
           <axis xyz="0 0 1"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="-0.000348 0.010884 -0.21684"/>
-          <parent link="right_hand_x_link"/>
-          <child link="right_hand_endeffector_z_link"/>
+          <parent link="right_hand_x_joint_x_link"/>
+          <child link="right_hand_endeffector_joint_z_link"/>
       </joint>
-      <joint name="right_hand_endeffector_y_joint" type ="revolute">
+      <joint name="right_hand_endeffector_joint_y_joint" type ="revolute">
           <axis xyz="0 1 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="right_hand_endeffector_z_link"/>
-          <child link="right_hand_endeffector_y_link"/>
+          <parent link="right_hand_endeffector_joint_z_link"/>
+          <child link="right_hand_endeffector_joint_y_link"/>
       </joint>
-      <joint name="right_hand_endeffector_x_joint" type ="revolute">
+      <joint name="right_hand_endeffector_joint_x_joint" type ="revolute">
           <axis xyz="1 0 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="right_hand_endeffector_y_link"/>
-          <child link="right_hand_endeffector_x_link"/>
+          <parent link="right_hand_endeffector_joint_y_link"/>
+          <child link="right_hand_endeffector_joint_x_link"/>
       </joint>
-      <link name="right_hand_endeffectorendsite_z_link"/>
-      <link name="right_hand_endeffectorendsite_y_link"/>
-      <link name="right_hand_endeffectorendsite_x_link">
+      <link name="right_hand_endeffector_jointendsite_z_link"/>
+      <link name="right_hand_endeffector_jointendsite_y_link"/>
+      <link name="right_hand_endeffector_jointendsite_x_link">
         <visual>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/right_hand_endeffectorendsite.obj"/>
+            <mesh filename="../rami/model/right_hand_endeffector_jointendsite.obj"/>
           </geometry>
           <material name="Blue"/>
         </visual>
         <collision>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/right_hand_endeffectorendsite.obj"/>
+            <mesh filename="../rami/model/right_hand_endeffector_jointendsite.obj"/>
           </geometry>
         </collision>
       </link>
-      <joint name="right_hand_endeffectorendsite_z_joint" type ="revolute">
+      <joint name="right_hand_endeffector_jointendsite_z_joint" type ="revolute">
           <axis xyz="0 0 1"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="-8.01425e-07 2.50653e-05 -0.000499371"/>
-          <parent link="right_hand_endeffector_x_link"/>
-          <child link="right_hand_endeffectorendsite_z_link"/>
+          <parent link="right_hand_endeffector_joint_x_link"/>
+          <child link="right_hand_endeffector_jointendsite_z_link"/>
       </joint>
-      <joint name="right_hand_endeffectorendsite_y_joint" type ="revolute">
+      <joint name="right_hand_endeffector_jointendsite_y_joint" type ="revolute">
           <axis xyz="0 1 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="right_hand_endeffectorendsite_z_link"/>
-          <child link="right_hand_endeffectorendsite_y_link"/>
+          <parent link="right_hand_endeffector_jointendsite_z_link"/>
+          <child link="right_hand_endeffector_jointendsite_y_link"/>
       </joint>
-      <joint name="right_hand_endeffectorendsite_x_joint" type ="revolute">
+      <joint name="right_hand_endeffector_jointendsite_x_joint" type ="revolute">
           <axis xyz="1 0 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="right_hand_endeffectorendsite_y_link"/>
-          <child link="right_hand_endeffectorendsite_x_link"/>
+          <parent link="right_hand_endeffector_jointendsite_y_link"/>
+          <child link="right_hand_endeffector_jointendsite_x_link"/>
       </joint>
-      <link name="right_hand_cp_1_z_link"/>
-      <link name="right_hand_cp_1_y_link"/>
-      <link name="right_hand_cp_1_x_link">
+      <link name="right_hand_cp_1_joint_z_link"/>
+      <link name="right_hand_cp_1_joint_y_link"/>
+      <link name="right_hand_cp_1_joint_x_link">
         <visual>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/right_hand_cp_1.obj"/>
+            <mesh filename="../rami/model/right_hand_cp_1_joint.obj"/>
           </geometry>
           <material name="Blue"/>
         </visual>
         <collision>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/right_hand_cp_1.obj"/>
+            <mesh filename="../rami/model/right_hand_cp_1_joint.obj"/>
           </geometry>
         </collision>
       </link>
-      <joint name="right_hand_cp_1_z_joint" type ="revolute">
+      <joint name="right_hand_cp_1_joint_z_joint" type ="revolute">
           <axis xyz="0 0 1"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="-0.01229 0.05553 -0.01712"/>
-          <parent link="right_hand_x_link"/>
-          <child link="right_hand_cp_1_z_link"/>
+          <parent link="right_hand_x_joint_x_link"/>
+          <child link="right_hand_cp_1_joint_z_link"/>
       </joint>
-      <joint name="right_hand_cp_1_y_joint" type ="revolute">
+      <joint name="right_hand_cp_1_joint_y_joint" type ="revolute">
           <axis xyz="0 1 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="right_hand_cp_1_z_link"/>
-          <child link="right_hand_cp_1_y_link"/>
+          <parent link="right_hand_cp_1_joint_z_link"/>
+          <child link="right_hand_cp_1_joint_y_link"/>
       </joint>
-      <joint name="right_hand_cp_1_x_joint" type ="revolute">
+      <joint name="right_hand_cp_1_joint_x_joint" type ="revolute">
           <axis xyz="1 0 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="right_hand_cp_1_y_link"/>
-          <child link="right_hand_cp_1_x_link"/>
+          <parent link="right_hand_cp_1_joint_y_link"/>
+          <child link="right_hand_cp_1_joint_x_link"/>
       </joint>
-      <link name="right_hand_cp_1endsite_z_link"/>
-      <link name="right_hand_cp_1endsite_y_link"/>
-      <link name="right_hand_cp_1endsite_x_link">
+      <link name="right_hand_cp_1_jointendsite_z_link"/>
+      <link name="right_hand_cp_1_jointendsite_y_link"/>
+      <link name="right_hand_cp_1_jointendsite_x_link">
         <visual>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/right_hand_cp_1endsite.obj"/>
+            <mesh filename="../rami/model/right_hand_cp_1_jointendsite.obj"/>
           </geometry>
           <material name="Blue"/>
         </visual>
         <collision>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/right_hand_cp_1endsite.obj"/>
+            <mesh filename="../rami/model/right_hand_cp_1_jointendsite.obj"/>
           </geometry>
         </collision>
       </link>
-      <joint name="right_hand_cp_1endsite_z_joint" type ="revolute">
+      <joint name="right_hand_cp_1_jointendsite_z_joint" type ="revolute">
           <axis xyz="0 0 1"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="-0.000103461 0.000467467 -0.000144121"/>
-          <parent link="right_hand_cp_1_x_link"/>
-          <child link="right_hand_cp_1endsite_z_link"/>
+          <parent link="right_hand_cp_1_joint_x_link"/>
+          <child link="right_hand_cp_1_jointendsite_z_link"/>
       </joint>
-      <joint name="right_hand_cp_1endsite_y_joint" type ="revolute">
+      <joint name="right_hand_cp_1_jointendsite_y_joint" type ="revolute">
           <axis xyz="0 1 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="right_hand_cp_1endsite_z_link"/>
-          <child link="right_hand_cp_1endsite_y_link"/>
+          <parent link="right_hand_cp_1_jointendsite_z_link"/>
+          <child link="right_hand_cp_1_jointendsite_y_link"/>
       </joint>
-      <joint name="right_hand_cp_1endsite_x_joint" type ="revolute">
+      <joint name="right_hand_cp_1_jointendsite_x_joint" type ="revolute">
           <axis xyz="1 0 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="right_hand_cp_1endsite_y_link"/>
-          <child link="right_hand_cp_1endsite_x_link"/>
+          <parent link="right_hand_cp_1_jointendsite_y_link"/>
+          <child link="right_hand_cp_1_jointendsite_x_link"/>
       </joint>
-      <link name="right_hand_cp_2_z_link"/>
-      <link name="right_hand_cp_2_y_link"/>
-      <link name="right_hand_cp_2_x_link">
+      <link name="right_hand_cp_2_joint_z_link"/>
+      <link name="right_hand_cp_2_joint_y_link"/>
+      <link name="right_hand_cp_2_joint_x_link">
         <visual>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/right_hand_cp_2.obj"/>
+            <mesh filename="../rami/model/right_hand_cp_2_joint.obj"/>
           </geometry>
           <material name="Blue"/>
         </visual>
         <collision>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/right_hand_cp_2.obj"/>
+            <mesh filename="../rami/model/right_hand_cp_2_joint.obj"/>
           </geometry>
         </collision>
       </link>
-      <joint name="right_hand_cp_2_z_joint" type ="revolute">
+      <joint name="right_hand_cp_2_joint_z_joint" type ="revolute">
           <axis xyz="0 0 1"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="-0.01229 -0.06975 -0.01712"/>
-          <parent link="right_hand_x_link"/>
-          <child link="right_hand_cp_2_z_link"/>
+          <parent link="right_hand_x_joint_x_link"/>
+          <child link="right_hand_cp_2_joint_z_link"/>
       </joint>
-      <joint name="right_hand_cp_2_y_joint" type ="revolute">
+      <joint name="right_hand_cp_2_joint_y_joint" type ="revolute">
           <axis xyz="0 1 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="right_hand_cp_2_z_link"/>
-          <child link="right_hand_cp_2_y_link"/>
+          <parent link="right_hand_cp_2_joint_z_link"/>
+          <child link="right_hand_cp_2_joint_y_link"/>
       </joint>
-      <joint name="right_hand_cp_2_x_joint" type ="revolute">
+      <joint name="right_hand_cp_2_joint_x_joint" type ="revolute">
           <axis xyz="1 0 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="right_hand_cp_2_y_link"/>
-          <child link="right_hand_cp_2_x_link"/>
+          <parent link="right_hand_cp_2_joint_y_link"/>
+          <child link="right_hand_cp_2_joint_x_link"/>
       </joint>
-      <link name="right_hand_cp_2endsite_z_link"/>
-      <link name="right_hand_cp_2endsite_y_link"/>
-      <link name="right_hand_cp_2endsite_x_link">
+      <link name="right_hand_cp_2_jointendsite_z_link"/>
+      <link name="right_hand_cp_2_jointendsite_y_link"/>
+      <link name="right_hand_cp_2_jointendsite_x_link">
         <visual>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/right_hand_cp_2endsite.obj"/>
+            <mesh filename="../rami/model/right_hand_cp_2_jointendsite.obj"/>
           </geometry>
           <material name="Blue"/>
         </visual>
         <collision>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/right_hand_cp_2endsite.obj"/>
+            <mesh filename="../rami/model/right_hand_cp_2_jointendsite.obj"/>
           </geometry>
         </collision>
       </link>
-      <joint name="right_hand_cp_2endsite_z_joint" type ="revolute">
+      <joint name="right_hand_cp_2_jointendsite_z_joint" type ="revolute">
           <axis xyz="0 0 1"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="-8.43349e-05 -0.00047863 -0.000117479"/>
-          <parent link="right_hand_cp_2_x_link"/>
-          <child link="right_hand_cp_2endsite_z_link"/>
+          <parent link="right_hand_cp_2_joint_x_link"/>
+          <child link="right_hand_cp_2_jointendsite_z_link"/>
       </joint>
-      <joint name="right_hand_cp_2endsite_y_joint" type ="revolute">
+      <joint name="right_hand_cp_2_jointendsite_y_joint" type ="revolute">
           <axis xyz="0 1 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="right_hand_cp_2endsite_z_link"/>
-          <child link="right_hand_cp_2endsite_y_link"/>
+          <parent link="right_hand_cp_2_jointendsite_z_link"/>
+          <child link="right_hand_cp_2_jointendsite_y_link"/>
       </joint>
-      <joint name="right_hand_cp_2endsite_x_joint" type ="revolute">
+      <joint name="right_hand_cp_2_jointendsite_x_joint" type ="revolute">
           <axis xyz="1 0 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="right_hand_cp_2endsite_y_link"/>
-          <child link="right_hand_cp_2endsite_x_link"/>
+          <parent link="right_hand_cp_2_jointendsite_y_link"/>
+          <child link="right_hand_cp_2_jointendsite_x_link"/>
       </joint>
-      <link name="right_hand_cp_3_z_link"/>
-      <link name="right_hand_cp_3_y_link"/>
-      <link name="right_hand_cp_3_x_link">
+      <link name="right_hand_cp_3_joint_z_link"/>
+      <link name="right_hand_cp_3_joint_y_link"/>
+      <link name="right_hand_cp_3_joint_x_link">
         <visual>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/right_hand_cp_3.obj"/>
+            <mesh filename="../rami/model/right_hand_cp_3_joint.obj"/>
           </geometry>
           <material name="Blue"/>
         </visual>
         <collision>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/right_hand_cp_3.obj"/>
+            <mesh filename="../rami/model/right_hand_cp_3_joint.obj"/>
           </geometry>
         </collision>
       </link>
-      <joint name="right_hand_cp_3_z_joint" type ="revolute">
+      <joint name="right_hand_cp_3_joint_z_joint" type ="revolute">
           <axis xyz="0 0 1"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="-0.01229 -0.06975 -0.21577"/>
-          <parent link="right_hand_x_link"/>
-          <child link="right_hand_cp_3_z_link"/>
+          <parent link="right_hand_x_joint_x_link"/>
+          <child link="right_hand_cp_3_joint_z_link"/>
       </joint>
-      <joint name="right_hand_cp_3_y_joint" type ="revolute">
+      <joint name="right_hand_cp_3_joint_y_joint" type ="revolute">
           <axis xyz="0 1 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="right_hand_cp_3_z_link"/>
-          <child link="right_hand_cp_3_y_link"/>
+          <parent link="right_hand_cp_3_joint_z_link"/>
+          <child link="right_hand_cp_3_joint_y_link"/>
       </joint>
-      <joint name="right_hand_cp_3_x_joint" type ="revolute">
+      <joint name="right_hand_cp_3_joint_x_joint" type ="revolute">
           <axis xyz="1 0 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="right_hand_cp_3_y_link"/>
-          <child link="right_hand_cp_3_x_link"/>
+          <parent link="right_hand_cp_3_joint_y_link"/>
+          <child link="right_hand_cp_3_joint_x_link"/>
       </joint>
-      <link name="right_hand_cp_3endsite_z_link"/>
-      <link name="right_hand_cp_3endsite_y_link"/>
-      <link name="right_hand_cp_3endsite_x_link">
+      <link name="right_hand_cp_3_jointendsite_z_link"/>
+      <link name="right_hand_cp_3_jointendsite_y_link"/>
+      <link name="right_hand_cp_3_jointendsite_x_link">
         <visual>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/right_hand_cp_3endsite.obj"/>
+            <mesh filename="../rami/model/right_hand_cp_3_jointendsite.obj"/>
           </geometry>
           <material name="Blue"/>
         </visual>
         <collision>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/right_hand_cp_3endsite.obj"/>
+            <mesh filename="../rami/model/right_hand_cp_3_jointendsite.obj"/>
           </geometry>
         </collision>
       </link>
-      <joint name="right_hand_cp_3endsite_z_joint" type ="revolute">
+      <joint name="right_hand_cp_3_jointendsite_z_joint" type ="revolute">
           <axis xyz="0 0 1"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="-2.7059e-05 -0.000153569 -0.000475062"/>
-          <parent link="right_hand_cp_3_x_link"/>
-          <child link="right_hand_cp_3endsite_z_link"/>
+          <parent link="right_hand_cp_3_joint_x_link"/>
+          <child link="right_hand_cp_3_jointendsite_z_link"/>
       </joint>
-      <joint name="right_hand_cp_3endsite_y_joint" type ="revolute">
+      <joint name="right_hand_cp_3_jointendsite_y_joint" type ="revolute">
           <axis xyz="0 1 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="right_hand_cp_3endsite_z_link"/>
-          <child link="right_hand_cp_3endsite_y_link"/>
+          <parent link="right_hand_cp_3_jointendsite_z_link"/>
+          <child link="right_hand_cp_3_jointendsite_y_link"/>
       </joint>
-      <joint name="right_hand_cp_3endsite_x_joint" type ="revolute">
+      <joint name="right_hand_cp_3_jointendsite_x_joint" type ="revolute">
           <axis xyz="1 0 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="right_hand_cp_3endsite_y_link"/>
-          <child link="right_hand_cp_3endsite_x_link"/>
+          <parent link="right_hand_cp_3_jointendsite_y_link"/>
+          <child link="right_hand_cp_3_jointendsite_x_link"/>
       </joint>
-      <link name="right_hand_cp_4_z_link"/>
-      <link name="right_hand_cp_4_y_link"/>
-      <link name="right_hand_cp_4_x_link">
+      <link name="right_hand_cp_4_joint_z_link"/>
+      <link name="right_hand_cp_4_joint_y_link"/>
+      <link name="right_hand_cp_4_joint_x_link">
         <visual>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/right_hand_cp_4.obj"/>
+            <mesh filename="../rami/model/right_hand_cp_4_joint.obj"/>
           </geometry>
           <material name="Blue"/>
         </visual>
         <collision>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/right_hand_cp_4.obj"/>
+            <mesh filename="../rami/model/right_hand_cp_4_joint.obj"/>
           </geometry>
         </collision>
       </link>
-      <joint name="right_hand_cp_4_z_joint" type ="revolute">
+      <joint name="right_hand_cp_4_joint_z_joint" type ="revolute">
           <axis xyz="0 0 1"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="-0.01229 0.05553 -0.21577"/>
-          <parent link="right_hand_x_link"/>
-          <child link="right_hand_cp_4_z_link"/>
+          <parent link="right_hand_x_joint_x_link"/>
+          <child link="right_hand_cp_4_joint_z_link"/>
       </joint>
-      <joint name="right_hand_cp_4_y_joint" type ="revolute">
+      <joint name="right_hand_cp_4_joint_y_joint" type ="revolute">
           <axis xyz="0 1 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="right_hand_cp_4_z_link"/>
-          <child link="right_hand_cp_4_y_link"/>
+          <parent link="right_hand_cp_4_joint_z_link"/>
+          <child link="right_hand_cp_4_joint_y_link"/>
       </joint>
-      <joint name="right_hand_cp_4_x_joint" type ="revolute">
+      <joint name="right_hand_cp_4_joint_x_joint" type ="revolute">
           <axis xyz="1 0 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="right_hand_cp_4_y_link"/>
-          <child link="right_hand_cp_4_x_link"/>
+          <parent link="right_hand_cp_4_joint_y_link"/>
+          <child link="right_hand_cp_4_joint_x_link"/>
       </joint>
-      <link name="right_hand_cp_4endsite_z_link"/>
-      <link name="right_hand_cp_4endsite_y_link"/>
-      <link name="right_hand_cp_4endsite_x_link">
+      <link name="right_hand_cp_4_jointendsite_z_link"/>
+      <link name="right_hand_cp_4_jointendsite_y_link"/>
+      <link name="right_hand_cp_4_jointendsite_x_link">
         <visual>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/right_hand_cp_4endsite.obj"/>
+            <mesh filename="../rami/model/right_hand_cp_4_jointendsite.obj"/>
           </geometry>
           <material name="Blue"/>
         </visual>
         <collision>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/right_hand_cp_4endsite.obj"/>
+            <mesh filename="../rami/model/right_hand_cp_4_jointendsite.obj"/>
           </geometry>
         </collision>
       </link>
-      <joint name="right_hand_cp_4endsite_z_joint" type ="revolute">
+      <joint name="right_hand_cp_4_jointendsite_z_joint" type ="revolute">
           <axis xyz="0 0 1"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="-2.75388e-05 0.000124429 -0.000483486"/>
-          <parent link="right_hand_cp_4_x_link"/>
-          <child link="right_hand_cp_4endsite_z_link"/>
+          <parent link="right_hand_cp_4_joint_x_link"/>
+          <child link="right_hand_cp_4_jointendsite_z_link"/>
       </joint>
-      <joint name="right_hand_cp_4endsite_y_joint" type ="revolute">
+      <joint name="right_hand_cp_4_jointendsite_y_joint" type ="revolute">
           <axis xyz="0 1 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="right_hand_cp_4endsite_z_link"/>
-          <child link="right_hand_cp_4endsite_y_link"/>
+          <parent link="right_hand_cp_4_jointendsite_z_link"/>
+          <child link="right_hand_cp_4_jointendsite_y_link"/>
       </joint>
-      <joint name="right_hand_cp_4endsite_x_joint" type ="revolute">
+      <joint name="right_hand_cp_4_jointendsite_x_joint" type ="revolute">
           <axis xyz="1 0 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="right_hand_cp_4endsite_y_link"/>
-          <child link="right_hand_cp_4endsite_x_link"/>
+          <parent link="right_hand_cp_4_jointendsite_y_link"/>
+          <child link="right_hand_cp_4_jointendsite_x_link"/>
       </joint>
-      <link name="upper_left_leg_z_link"/>
-      <link name="upper_left_leg_y_link"/>
-      <link name="upper_left_leg_x_link">
+      <link name="upper_left_leg_x_joint_z_link"/>
+      <link name="upper_left_leg_x_joint_y_link"/>
+      <link name="upper_left_leg_x_joint_x_link">
         <visual>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/upper_left_leg.obj"/>
+            <mesh filename="../rami/model/upper_left_leg_x_joint.obj"/>
           </geometry>
           <material name="Blue"/>
         </visual>
         <collision>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/upper_left_leg.obj"/>
+            <mesh filename="../rami/model/upper_left_leg_x_joint.obj"/>
           </geometry>
         </collision>
       </link>
-      <joint name="upper_left_leg_z_joint" type ="revolute">
+      <joint name="upper_left_leg_x_joint_z_joint" type ="revolute">
           <axis xyz="0 0 1"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="-0.106044 -0.001956 -0.144312"/>
           <parent link="pelvis_link"/>
-          <child link="upper_left_leg_z_link"/>
+          <child link="upper_left_leg_x_joint_z_link"/>
       </joint>
-      <joint name="upper_left_leg_y_joint" type ="revolute">
+      <joint name="upper_left_leg_x_joint_y_joint" type ="revolute">
           <axis xyz="0 1 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="upper_left_leg_z_link"/>
-          <child link="upper_left_leg_y_link"/>
+          <parent link="upper_left_leg_x_joint_z_link"/>
+          <child link="upper_left_leg_x_joint_y_link"/>
       </joint>
-      <joint name="upper_left_leg_x_joint" type ="revolute">
+      <joint name="upper_left_leg_x_joint_x_joint" type ="revolute">
           <axis xyz="1 0 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="upper_left_leg_y_link"/>
-          <child link="upper_left_leg_x_link"/>
+          <parent link="upper_left_leg_x_joint_y_link"/>
+          <child link="upper_left_leg_x_joint_x_link"/>
       </joint>
-      <link name="lower_left_leg_z_link"/>
-      <link name="lower_left_leg_y_link"/>
-      <link name="lower_left_leg_x_link">
+      <link name="lower_left_leg_joint_z_link"/>
+      <link name="lower_left_leg_joint_y_link"/>
+      <link name="lower_left_leg_joint_x_link">
         <visual>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/lower_left_leg.obj"/>
+            <mesh filename="../rami/model/lower_left_leg_joint.obj"/>
           </geometry>
           <material name="Blue"/>
         </visual>
         <collision>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/lower_left_leg.obj"/>
+            <mesh filename="../rami/model/lower_left_leg_joint.obj"/>
           </geometry>
         </collision>
       </link>
-      <joint name="lower_left_leg_z_joint" type ="revolute">
+      <joint name="lower_left_leg_joint_z_joint" type ="revolute">
           <axis xyz="0 0 1"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="-0.025332 -0.01956 -0.477768"/>
-          <parent link="upper_left_leg_x_link"/>
-          <child link="lower_left_leg_z_link"/>
+          <parent link="upper_left_leg_x_joint_x_link"/>
+          <child link="lower_left_leg_joint_z_link"/>
       </joint>
-      <joint name="lower_left_leg_y_joint" type ="revolute">
+      <joint name="lower_left_leg_joint_y_joint" type ="revolute">
           <axis xyz="0 1 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="lower_left_leg_z_link"/>
-          <child link="lower_left_leg_y_link"/>
+          <parent link="lower_left_leg_joint_z_link"/>
+          <child link="lower_left_leg_joint_y_link"/>
       </joint>
-      <joint name="lower_left_leg_x_joint" type ="revolute">
+      <joint name="lower_left_leg_joint_x_joint" type ="revolute">
           <axis xyz="1 0 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="lower_left_leg_y_link"/>
-          <child link="lower_left_leg_x_link"/>
+          <parent link="lower_left_leg_joint_y_link"/>
+          <child link="lower_left_leg_joint_x_link"/>
       </joint>
-      <link name="left_foot_z_link"/>
-      <link name="left_foot_y_link"/>
-      <link name="left_foot_x_link">
+      <link name="left_foot_x_joint_z_link"/>
+      <link name="left_foot_x_joint_y_link"/>
+      <link name="left_foot_x_joint_x_link">
         <visual>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/left_foot.obj"/>
+            <mesh filename="../rami/model/left_foot_x_joint.obj"/>
           </geometry>
           <material name="Blue"/>
         </visual>
         <collision>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/left_foot.obj"/>
+            <mesh filename="../rami/model/left_foot_x_joint.obj"/>
           </geometry>
         </collision>
       </link>
-      <joint name="left_foot_z_joint" type ="revolute">
+      <joint name="left_foot_x_joint_z_joint" type ="revolute">
           <axis xyz="0 0 1"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="-0.008988 0.036996 -0.474504"/>
-          <parent link="lower_left_leg_x_link"/>
-          <child link="left_foot_z_link"/>
+          <parent link="lower_left_leg_joint_x_link"/>
+          <child link="left_foot_x_joint_z_link"/>
       </joint>
-      <joint name="left_foot_y_joint" type ="revolute">
+      <joint name="left_foot_x_joint_y_joint" type ="revolute">
           <axis xyz="0 1 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="left_foot_z_link"/>
-          <child link="left_foot_y_link"/>
+          <parent link="left_foot_x_joint_z_link"/>
+          <child link="left_foot_x_joint_y_link"/>
       </joint>
-      <joint name="left_foot_x_joint" type ="revolute">
+      <joint name="left_foot_x_joint_x_joint" type ="revolute">
           <axis xyz="1 0 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="left_foot_y_link"/>
-          <child link="left_foot_x_link"/>
+          <parent link="left_foot_x_joint_y_link"/>
+          <child link="left_foot_x_joint_x_link"/>
       </joint>
-      <link name="left_foot_cp_1_z_link"/>
-      <link name="left_foot_cp_1_y_link"/>
-      <link name="left_foot_cp_1_x_link">
+      <link name="left_foot_cp_1_joint_z_link"/>
+      <link name="left_foot_cp_1_joint_y_link"/>
+      <link name="left_foot_cp_1_joint_x_link">
         <visual>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/left_foot_cp_1.obj"/>
+            <mesh filename="../rami/model/left_foot_cp_1_joint.obj"/>
           </geometry>
           <material name="Blue"/>
         </visual>
         <collision>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/left_foot_cp_1.obj"/>
+            <mesh filename="../rami/model/left_foot_cp_1_joint.obj"/>
           </geometry>
         </collision>
       </link>
-      <joint name="left_foot_cp_1_z_joint" type ="revolute">
+      <joint name="left_foot_cp_1_joint_z_joint" type ="revolute">
           <axis xyz="0 0 1"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0.08027 0.27372 -0.12195"/>
-          <parent link="left_foot_x_link"/>
-          <child link="left_foot_cp_1_z_link"/>
+          <parent link="left_foot_x_joint_x_link"/>
+          <child link="left_foot_cp_1_joint_z_link"/>
       </joint>
-      <joint name="left_foot_cp_1_y_joint" type ="revolute">
+      <joint name="left_foot_cp_1_joint_y_joint" type ="revolute">
           <axis xyz="0 1 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="left_foot_cp_1_z_link"/>
-          <child link="left_foot_cp_1_y_link"/>
+          <parent link="left_foot_cp_1_joint_z_link"/>
+          <child link="left_foot_cp_1_joint_y_link"/>
       </joint>
-      <joint name="left_foot_cp_1_x_joint" type ="revolute">
+      <joint name="left_foot_cp_1_joint_x_joint" type ="revolute">
           <axis xyz="1 0 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="left_foot_cp_1_y_link"/>
-          <child link="left_foot_cp_1_x_link"/>
+          <parent link="left_foot_cp_1_joint_y_link"/>
+          <child link="left_foot_cp_1_joint_x_link"/>
       </joint>
-      <link name="left_foot_cp_1endsite_z_link"/>
-      <link name="left_foot_cp_1endsite_y_link"/>
-      <link name="left_foot_cp_1endsite_x_link">
+      <link name="left_foot_cp_1_jointendsite_z_link"/>
+      <link name="left_foot_cp_1_jointendsite_y_link"/>
+      <link name="left_foot_cp_1_jointendsite_x_link">
         <visual>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/left_foot_cp_1endsite.obj"/>
+            <mesh filename="../rami/model/left_foot_cp_1_jointendsite.obj"/>
           </geometry>
           <material name="Blue"/>
         </visual>
         <collision>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/left_foot_cp_1endsite.obj"/>
+            <mesh filename="../rami/model/left_foot_cp_1_jointendsite.obj"/>
           </geometry>
         </collision>
       </link>
-      <joint name="left_foot_cp_1endsite_z_joint" type ="revolute">
+      <joint name="left_foot_cp_1_jointendsite_z_joint" type ="revolute">
           <axis xyz="0 0 1"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0.000129375 0.000441168 -0.000196553"/>
-          <parent link="left_foot_cp_1_x_link"/>
-          <child link="left_foot_cp_1endsite_z_link"/>
+          <parent link="left_foot_cp_1_joint_x_link"/>
+          <child link="left_foot_cp_1_jointendsite_z_link"/>
       </joint>
-      <joint name="left_foot_cp_1endsite_y_joint" type ="revolute">
+      <joint name="left_foot_cp_1_jointendsite_y_joint" type ="revolute">
           <axis xyz="0 1 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="left_foot_cp_1endsite_z_link"/>
-          <child link="left_foot_cp_1endsite_y_link"/>
+          <parent link="left_foot_cp_1_jointendsite_z_link"/>
+          <child link="left_foot_cp_1_jointendsite_y_link"/>
       </joint>
-      <joint name="left_foot_cp_1endsite_x_joint" type ="revolute">
+      <joint name="left_foot_cp_1_jointendsite_x_joint" type ="revolute">
           <axis xyz="1 0 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="left_foot_cp_1endsite_y_link"/>
-          <child link="left_foot_cp_1endsite_x_link"/>
+          <parent link="left_foot_cp_1_jointendsite_y_link"/>
+          <child link="left_foot_cp_1_jointendsite_x_link"/>
       </joint>
-      <link name="left_foot_cp_2_z_link"/>
-      <link name="left_foot_cp_2_y_link"/>
-      <link name="left_foot_cp_2_x_link">
+      <link name="left_foot_cp_2_joint_z_link"/>
+      <link name="left_foot_cp_2_joint_y_link"/>
+      <link name="left_foot_cp_2_joint_x_link">
         <visual>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/left_foot_cp_2.obj"/>
+            <mesh filename="../rami/model/left_foot_cp_2_joint.obj"/>
           </geometry>
           <material name="Blue"/>
         </visual>
         <collision>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/left_foot_cp_2.obj"/>
+            <mesh filename="../rami/model/left_foot_cp_2_joint.obj"/>
           </geometry>
         </collision>
       </link>
-      <joint name="left_foot_cp_2_z_joint" type ="revolute">
+      <joint name="left_foot_cp_2_joint_z_joint" type ="revolute">
           <axis xyz="0 0 1"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="-0.09166 0.27372 -0.12195"/>
-          <parent link="left_foot_x_link"/>
-          <child link="left_foot_cp_2_z_link"/>
+          <parent link="left_foot_x_joint_x_link"/>
+          <child link="left_foot_cp_2_joint_z_link"/>
       </joint>
-      <joint name="left_foot_cp_2_y_joint" type ="revolute">
+      <joint name="left_foot_cp_2_joint_y_joint" type ="revolute">
           <axis xyz="0 1 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="left_foot_cp_2_z_link"/>
-          <child link="left_foot_cp_2_y_link"/>
+          <parent link="left_foot_cp_2_joint_z_link"/>
+          <child link="left_foot_cp_2_joint_y_link"/>
       </joint>
-      <joint name="left_foot_cp_2_x_joint" type ="revolute">
+      <joint name="left_foot_cp_2_joint_x_joint" type ="revolute">
           <axis xyz="1 0 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="left_foot_cp_2_y_link"/>
-          <child link="left_foot_cp_2_x_link"/>
+          <parent link="left_foot_cp_2_joint_y_link"/>
+          <child link="left_foot_cp_2_joint_x_link"/>
       </joint>
-      <link name="left_foot_cp_2endsite_z_link"/>
-      <link name="left_foot_cp_2endsite_y_link"/>
-      <link name="left_foot_cp_2endsite_x_link">
+      <link name="left_foot_cp_2_jointendsite_z_link"/>
+      <link name="left_foot_cp_2_jointendsite_y_link"/>
+      <link name="left_foot_cp_2_jointendsite_x_link">
         <visual>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/left_foot_cp_2endsite.obj"/>
+            <mesh filename="../rami/model/left_foot_cp_2_jointendsite.obj"/>
           </geometry>
           <material name="Blue"/>
         </visual>
         <collision>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/left_foot_cp_2endsite.obj"/>
+            <mesh filename="../rami/model/left_foot_cp_2_jointendsite.obj"/>
           </geometry>
         </collision>
       </link>
-      <joint name="left_foot_cp_2endsite_z_joint" type ="revolute">
+      <joint name="left_foot_cp_2_jointendsite_z_joint" type ="revolute">
           <axis xyz="0 0 1"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="-0.000146252 0.000436747 -0.000194583"/>
-          <parent link="left_foot_cp_2_x_link"/>
-          <child link="left_foot_cp_2endsite_z_link"/>
+          <parent link="left_foot_cp_2_joint_x_link"/>
+          <child link="left_foot_cp_2_jointendsite_z_link"/>
       </joint>
-      <joint name="left_foot_cp_2endsite_y_joint" type ="revolute">
+      <joint name="left_foot_cp_2_jointendsite_y_joint" type ="revolute">
           <axis xyz="0 1 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="left_foot_cp_2endsite_z_link"/>
-          <child link="left_foot_cp_2endsite_y_link"/>
+          <parent link="left_foot_cp_2_jointendsite_z_link"/>
+          <child link="left_foot_cp_2_jointendsite_y_link"/>
       </joint>
-      <joint name="left_foot_cp_2endsite_x_joint" type ="revolute">
+      <joint name="left_foot_cp_2_jointendsite_x_joint" type ="revolute">
           <axis xyz="1 0 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="left_foot_cp_2endsite_y_link"/>
-          <child link="left_foot_cp_2endsite_x_link"/>
+          <parent link="left_foot_cp_2_jointendsite_y_link"/>
+          <child link="left_foot_cp_2_jointendsite_x_link"/>
       </joint>
-      <link name="left_foot_cp_3_z_link"/>
-      <link name="left_foot_cp_3_y_link"/>
-      <link name="left_foot_cp_3_x_link">
+      <link name="left_foot_cp_3_joint_z_link"/>
+      <link name="left_foot_cp_3_joint_y_link"/>
+      <link name="left_foot_cp_3_joint_x_link">
         <visual>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/left_foot_cp_3.obj"/>
+            <mesh filename="../rami/model/left_foot_cp_3_joint.obj"/>
           </geometry>
           <material name="Blue"/>
         </visual>
         <collision>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/left_foot_cp_3.obj"/>
+            <mesh filename="../rami/model/left_foot_cp_3_joint.obj"/>
           </geometry>
         </collision>
       </link>
-      <joint name="left_foot_cp_3_z_joint" type ="revolute">
+      <joint name="left_foot_cp_3_joint_z_joint" type ="revolute">
           <axis xyz="0 0 1"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="-0.09166 -0.07769 -0.12195"/>
-          <parent link="left_foot_x_link"/>
-          <child link="left_foot_cp_3_z_link"/>
+          <parent link="left_foot_x_joint_x_link"/>
+          <child link="left_foot_cp_3_joint_z_link"/>
       </joint>
-      <joint name="left_foot_cp_3_y_joint" type ="revolute">
+      <joint name="left_foot_cp_3_joint_y_joint" type ="revolute">
           <axis xyz="0 1 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="left_foot_cp_3_z_link"/>
-          <child link="left_foot_cp_3_y_link"/>
+          <parent link="left_foot_cp_3_joint_z_link"/>
+          <child link="left_foot_cp_3_joint_y_link"/>
       </joint>
-      <joint name="left_foot_cp_3_x_joint" type ="revolute">
+      <joint name="left_foot_cp_3_joint_x_joint" type ="revolute">
           <axis xyz="1 0 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="left_foot_cp_3_y_link"/>
-          <child link="left_foot_cp_3_x_link"/>
+          <parent link="left_foot_cp_3_joint_y_link"/>
+          <child link="left_foot_cp_3_joint_x_link"/>
       </joint>
-      <link name="left_foot_cp_3endsite_z_link"/>
-      <link name="left_foot_cp_3endsite_y_link"/>
-      <link name="left_foot_cp_3endsite_x_link">
+      <link name="left_foot_cp_3_jointendsite_z_link"/>
+      <link name="left_foot_cp_3_jointendsite_y_link"/>
+      <link name="left_foot_cp_3_jointendsite_x_link">
         <visual>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/left_foot_cp_3endsite.obj"/>
+            <mesh filename="../rami/model/left_foot_cp_3_jointendsite.obj"/>
           </geometry>
           <material name="Blue"/>
         </visual>
         <collision>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/left_foot_cp_3endsite.obj"/>
+            <mesh filename="../rami/model/left_foot_cp_3_jointendsite.obj"/>
           </geometry>
         </collision>
       </link>
-      <joint name="left_foot_cp_3endsite_z_joint" type ="revolute">
+      <joint name="left_foot_cp_3_jointendsite_z_joint" type ="revolute">
           <axis xyz="0 0 1"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="-0.0002677 -0.0002269 -0.000356164"/>
-          <parent link="left_foot_cp_3_x_link"/>
-          <child link="left_foot_cp_3endsite_z_link"/>
+          <parent link="left_foot_cp_3_joint_x_link"/>
+          <child link="left_foot_cp_3_jointendsite_z_link"/>
       </joint>
-      <joint name="left_foot_cp_3endsite_y_joint" type ="revolute">
+      <joint name="left_foot_cp_3_jointendsite_y_joint" type ="revolute">
           <axis xyz="0 1 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="left_foot_cp_3endsite_z_link"/>
-          <child link="left_foot_cp_3endsite_y_link"/>
+          <parent link="left_foot_cp_3_jointendsite_z_link"/>
+          <child link="left_foot_cp_3_jointendsite_y_link"/>
       </joint>
-      <joint name="left_foot_cp_3endsite_x_joint" type ="revolute">
+      <joint name="left_foot_cp_3_jointendsite_x_joint" type ="revolute">
           <axis xyz="1 0 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="left_foot_cp_3endsite_y_link"/>
-          <child link="left_foot_cp_3endsite_x_link"/>
+          <parent link="left_foot_cp_3_jointendsite_y_link"/>
+          <child link="left_foot_cp_3_jointendsite_x_link"/>
       </joint>
-      <link name="left_foot_cp_4_z_link"/>
-      <link name="left_foot_cp_4_y_link"/>
-      <link name="left_foot_cp_4_x_link">
+      <link name="left_foot_cp_4_joint_z_link"/>
+      <link name="left_foot_cp_4_joint_y_link"/>
+      <link name="left_foot_cp_4_joint_x_link">
         <visual>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/left_foot_cp_4.obj"/>
+            <mesh filename="../rami/model/left_foot_cp_4_joint.obj"/>
           </geometry>
           <material name="Blue"/>
         </visual>
         <collision>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/left_foot_cp_4.obj"/>
+            <mesh filename="../rami/model/left_foot_cp_4_joint.obj"/>
           </geometry>
         </collision>
       </link>
-      <joint name="left_foot_cp_4_z_joint" type ="revolute">
+      <joint name="left_foot_cp_4_joint_z_joint" type ="revolute">
           <axis xyz="0 0 1"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0.08027 -0.07769 -0.12195"/>
-          <parent link="left_foot_x_link"/>
-          <child link="left_foot_cp_4_z_link"/>
+          <parent link="left_foot_x_joint_x_link"/>
+          <child link="left_foot_cp_4_joint_z_link"/>
       </joint>
-      <joint name="left_foot_cp_4_y_joint" type ="revolute">
+      <joint name="left_foot_cp_4_joint_y_joint" type ="revolute">
           <axis xyz="0 1 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="left_foot_cp_4_z_link"/>
-          <child link="left_foot_cp_4_y_link"/>
+          <parent link="left_foot_cp_4_joint_z_link"/>
+          <child link="left_foot_cp_4_joint_y_link"/>
       </joint>
-      <joint name="left_foot_cp_4_x_joint" type ="revolute">
+      <joint name="left_foot_cp_4_joint_x_joint" type ="revolute">
           <axis xyz="1 0 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="left_foot_cp_4_y_link"/>
-          <child link="left_foot_cp_4_x_link"/>
+          <parent link="left_foot_cp_4_joint_y_link"/>
+          <child link="left_foot_cp_4_joint_x_link"/>
       </joint>
-      <link name="left_foot_cp_4endsite_z_link"/>
-      <link name="left_foot_cp_4endsite_y_link"/>
-      <link name="left_foot_cp_4endsite_x_link">
+      <link name="left_foot_cp_4_jointendsite_z_link"/>
+      <link name="left_foot_cp_4_jointendsite_y_link"/>
+      <link name="left_foot_cp_4_jointendsite_x_link">
         <visual>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/left_foot_cp_4endsite.obj"/>
+            <mesh filename="../rami/model/left_foot_cp_4_jointendsite.obj"/>
           </geometry>
           <material name="Blue"/>
         </visual>
         <collision>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/left_foot_cp_4endsite.obj"/>
+            <mesh filename="../rami/model/left_foot_cp_4_jointendsite.obj"/>
           </geometry>
         </collision>
       </link>
-      <joint name="left_foot_cp_4endsite_z_joint" type ="revolute">
+      <joint name="left_foot_cp_4_jointendsite_z_joint" type ="revolute">
           <axis xyz="0 0 1"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0.000242682 -0.000234882 -0.000368695"/>
-          <parent link="left_foot_cp_4_x_link"/>
-          <child link="left_foot_cp_4endsite_z_link"/>
+          <parent link="left_foot_cp_4_joint_x_link"/>
+          <child link="left_foot_cp_4_jointendsite_z_link"/>
       </joint>
-      <joint name="left_foot_cp_4endsite_y_joint" type ="revolute">
+      <joint name="left_foot_cp_4_jointendsite_y_joint" type ="revolute">
           <axis xyz="0 1 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="left_foot_cp_4endsite_z_link"/>
-          <child link="left_foot_cp_4endsite_y_link"/>
+          <parent link="left_foot_cp_4_jointendsite_z_link"/>
+          <child link="left_foot_cp_4_jointendsite_y_link"/>
       </joint>
-      <joint name="left_foot_cp_4endsite_x_joint" type ="revolute">
+      <joint name="left_foot_cp_4_jointendsite_x_joint" type ="revolute">
           <axis xyz="1 0 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="left_foot_cp_4endsite_y_link"/>
-          <child link="left_foot_cp_4endsite_x_link"/>
+          <parent link="left_foot_cp_4_jointendsite_y_link"/>
+          <child link="left_foot_cp_4_jointendsite_x_link"/>
       </joint>
-      <link name="upper_right_leg_z_link"/>
-      <link name="upper_right_leg_y_link"/>
-      <link name="upper_right_leg_x_link">
+      <link name="upper_right_leg_x_joint_z_link"/>
+      <link name="upper_right_leg_x_joint_y_link"/>
+      <link name="upper_right_leg_x_joint_x_link">
         <visual>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/upper_right_leg.obj"/>
+            <mesh filename="../rami/model/upper_right_leg_x_joint.obj"/>
           </geometry>
           <material name="Blue"/>
         </visual>
         <collision>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/upper_right_leg.obj"/>
+            <mesh filename="../rami/model/upper_right_leg_x_joint.obj"/>
           </geometry>
         </collision>
       </link>
-      <joint name="upper_right_leg_z_joint" type ="revolute">
+      <joint name="upper_right_leg_x_joint_z_joint" type ="revolute">
           <axis xyz="0 0 1"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0.106044 -0.001956 -0.1443"/>
           <parent link="pelvis_link"/>
-          <child link="upper_right_leg_z_link"/>
+          <child link="upper_right_leg_x_joint_z_link"/>
       </joint>
-      <joint name="upper_right_leg_y_joint" type ="revolute">
+      <joint name="upper_right_leg_x_joint_y_joint" type ="revolute">
           <axis xyz="0 1 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="upper_right_leg_z_link"/>
-          <child link="upper_right_leg_y_link"/>
+          <parent link="upper_right_leg_x_joint_z_link"/>
+          <child link="upper_right_leg_x_joint_y_link"/>
       </joint>
-      <joint name="upper_right_leg_x_joint" type ="revolute">
+      <joint name="upper_right_leg_x_joint_x_joint" type ="revolute">
           <axis xyz="1 0 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="upper_right_leg_y_link"/>
-          <child link="upper_right_leg_x_link"/>
+          <parent link="upper_right_leg_x_joint_y_link"/>
+          <child link="upper_right_leg_x_joint_x_link"/>
       </joint>
-      <link name="lower_right_leg_z_link"/>
-      <link name="lower_right_leg_y_link"/>
-      <link name="lower_right_leg_x_link">
+      <link name="lower_right_leg_joint_z_link"/>
+      <link name="lower_right_leg_joint_y_link"/>
+      <link name="lower_right_leg_joint_x_link">
         <visual>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/lower_right_leg.obj"/>
+            <mesh filename="../rami/model/lower_right_leg_joint.obj"/>
           </geometry>
           <material name="Blue"/>
         </visual>
         <collision>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/lower_right_leg.obj"/>
+            <mesh filename="../rami/model/lower_right_leg_joint.obj"/>
           </geometry>
         </collision>
       </link>
-      <joint name="lower_right_leg_z_joint" type ="revolute">
+      <joint name="lower_right_leg_joint_z_joint" type ="revolute">
           <axis xyz="0 0 1"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0.025332 -0.01956 -0.47778"/>
-          <parent link="upper_right_leg_x_link"/>
-          <child link="lower_right_leg_z_link"/>
+          <parent link="upper_right_leg_x_joint_x_link"/>
+          <child link="lower_right_leg_joint_z_link"/>
       </joint>
-      <joint name="lower_right_leg_y_joint" type ="revolute">
+      <joint name="lower_right_leg_joint_y_joint" type ="revolute">
           <axis xyz="0 1 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="lower_right_leg_z_link"/>
-          <child link="lower_right_leg_y_link"/>
+          <parent link="lower_right_leg_joint_z_link"/>
+          <child link="lower_right_leg_joint_y_link"/>
       </joint>
-      <joint name="lower_right_leg_x_joint" type ="revolute">
+      <joint name="lower_right_leg_joint_x_joint" type ="revolute">
           <axis xyz="1 0 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="lower_right_leg_y_link"/>
-          <child link="lower_right_leg_x_link"/>
+          <parent link="lower_right_leg_joint_y_link"/>
+          <child link="lower_right_leg_joint_x_link"/>
       </joint>
-      <link name="right_foot_z_link"/>
-      <link name="right_foot_y_link"/>
-      <link name="right_foot_x_link">
+      <link name="right_foot_x_joint_z_link"/>
+      <link name="right_foot_x_joint_y_link"/>
+      <link name="right_foot_x_joint_x_link">
         <visual>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/right_foot.obj"/>
+            <mesh filename="../rami/model/right_foot_x_joint.obj"/>
           </geometry>
           <material name="Blue"/>
         </visual>
         <collision>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/right_foot.obj"/>
+            <mesh filename="../rami/model/right_foot_x_joint.obj"/>
           </geometry>
         </collision>
       </link>
-      <joint name="right_foot_z_joint" type ="revolute">
+      <joint name="right_foot_x_joint_z_joint" type ="revolute">
           <axis xyz="0 0 1"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0.008988 0.036996 -0.474504"/>
-          <parent link="lower_right_leg_x_link"/>
-          <child link="right_foot_z_link"/>
+          <parent link="lower_right_leg_joint_x_link"/>
+          <child link="right_foot_x_joint_z_link"/>
       </joint>
-      <joint name="right_foot_y_joint" type ="revolute">
+      <joint name="right_foot_x_joint_y_joint" type ="revolute">
           <axis xyz="0 1 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="right_foot_z_link"/>
-          <child link="right_foot_y_link"/>
+          <parent link="right_foot_x_joint_z_link"/>
+          <child link="right_foot_x_joint_y_link"/>
       </joint>
-      <joint name="right_foot_x_joint" type ="revolute">
+      <joint name="right_foot_x_joint_x_joint" type ="revolute">
           <axis xyz="1 0 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="right_foot_y_link"/>
-          <child link="right_foot_x_link"/>
+          <parent link="right_foot_x_joint_y_link"/>
+          <child link="right_foot_x_joint_x_link"/>
       </joint>
-      <link name="right_foot_cp_1_z_link"/>
-      <link name="right_foot_cp_1_y_link"/>
-      <link name="right_foot_cp_1_x_link">
+      <link name="right_foot_cp_1_joint_z_link"/>
+      <link name="right_foot_cp_1_joint_y_link"/>
+      <link name="right_foot_cp_1_joint_x_link">
         <visual>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/right_foot_cp_1.obj"/>
+            <mesh filename="../rami/model/right_foot_cp_1_joint.obj"/>
           </geometry>
           <material name="Blue"/>
         </visual>
         <collision>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/right_foot_cp_1.obj"/>
+            <mesh filename="../rami/model/right_foot_cp_1_joint.obj"/>
           </geometry>
         </collision>
       </link>
-      <joint name="right_foot_cp_1_z_joint" type ="revolute">
+      <joint name="right_foot_cp_1_joint_z_joint" type ="revolute">
           <axis xyz="0 0 1"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0.10495 0.2684 -0.12195"/>
-          <parent link="right_foot_x_link"/>
-          <child link="right_foot_cp_1_z_link"/>
+          <parent link="right_foot_x_joint_x_link"/>
+          <child link="right_foot_cp_1_joint_z_link"/>
       </joint>
-      <joint name="right_foot_cp_1_y_joint" type ="revolute">
+      <joint name="right_foot_cp_1_joint_y_joint" type ="revolute">
           <axis xyz="0 1 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="right_foot_cp_1_z_link"/>
-          <child link="right_foot_cp_1_y_link"/>
+          <parent link="right_foot_cp_1_joint_z_link"/>
+          <child link="right_foot_cp_1_joint_y_link"/>
       </joint>
-      <joint name="right_foot_cp_1_x_joint" type ="revolute">
+      <joint name="right_foot_cp_1_joint_x_joint" type ="revolute">
           <axis xyz="1 0 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="right_foot_cp_1_y_link"/>
-          <child link="right_foot_cp_1_x_link"/>
+          <parent link="right_foot_cp_1_joint_y_link"/>
+          <child link="right_foot_cp_1_joint_x_link"/>
       </joint>
-      <link name="right_foot_cp_1endsite_z_link"/>
-      <link name="right_foot_cp_1endsite_y_link"/>
-      <link name="right_foot_cp_1endsite_x_link">
+      <link name="right_foot_cp_1_jointendsite_z_link"/>
+      <link name="right_foot_cp_1_jointendsite_y_link"/>
+      <link name="right_foot_cp_1_jointendsite_x_link">
         <visual>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/right_foot_cp_1endsite.obj"/>
+            <mesh filename="../rami/model/right_foot_cp_1_jointendsite.obj"/>
           </geometry>
           <material name="Blue"/>
         </visual>
         <collision>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/right_foot_cp_1endsite.obj"/>
+            <mesh filename="../rami/model/right_foot_cp_1_jointendsite.obj"/>
           </geometry>
         </collision>
       </link>
-      <joint name="right_foot_cp_1endsite_z_joint" type ="revolute">
+      <joint name="right_foot_cp_1_jointendsite_z_joint" type ="revolute">
           <axis xyz="0 0 1"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0.00016769 0.000428851 -0.000194852"/>
-          <parent link="right_foot_cp_1_x_link"/>
-          <child link="right_foot_cp_1endsite_z_link"/>
+          <parent link="right_foot_cp_1_joint_x_link"/>
+          <child link="right_foot_cp_1_jointendsite_z_link"/>
       </joint>
-      <joint name="right_foot_cp_1endsite_y_joint" type ="revolute">
+      <joint name="right_foot_cp_1_jointendsite_y_joint" type ="revolute">
           <axis xyz="0 1 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="right_foot_cp_1endsite_z_link"/>
-          <child link="right_foot_cp_1endsite_y_link"/>
+          <parent link="right_foot_cp_1_jointendsite_z_link"/>
+          <child link="right_foot_cp_1_jointendsite_y_link"/>
       </joint>
-      <joint name="right_foot_cp_1endsite_x_joint" type ="revolute">
+      <joint name="right_foot_cp_1_jointendsite_x_joint" type ="revolute">
           <axis xyz="1 0 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="right_foot_cp_1endsite_y_link"/>
-          <child link="right_foot_cp_1endsite_x_link"/>
+          <parent link="right_foot_cp_1_jointendsite_y_link"/>
+          <child link="right_foot_cp_1_jointendsite_x_link"/>
       </joint>
-      <link name="right_foot_cp_2_z_link"/>
-      <link name="right_foot_cp_2_y_link"/>
-      <link name="right_foot_cp_2_x_link">
+      <link name="right_foot_cp_2_joint_z_link"/>
+      <link name="right_foot_cp_2_joint_y_link"/>
+      <link name="right_foot_cp_2_joint_x_link">
         <visual>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/right_foot_cp_2.obj"/>
+            <mesh filename="../rami/model/right_foot_cp_2_joint.obj"/>
           </geometry>
           <material name="Blue"/>
         </visual>
         <collision>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/right_foot_cp_2.obj"/>
+            <mesh filename="../rami/model/right_foot_cp_2_joint.obj"/>
           </geometry>
         </collision>
       </link>
-      <joint name="right_foot_cp_2_z_joint" type ="revolute">
+      <joint name="right_foot_cp_2_joint_z_joint" type ="revolute">
           <axis xyz="0 0 1"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="-0.06698 0.2684 -0.12195"/>
-          <parent link="right_foot_x_link"/>
-          <child link="right_foot_cp_2_z_link"/>
+          <parent link="right_foot_x_joint_x_link"/>
+          <child link="right_foot_cp_2_joint_z_link"/>
       </joint>
-      <joint name="right_foot_cp_2_y_joint" type ="revolute">
+      <joint name="right_foot_cp_2_joint_y_joint" type ="revolute">
           <axis xyz="0 1 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="right_foot_cp_2_z_link"/>
-          <child link="right_foot_cp_2_y_link"/>
+          <parent link="right_foot_cp_2_joint_z_link"/>
+          <child link="right_foot_cp_2_joint_y_link"/>
       </joint>
-      <joint name="right_foot_cp_2_x_joint" type ="revolute">
+      <joint name="right_foot_cp_2_joint_x_joint" type ="revolute">
           <axis xyz="1 0 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="right_foot_cp_2_y_link"/>
-          <child link="right_foot_cp_2_x_link"/>
+          <parent link="right_foot_cp_2_joint_y_link"/>
+          <child link="right_foot_cp_2_joint_x_link"/>
       </joint>
-      <link name="right_foot_cp_2endsite_z_link"/>
-      <link name="right_foot_cp_2endsite_y_link"/>
-      <link name="right_foot_cp_2endsite_x_link">
+      <link name="right_foot_cp_2_jointendsite_z_link"/>
+      <link name="right_foot_cp_2_jointendsite_y_link"/>
+      <link name="right_foot_cp_2_jointendsite_x_link">
         <visual>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/right_foot_cp_2endsite.obj"/>
+            <mesh filename="../rami/model/right_foot_cp_2_jointendsite.obj"/>
           </geometry>
           <material name="Blue"/>
         </visual>
         <collision>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/right_foot_cp_2endsite.obj"/>
+            <mesh filename="../rami/model/right_foot_cp_2_jointendsite.obj"/>
           </geometry>
         </collision>
       </link>
-      <joint name="right_foot_cp_2endsite_z_joint" type ="revolute">
+      <joint name="right_foot_cp_2_jointendsite_z_joint" type ="revolute">
           <axis xyz="0 0 1"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="-0.000110777 0.000443902 -0.000201691"/>
-          <parent link="right_foot_cp_2_x_link"/>
-          <child link="right_foot_cp_2endsite_z_link"/>
+          <parent link="right_foot_cp_2_joint_x_link"/>
+          <child link="right_foot_cp_2_jointendsite_z_link"/>
       </joint>
-      <joint name="right_foot_cp_2endsite_y_joint" type ="revolute">
+      <joint name="right_foot_cp_2_jointendsite_y_joint" type ="revolute">
           <axis xyz="0 1 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="right_foot_cp_2endsite_z_link"/>
-          <child link="right_foot_cp_2endsite_y_link"/>
+          <parent link="right_foot_cp_2_jointendsite_z_link"/>
+          <child link="right_foot_cp_2_jointendsite_y_link"/>
       </joint>
-      <joint name="right_foot_cp_2endsite_x_joint" type ="revolute">
+      <joint name="right_foot_cp_2_jointendsite_x_joint" type ="revolute">
           <axis xyz="1 0 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="right_foot_cp_2endsite_y_link"/>
-          <child link="right_foot_cp_2endsite_x_link"/>
+          <parent link="right_foot_cp_2_jointendsite_y_link"/>
+          <child link="right_foot_cp_2_jointendsite_x_link"/>
       </joint>
-      <link name="right_foot_cp_3_z_link"/>
-      <link name="right_foot_cp_3_y_link"/>
-      <link name="right_foot_cp_3_x_link">
+      <link name="right_foot_cp_3_joint_z_link"/>
+      <link name="right_foot_cp_3_joint_y_link"/>
+      <link name="right_foot_cp_3_joint_x_link">
         <visual>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/right_foot_cp_3.obj"/>
+            <mesh filename="../rami/model/right_foot_cp_3_joint.obj"/>
           </geometry>
           <material name="Blue"/>
         </visual>
         <collision>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/right_foot_cp_3.obj"/>
+            <mesh filename="../rami/model/right_foot_cp_3_joint.obj"/>
           </geometry>
         </collision>
       </link>
-      <joint name="right_foot_cp_3_z_joint" type ="revolute">
+      <joint name="right_foot_cp_3_joint_z_joint" type ="revolute">
           <axis xyz="0 0 1"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="-0.06698 -0.08301 -0.12195"/>
-          <parent link="right_foot_x_link"/>
-          <child link="right_foot_cp_3_z_link"/>
+          <parent link="right_foot_x_joint_x_link"/>
+          <child link="right_foot_cp_3_joint_z_link"/>
       </joint>
-      <joint name="right_foot_cp_3_y_joint" type ="revolute">
+      <joint name="right_foot_cp_3_joint_y_joint" type ="revolute">
           <axis xyz="0 1 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="right_foot_cp_3_z_link"/>
-          <child link="right_foot_cp_3_y_link"/>
+          <parent link="right_foot_cp_3_joint_z_link"/>
+          <child link="right_foot_cp_3_joint_y_link"/>
       </joint>
-      <joint name="right_foot_cp_3_x_joint" type ="revolute">
+      <joint name="right_foot_cp_3_joint_x_joint" type ="revolute">
           <axis xyz="1 0 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="right_foot_cp_3_y_link"/>
-          <child link="right_foot_cp_3_x_link"/>
+          <parent link="right_foot_cp_3_joint_y_link"/>
+          <child link="right_foot_cp_3_joint_x_link"/>
       </joint>
-      <link name="right_foot_cp_3endsite_z_link"/>
-      <link name="right_foot_cp_3endsite_y_link"/>
-      <link name="right_foot_cp_3endsite_x_link">
+      <link name="right_foot_cp_3_jointendsite_z_link"/>
+      <link name="right_foot_cp_3_jointendsite_y_link"/>
+      <link name="right_foot_cp_3_jointendsite_x_link">
         <visual>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/right_foot_cp_3endsite.obj"/>
+            <mesh filename="../rami/model/right_foot_cp_3_jointendsite.obj"/>
           </geometry>
           <material name="Blue"/>
         </visual>
         <collision>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/right_foot_cp_3endsite.obj"/>
+            <mesh filename="../rami/model/right_foot_cp_3_jointendsite.obj"/>
           </geometry>
         </collision>
       </link>
-      <joint name="right_foot_cp_3endsite_z_joint" type ="revolute">
+      <joint name="right_foot_cp_3_jointendsite_z_joint" type ="revolute">
           <axis xyz="0 0 1"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="-0.00020671 -0.00025618 -0.000376355"/>
-          <parent link="right_foot_cp_3_x_link"/>
-          <child link="right_foot_cp_3endsite_z_link"/>
+          <parent link="right_foot_cp_3_joint_x_link"/>
+          <child link="right_foot_cp_3_jointendsite_z_link"/>
       </joint>
-      <joint name="right_foot_cp_3endsite_y_joint" type ="revolute">
+      <joint name="right_foot_cp_3_jointendsite_y_joint" type ="revolute">
           <axis xyz="0 1 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="right_foot_cp_3endsite_z_link"/>
-          <child link="right_foot_cp_3endsite_y_link"/>
+          <parent link="right_foot_cp_3_jointendsite_z_link"/>
+          <child link="right_foot_cp_3_jointendsite_y_link"/>
       </joint>
-      <joint name="right_foot_cp_3endsite_x_joint" type ="revolute">
+      <joint name="right_foot_cp_3_jointendsite_x_joint" type ="revolute">
           <axis xyz="1 0 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="right_foot_cp_3endsite_y_link"/>
-          <child link="right_foot_cp_3endsite_x_link"/>
+          <parent link="right_foot_cp_3_jointendsite_y_link"/>
+          <child link="right_foot_cp_3_jointendsite_x_link"/>
       </joint>
-      <link name="right_foot_cp_4_z_link"/>
-      <link name="right_foot_cp_4_y_link"/>
-      <link name="right_foot_cp_4_x_link">
+      <link name="right_foot_cp_4_joint_z_link"/>
+      <link name="right_foot_cp_4_joint_y_link"/>
+      <link name="right_foot_cp_4_joint_x_link">
         <visual>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/right_foot_cp_4.obj"/>
+            <mesh filename="../rami/model/right_foot_cp_4_joint.obj"/>
           </geometry>
           <material name="Blue"/>
         </visual>
         <collision>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/right_foot_cp_4.obj"/>
+            <mesh filename="../rami/model/right_foot_cp_4_joint.obj"/>
           </geometry>
         </collision>
       </link>
-      <joint name="right_foot_cp_4_z_joint" type ="revolute">
+      <joint name="right_foot_cp_4_joint_z_joint" type ="revolute">
           <axis xyz="0 0 1"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0.10495 -0.08301 -0.12195"/>
-          <parent link="right_foot_x_link"/>
-          <child link="right_foot_cp_4_z_link"/>
+          <parent link="right_foot_x_joint_x_link"/>
+          <child link="right_foot_cp_4_joint_z_link"/>
       </joint>
-      <joint name="right_foot_cp_4_y_joint" type ="revolute">
+      <joint name="right_foot_cp_4_joint_y_joint" type ="revolute">
           <axis xyz="0 1 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="right_foot_cp_4_z_link"/>
-          <child link="right_foot_cp_4_y_link"/>
+          <parent link="right_foot_cp_4_joint_z_link"/>
+          <child link="right_foot_cp_4_joint_y_link"/>
       </joint>
-      <joint name="right_foot_cp_4_x_joint" type ="revolute">
+      <joint name="right_foot_cp_4_joint_x_joint" type ="revolute">
           <axis xyz="1 0 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="right_foot_cp_4_y_link"/>
-          <child link="right_foot_cp_4_x_link"/>
+          <parent link="right_foot_cp_4_joint_y_link"/>
+          <child link="right_foot_cp_4_joint_x_link"/>
       </joint>
-      <link name="right_foot_cp_4endsite_z_link"/>
-      <link name="right_foot_cp_4endsite_y_link"/>
-      <link name="right_foot_cp_4endsite_x_link">
+      <link name="right_foot_cp_4_jointendsite_z_link"/>
+      <link name="right_foot_cp_4_jointendsite_y_link"/>
+      <link name="right_foot_cp_4_jointendsite_x_link">
         <visual>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/right_foot_cp_4endsite.obj"/>
+            <mesh filename="../rami/model/right_foot_cp_4_jointendsite.obj"/>
           </geometry>
           <material name="Blue"/>
         </visual>
         <collision>
           <origin rpy="0 0 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="../rami/model/right_foot_cp_4endsite.obj"/>
+            <mesh filename="../rami/model/right_foot_cp_4_jointendsite.obj"/>
           </geometry>
         </collision>
       </link>
-      <joint name="right_foot_cp_4endsite_z_joint" type ="revolute">
+      <joint name="right_foot_cp_4_jointendsite_z_joint" type ="revolute">
           <axis xyz="0 0 1"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0.000289847 -0.000229254 -0.000336796"/>
-          <parent link="right_foot_cp_4_x_link"/>
-          <child link="right_foot_cp_4endsite_z_link"/>
+          <parent link="right_foot_cp_4_joint_x_link"/>
+          <child link="right_foot_cp_4_jointendsite_z_link"/>
       </joint>
-      <joint name="right_foot_cp_4endsite_y_joint" type ="revolute">
+      <joint name="right_foot_cp_4_jointendsite_y_joint" type ="revolute">
           <axis xyz="0 1 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="right_foot_cp_4endsite_z_link"/>
-          <child link="right_foot_cp_4endsite_y_link"/>
+          <parent link="right_foot_cp_4_jointendsite_z_link"/>
+          <child link="right_foot_cp_4_jointendsite_y_link"/>
       </joint>
-      <joint name="right_foot_cp_4endsite_x_joint" type ="revolute">
+      <joint name="right_foot_cp_4_jointendsite_x_joint" type ="revolute">
           <axis xyz="1 0 0"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
           <origin rpy="0 0 0" xyz="0 0 0"/>
-          <parent link="right_foot_cp_4endsite_y_link"/>
-          <child link="right_foot_cp_4endsite_x_link"/>
+          <parent link="right_foot_cp_4_jointendsite_y_link"/>
+          <child link="right_foot_cp_4_jointendsite_x_link"/>
       </joint>
 
 </robot>
