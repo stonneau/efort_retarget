@@ -45,7 +45,7 @@ namespace planner
     struct InterpolateRRT
     {
          InterpolateRRT(const planner::Robot* robot, const planner::Node* limb, const sampling::T_Samples& samples, Collider& collider)
-             : robot_(new planner::Robot(*robot)), limb_(new planner::Node(*limb)), samples_(samples), collider_(collider), limbObjects(CollectObjects(limb_)) {}
+             : robot_(new planner::Robot(*robot)), limb_(planner::GetChild(robot_,limb->id)), samples_(samples), collider_(collider), limbObjects(CollectObjects(limb_)) {}
         ~InterpolateRRT() {}
          planner::Robot* robot_;
          planner::Node* limb_;

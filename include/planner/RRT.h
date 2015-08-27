@@ -97,6 +97,11 @@ private:
         return closest_index;
     }
 
+    int GetRandomPointInGraph(const graph_t& g) const //todo this is really expensive at the moment
+    {
+        return rand() % (int)(g.currentIndex_+1);
+    }
+
      T_NodeContentPath ComputePath(const graph_t& g, const int from, const int to, Distance dist) const
      {
         typename astar_t::Path path;
@@ -124,7 +129,7 @@ private:
 
     ExtendRet Extend(NodeContent* node, graph_t& g, LocalPlanner* localPlanner, Distance distance, const Numeric neighbourDistance, bool cloneIfAdding=false)
     {
-        const int& nearestId = GetClosestPointInGraph(g, node, distance, localPlanner, neighbourDistance, true);
+        const int& nearestId = Ordered ? GetRandomPointInGraph(g) : GetClosestPointInGraph(g, node, distance, localPlanner, neighbourDistance, true);
         NodeContent* nearest = g.nodeContents_[nearestId];
         if((*localPlanner) (nearest,node))
         {
@@ -144,6 +149,13 @@ private:
 
     T_NodeContentPath GenerateRRT(Generator* generator, LocalPlanner* localPlanner, Distance distance, const Numeric neighbourDistance)
     {
+        if((*localPlanner)(from_, to_))
+        {
+            T_NodeContentPath res;
+            res.push_back(from_);
+            res.push_back(to_);
+            return res;
+        }
         int startId = g1_.AddNode(from_);
         for(int k = 0; k < size_; ++k)
         {
@@ -156,7 +168,12 @@ private:
                     {
                         int endId = g1_.AddNode(to_);
                         g1_.AddEdge(nodeId,endId,Ordered);
-                        return ComputePath(g1_,startId,endId,distance);
+                        T_NodeContentPath res = ComputePath(g1_,startId,endId,distance);
+                        if(!res.empty())
+                        {
+                            shortcut(res, localPlanner);
+                            return res;
+                        }
                     }
                 }
         }
@@ -164,8 +181,43 @@ private:
         return res;
     }
 
+    void shortcutrec(T_NodeContentPath& res, LocalPlanner* localPlanner, const int currentIndex)
+    {
+        if(currentIndex >= res.size()) return;
+        bool erased = false;
+        for(int i = currentIndex+2; i< res.size() && ! erased; ++i)
+        {
+            if((*localPlanner)(res[currentIndex], res[i]))
+            {
+                erased = true;
+                res.erase(res.begin() + currentIndex + 1, res.begin() + i);
+                std::cout << "je sers a qqe chose " << std::endl;
+            }
+        }
+        if(erased)
+        {
+            shortcutrec(res, localPlanner, currentIndex);
+        }
+        else
+        {
+            shortcutrec(res, localPlanner, currentIndex+1);
+        }
+    }
+
+    void shortcut(T_NodeContentPath& path, LocalPlanner* localPlanner)
+    {
+        shortcutrec(path, localPlanner,0);
+    }
+
     T_NodeContentPath GenerateBiRRT(Generator* generator, LocalPlanner* localPlanner, Distance distance, Numeric neighbourDistance)
     {
+        if((*localPlanner)(from_, to_))
+        {
+            T_NodeContentPath res;
+            res.push_back(from_);
+            res.push_back(to_);
+            return res;
+        }
         int startId = g1_.AddNode(from_);
         int endId = g2_.AddNode(to_);
         graph_t* gtmp;
@@ -183,15 +235,19 @@ private:
                     T_NodeContentPath res1 = ComputePath(g1_, startId,nodeId,distance);
                     nodeId = g2_.currentIndex_;
                     T_NodeContentPath res2 = ComputePath(g2_, nodeId,endId,distance);
-                    res1.pop_back();
-                    res1.insert(res1.end(), res2.begin(), res2.end());
-                    return res1;
+                    if(!(res1.empty() ||res2.empty() ))
+                    {
+                        res1.pop_back();
+                        res1.insert(res1.end(), res2.begin(), res2.end());
+                        shortcut(res1,localPlanner);
+                        return res1;
+                    }
                 }
-                //swap
-                gtmp = ga;
-                ga = gb;
-                gb = gtmp;
             }
+            //swap
+            gtmp = ga;
+            ga = gb;
+            gb = gtmp;
         }
         T_NodeContentPath res;
         return res;
