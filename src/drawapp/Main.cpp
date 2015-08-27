@@ -490,6 +490,8 @@ void interpolaterrt()
         planner::LimbNode* ln = *cit;
         planner::State* ns = new planner::State();
         ns->value = new planner::Robot(*ln->robot_);
+        ns->value->SetRotation(ln->configuration_.second, false);
+        ns->value->SetPosition(ln->configuration_.first, true);
         planner::Node* limb = planner::GetChild(ns->value, ln->limb_->id);
         planner::sampling::LoadSample(*ln->sample_,limb);
         states.push_back(ns);

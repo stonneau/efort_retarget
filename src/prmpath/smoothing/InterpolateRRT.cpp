@@ -144,7 +144,7 @@ public:
     {
         if(ma->t_ > mb->t_) return false;
         double distance = Distance(ma,mb);
-        if(distance / (mb->t_ - ma->t_) > 10) return false; // too fast
+        if(distance / (mb->t_ - ma->t_) > 50) return false; // too fast
         double inc = (distance > 0) ? (1 / (distance * dStep_)) : 1;
         std::vector<planner::Configuration> cas;
         std::vector<planner::Configuration> cbs;
