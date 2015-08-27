@@ -127,17 +127,17 @@ private:
        trapped,reached,advanced
     };
 
-    ExtendRet Extend(NodeContent* node, graph_t& g, LocalPlanner* localPlanner, Distance distance, const Numeric neighbourDistance, bool cloneIfAdding=false)
+    ExtendRet Extend(NodeContent* node, graph_t& g, LocalPlanner* localPlanner, Distance distance, const Numeric neighbourDistance, bool reverse, bool cloneIfAdding=false)
     {
         const int& nearestId = Ordered ? GetRandomPointInGraph(g) : GetClosestPointInGraph(g, node, distance, localPlanner, neighbourDistance, true);
         NodeContent* nearest = g.nodeContents_[nearestId];
-        if((*localPlanner) (nearest,node))
+        if(!reverse && (*localPlanner) (nearest,node))
         {
             int id = g.AddNode(cloneIfAdding ? (new NodeContent(*node)) : node);
             g.AddEdge(nearestId,id,Ordered);
             return reached; // TODO ADVANCED
         }
-        else if(Ordered && (*localPlanner) (node,nearest))
+        else if(reverse && (*localPlanner) (node,nearest))
         {
             int id = g.AddNode(cloneIfAdding ? (new NodeContent(*node)) : node);
             g.AddEdge(id,nearestId,Ordered);
@@ -161,7 +161,7 @@ private:
         {
             NodeContent* node = (*generator)();
             if(node == 0) break;
-                if(Extend(node,g1_,localPlanner, distance, neighbourDistance) != trapped)
+                if(Extend(node,g1_,localPlanner, distance, neighbourDistance, false, false) != trapped)
                 {
                     int nodeId = g1_.currentIndex_;
                     if ((*localPlanner)(node, to_))
@@ -223,13 +223,14 @@ private:
         graph_t* gtmp;
         graph_t* ga = &g1_;
         graph_t* gb = &g2_;
+        bool inverse = false;
         for(int k = 0; k < size_; ++k)
         {
             NodeContent* node = (*generator)();
             if(node == 0) break;
-            if(Extend(node,*ga,localPlanner, distance, neighbourDistance) != trapped)
+            if(Extend(node,*ga,localPlanner, distance, neighbourDistance, inverse) != trapped)
             {
-                if(Extend(node,*gb,localPlanner, distance, neighbourDistance, true) == reached)
+                if(Extend(node,*gb,localPlanner, distance, neighbourDistance, !inverse, true) == reached)
                 {
                     int nodeId = g1_.currentIndex_;
                     T_NodeContentPath res1 = ComputePath(g1_, startId,nodeId,distance);
@@ -248,6 +249,7 @@ private:
             gtmp = ga;
             ga = gb;
             gb = gtmp;
+            inverse = !inverse;
         }
         T_NodeContentPath res;
         return res;

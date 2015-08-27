@@ -185,14 +185,14 @@ public:
    ~LimbPlanner(){};
     bool operator ()(const LimbNode *ma, const LimbNode *mb)
     {
-        //if(ma->t_ > mb->t_) return false;
+        if(ma->t_ > mb->t_) return false;
         Eigen::VectorXd dVec = DistancePerJoint(ma,mb);
         double distance = dVec(dVec.rows()-1);
         if(dVec(dVec.rows()-1) < 0.001) return true; // effectors coincident
         dVec /= (mb->t_ - ma->t_); // speed
         for(int i =0; i < dVec.rows() -1; ++i)
         {
-            if(dVec(i) > 2)
+            if(dVec(i) > 0.3)
             {
                 //std::cout << "trop grosse vitesse " << i << "\n" << dVec << std::endl;
                 return false;
@@ -243,7 +243,7 @@ public:
 
 };
 
-typedef RRT<LimbNode, LimbGenerator, LimbPlanner, double, false, 1000> rrt_t;
+typedef RRT<LimbNode, LimbGenerator, LimbPlanner, double, true, 10000> rrt_t;
 
 #include "tools/ExpMap.h"
 std::vector<LimbNode*> computeKeyFrames(InterpolateRRT& rrt, const planner::Robot* robotFrom, const planner::Robot* robotTo, const sampling::Sample& froms, const sampling::Sample& tos)
@@ -261,7 +261,7 @@ std::vector<LimbNode*> computeKeyFrames(InterpolateRRT& rrt, const planner::Robo
     from->sample_ = new planner::sampling::Sample(froms);
     LimbNode* to = new LimbNode(rrt.robot_,rrt.limb_,rrt.limbObjects,generator.weights,1., std::make_pair(robotTo->currentPosition, robotTo->currentRotation));
     to->sample_ = new planner::sampling::Sample(tos);
-    rrt_t plan(&generator, &localPlanner, from, to, Distance, 100, 10000,10,false);
+    rrt_t plan(&generator, &localPlanner, from, to, Distance, 100, 10000,10,true);
     std::vector<LimbNode*> res;
     for(rrt_t::T_NodeContentPath::const_iterator cit = plan.path_.begin();
         cit != plan.path_.end(); ++cit)
