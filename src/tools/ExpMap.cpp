@@ -2,7 +2,7 @@
 
 using namespace matrices;
 
-void ExpMap::setRotation(const Quat &q)
+/*void ExpMap::setRotation(const Quat &q)
 {
      // ok first normalize the quaternion
      // then compute theta the axis-angle and the normalized axis v
@@ -19,7 +19,7 @@ void ExpMap::setRotation(const Quat &q)
         m_theta = atan2(double(m_sinp),double(cosp));
         m_v *= m_theta;
     }
- }
+ }*/
 
 const Quat& ExpMap::getRotation() const
 {
@@ -195,10 +195,10 @@ void ExpMap::angleUpdated()
      }
  }
 
-Vector3 ExpMap::log() const
-{
+//Vector3 ExpMap::log() const
+//{
     // v = log(q) = 2 * cos-1 (q_w) / |qv| * qv
-    return m_v.norm() == 0 ? m_v : (2 * std::acos(m_q.w())) / (m_q.vec().norm()) * m_q.vec();
+//    return m_v.norm() == 0 ? m_v : (2 * std::acos(m_q.w())) / (m_q.vec().norm()) * m_q.vec();
     /*numeric theta = v.norm(); if(v.norm() != 0) v.normalize();
     return AngleAx(theta,v);*/
-}
+//}

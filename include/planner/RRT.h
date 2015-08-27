@@ -56,8 +56,8 @@ public:
         : from_(from)
         , to_(to)
         , size_(size)
-        , path_(biRRT ? GenerateRRT(generator, localPlanner, distance, neighbourDistance) :
-                        GenerateBiRRT(generator, localPlanner, distance, neighbourDistance))
+        , path_(biRRT ? GenerateBiRRT(generator, localPlanner, distance, neighbourDistance) :
+                        GenerateRRT(generator, localPlanner, distance, neighbourDistance))
     {
         // NOTHING
     }
@@ -84,7 +84,7 @@ private:
         int current_index = 0;
         int closest_index = -1;
         for(typename graph_t::T_NodeContentPtr::const_iterator it = g.nodeContents_.begin();
-                it != g.nodeContents_.end() && current_index < size_;
+                it <= g.nodeContents_.end() && current_index <= g.currentIndex_;
                 ++it, ++current_index)
         {
             Numeric current_distance = dist(node,*it);
@@ -106,12 +106,12 @@ private:
             astar_t astar(g);
             if(astar.ComputePath(from, to, path, dist))
             {
-                res.push_back(g.nodeContents_[from]);
+                //res.push_back(g.nodeContents_[from]);
                 for(std::list<int>::const_iterator it = path.begin(); it != path.end(); ++it)
                 {
                     res.push_back(g.nodeContents_[*it]);
                 }
-                res.push_back(g.nodeContents_[to]);
+                //res.push_back(g.nodeContents_[to]);
             }
          }
          return res;
@@ -122,19 +122,19 @@ private:
        trapped,reached,advanced
     };
 
-    ExtendRet Extend(NodeContent* node, graph_t& g, LocalPlanner* localPlanner, Distance distance, const Numeric neighbourDistance)
+    ExtendRet Extend(NodeContent* node, graph_t& g, LocalPlanner* localPlanner, Distance distance, const Numeric neighbourDistance, bool cloneIfAdding=false)
     {
         const int& nearestId = GetClosestPointInGraph(g, node, distance, localPlanner, neighbourDistance, true);
         NodeContent* nearest = g.nodeContents_[nearestId];
         if((*localPlanner) (nearest,node))
         {
-            int id = g.AddNode(node);
+            int id = g.AddNode(cloneIfAdding ? (new NodeContent(*node)) : node);
             g.AddEdge(nearestId,id,Ordered);
             return reached; // TODO ADVANCED
         }
         else if(Ordered && (*localPlanner) (node,nearest))
         {
-            int id = g.AddNode(node);
+            int id = g.AddNode(cloneIfAdding ? (new NodeContent(*node)) : node);
             g.AddEdge(id,nearestId,Ordered);
             return reached; // TODO ADVANCED
         }
@@ -177,10 +177,11 @@ private:
             if(node == 0) break;
             if(Extend(node,*ga,localPlanner, distance, neighbourDistance) != trapped)
             {
-                if(Extend(node,*gb,localPlanner, distance, neighbourDistance) == reached)
+                if(Extend(node,*gb,localPlanner, distance, neighbourDistance, true) == reached)
                 {
-                    int nodeId = ga->currentIndex_;
+                    int nodeId = g1_.currentIndex_;
                     T_NodeContentPath res1 = ComputePath(g1_, startId,nodeId,distance);
+                    nodeId = g2_.currentIndex_;
                     T_NodeContentPath res2 = ComputePath(g2_, nodeId,endId,distance);
                     res1.pop_back();
                     res1.insert(res1.end(), res2.begin(), res2.end());
@@ -188,8 +189,8 @@ private:
                 }
                 //swap
                 gtmp = ga;
-                gb = gtmp;
                 ga = gb;
+                gb = gtmp;
             }
         }
         T_NodeContentPath res;

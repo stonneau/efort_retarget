@@ -19,6 +19,7 @@
 #include "prmpath/animation/StateInterpolation.h"
 #include "Timer.h"
 #include "retarget/Motion.h"
+#include "prmpath/smoothing/InterpolateRRT.h"
 
 #include <string>
 #include <iostream>
@@ -469,6 +470,31 @@ void InitFullClampling()
    // messup->Update();
     //planner::sampling::LoadSample(*save,planner::GetChild(cScenario->robot, "upper_right_arm_z_joint"));
 }
+
+void interpolaterrt()
+{
+    const planner::State* state = states[current];
+    const planner::State* stateto = states[current+1];
+    int limbId = state->contactLimbs.front();
+    planner::Node* limb =  planner::GetChild(state->value,cScenario->limbs[limbId]->id);
+    planner::Node* limbTo =  planner::GetChild(stateto->value,cScenario->limbs[limbId]->id);
+    planner::Collider collider(cScenario->scenario->objects_);
+    planner::InterpolateRRT r(state->value,limb, cScenario->limbSamples[limbId],collider);
+    planner::sampling::Sample sFrom(limb);
+    planner::sampling::Sample sTo(limbTo);
+    std::vector<planner::LimbNode*> nodes = planner::computeKeyFrames(r,state->value, stateto->value,sFrom,sTo);
+    current = 0;
+    states.clear();
+    for(std::vector<planner::LimbNode*>::const_iterator cit = nodes.begin();cit != nodes.end(); ++cit)
+    {
+        planner::LimbNode* ln = *cit;
+        planner::State* ns = new planner::State();
+        ns->value = new planner::Robot(*ln->robot_);
+        planner::Node* limb = planner::GetChild(ns->value, ln->limb_->id);
+        planner::sampling::LoadSample(*ln->sample_,limb);
+        states.push_back(ns);
+    }
+}
 }
 
 static void simLoop (int pause)
@@ -809,7 +835,8 @@ void command(int cmd)   /**  key control function; */
         case 'f' :
         {
             std::cout << "computing animation " << std::endl;
-            states = planner::Animate(*cScenario, states, 24);
+            //states = planner::Animate(*cScenario, states, 24);
+            interpolaterrt();
             std::cout << "done " << std::endl;
             break;
         }
@@ -846,6 +873,7 @@ std::cout << "frame id" << current << std::endl;
             current--; if(current <0) current = 0;
             //cScenario->robot->SetConfiguration(states[current]);
             cScenario->robot = states[current]->value;
+            std::cout << "frame id" << current << std::endl;
 
             //currentSample = 0;
             //samples = planner::GetPosturesInContact(*cScenario->robot, cScenario->limbs[0], cScenario->limbSamples[0], cScenario->scenario->objects_ );

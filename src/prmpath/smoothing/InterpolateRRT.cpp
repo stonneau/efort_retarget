@@ -1,25 +1,21 @@
 
 #include "InterpolateRRT.h"
 #include "planner/RRT.h"
-#include "smooth.h"
 
 namespace planner
 {
-class LimbNode
+
+std::vector<Object*> CollectObjects(const planner::Node* limb)
 {
-public:
-    LimbNode(planner::Robot* robot, planner::Node* limb, std::vector<planner::Object*>& objects, const std::vector<double>& weight, const double t, const Configuration& configuration)
-        : robot_(robot), limb_(limb), sample_(0),configuration_(configuration), objects_(objects),weights(weight), t_(t)
-    {}
-    ~LimbNode(){}
-    planner::Robot* robot_;
-    planner::Node* limb_;
-    sampling::Sample* sample_;
-    const Configuration& configuration_;
-    std::vector<planner::Object*>& objects_;
-    const std::vector<double>& weights;
-    const double t_;
-};
+    std::vector<Object*> res;
+    const planner::Node* node = limb;
+    while(node)
+    {
+        if(node->current) res.push_back(node->current);
+            node = node->children.empty() ? 0 : node->children[0];
+    }
+    return res;
+}
 
 double Distance(const LimbNode* obj1, const LimbNode* obj2)
 {
@@ -53,7 +49,8 @@ public:
          float w = 9;
          float totalWeight = 0;
          planner::Node* node = limb_;
-         int nbIt = samples.front()->values.size();
+         sampling::Sample s(limb);
+         int nbIt = (int)s.values.size();
          while(nbIt>0)
          {
              if(node->id != limb_->id && node->offset.norm() != 0)
@@ -141,14 +138,14 @@ public:
         // NOTHING
     }
 
-   ~LimbPlanner();
+   ~LimbPlanner(){};
 
     bool operator ()(const LimbNode *ma, const LimbNode *mb)
     {
         if(ma->t_ > mb->t_) return false;
         double distance = Distance(ma,mb);
-        if(distance / (mb->t_ - ma->t_) > 1) return false; // too fast
-        double inc = distance / dStep_;
+        if(distance / (mb->t_ - ma->t_) > 10) return false; // too fast
+        double inc = (distance > 0) ? (1 / (distance * dStep_)) : 1;
         std::vector<planner::Configuration> cas;
         std::vector<planner::Configuration> cbs;
         ma->robot_->SetPosition(ma->configuration_.first,false);
@@ -191,7 +188,7 @@ public:
 typedef RRT<LimbNode, LimbGenerator, LimbPlanner, double, true, 1000> rrt_t;
 
 #include "tools/ExpMap.h"
-sampling::T_Samples computeKeyFrames(InterpolateRRT& rrt, const planner::Robot* robotFrom, const planner::Robot* robotTo, const sampling::Sample& froms, const sampling::Sample& tos)
+std::vector<LimbNode*> computeKeyFrames(InterpolateRRT& rrt, const planner::Robot* robotFrom, const planner::Robot* robotTo, const sampling::Sample& froms, const sampling::Sample& tos)
 {
     matrices::ExpMap emap(robotFrom->currentRotation);
     C2_Point a = std::make_pair(robotFrom->currentPosition, emap.log());
@@ -201,17 +198,17 @@ sampling::T_Samples computeKeyFrames(InterpolateRRT& rrt, const planner::Robot* 
     ParamFunction* path = new InterpolatePath(a,b,0,1);
 
     LimbGenerator generator(rrt.robot_,rrt.limb_,rrt.limbObjects,rrt.samples_,rrt.collider_,path);
-    LimbPlanner localPlanner(rrt.limbObjects,rrt.collider_,0.01,path);
-    LimbNode* from = new LimbNode(rrt.robot_,rrt.limb_,rrt.limbObjects,generator.weights,0, std::make_pair(robotFrom->currentPosition, robotFrom->constantRotation));
+    LimbPlanner localPlanner(rrt.limbObjects,rrt.collider_,10,path);
+    LimbNode* from = new LimbNode(rrt.robot_,rrt.limb_,rrt.limbObjects,generator.weights,0, std::make_pair(robotFrom->currentPosition, robotFrom->currentRotation));
     from->sample_ = new planner::sampling::Sample(froms);
-    LimbNode* to = new LimbNode(rrt.robot_,rrt.limb_,rrt.limbObjects,generator.weights,0, std::make_pair(robotTo->currentPosition, robotTo->constantRotation));
+    LimbNode* to = new LimbNode(rrt.robot_,rrt.limb_,rrt.limbObjects,generator.weights,1., std::make_pair(robotTo->currentPosition, robotTo->currentRotation));
     to->sample_ = new planner::sampling::Sample(tos);
-    rrt_t plan(&generator, &localPlanner, from, to, Distance, 10, 1000,10,true);
-    sampling::T_Samples res;
+    rrt_t plan(&generator, &localPlanner, from, to, Distance, 10, 10000,10,true);
+    std::vector<LimbNode*> res;
     for(rrt_t::T_NodeContentPath::const_iterator cit = plan.path_.begin();
         cit != plan.path_.end(); ++cit)
     {
-        res.push_back((*cit)->sample_);
+        res.push_back(new LimbNode(**cit));
     }
     delete path;
     return res;
