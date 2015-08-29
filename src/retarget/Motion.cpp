@@ -117,7 +117,8 @@ namespace
     void EffectorTargetRec(Node* current, const Eigen::VectorXd& framePositions, std::vector<Eigen::Vector3d>& targets,
                            std::size_t& id)
     {
-        if(current->tag.find("endsite") != std::string::npos)
+        if(current->tag.find("endsite") != std::string::npos
+                || current->tag.find("effector") != std::string::npos)
         {
             targets.push_back(framePositions.segment<3>(id*3));
         }
