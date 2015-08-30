@@ -506,6 +506,7 @@ static void simLoop (int pause)
     dsSetColorAlpha(0,0, 0.7,1);
     DrawNode(cScenario->robot->node);
     DrawPoint(itompTransform * cScenario->robot->currentPosition);
+    const planner::T_State& tstates = states;
     std::vector<Eigen::Vector3d>::iterator nit = states[current]->contactLimbPositionsNormals.begin();
     for(std::vector<Eigen::Vector3d>::iterator it = states[current]->contactLimbPositions.begin();
         it != states[current]->contactLimbPositions.end(); ++it, ++nit)
@@ -753,8 +754,8 @@ void Retarget(const Eigen::Vector3d& delta, const planner::Object* object)
     {
         res.push_back(planner::AsPosition(states[current+i]->value->node));
     }
-    std::vector<planner::Robot*> robs = motion->RetargetMotionInternal(res, replacement, current, efort::collision, false);
-    //std::vector<planner::Robot*> robs = motion->RetargetContactInternal(current, planner::AsPosition(robik.node), replacement, true);
+    //std::vector<planner::Robot*> robs = motion->RetargetMotionInternal(res, replacement, current, efort::collision, true);
+    std::vector<planner::Robot*> robs = motion->RetargetContactInternal(current, planner::AsPosition(robik.node), replacement, true);
     //states[current] = motion->Retarget(cScenario->robot, current, targets, cScenario->scenario->objects_);
     for(int i =0; i< robs.size(); ++i)
     {
@@ -837,8 +838,8 @@ void command(int cmd)   /**  key control function; */
         case 'f' :
         {
             std::cout << "computing animation " << std::endl;
-            //states = planner::Animate(*cScenario, states, 24);
-            interpolaterrt();
+            states = planner::Animate(*cScenario, states, 24);
+            //interpolaterrt();
             std::cout << "done " << std::endl;
             break;
         }
@@ -885,19 +886,19 @@ std::cout << "frame id" << current << std::endl;
         case '1' :
         {
 
-        std::cout << " SAMPLES" << samples.size() << std::endl;
-            if(samples.empty()) return;
-            currentSample ++; if(samples.size() <= currentSample) currentSample = samples.size()-1;
-            planner::sampling::LoadSample(*(samples[currentSample]),planner::GetChild(cScenario->robot, "LeftUpLeg_z_joint"));
+        std::cout << " SAMPLES" << cScenario->limbSamples[0].size() << std::endl;
+            if(cScenario->limbSamples[0].empty()) return;
+            currentSample ++; if(cScenario->limbSamples[0].size() <= currentSample) currentSample = cScenario->limbSamples[0].size()-1;
+            planner::sampling::LoadSample(*(cScenario->limbSamples[0][currentSample]),planner::GetChild(cScenario->robot, "upper_right_arm_z_joint"));
             break;
         }
         break;
         case '2' :
         {
-        std::cout << " SAMPLES" << samples.size() << std::endl;
+        std::cout << " SAMPLES" << cScenario->limbSamples[3].size() << std::endl;
             if(samples.empty()) return;
             currentSample --; if(currentSample < 0) currentSample = 0;
-            planner::sampling::LoadSample(*(samples[currentSample]),planner::GetChild(cScenario->robot, "LeftUpLeg_z_joint"));
+            planner::sampling::LoadSample(*(cScenario->limbSamples[3][currentSample]),planner::GetChild(cScenario->robot, "upper_left_leg_z_joint"));
             break;
         }
         case 'm' :

@@ -24,6 +24,39 @@ State::State(const State *parent)
     // NOTHING
 }
 
+State::State(const State *parent, int except)
+    :value(new planner::Robot(*parent->value))
+    , stable(parent->stable)
+    , contactLimbs(parent->contactLimbs)
+    , contactLimbPositions(parent->contactLimbPositions)
+    , contactLimbPositionsNormals(parent->contactLimbPositionsNormals)
+{
+    // NOTHING
+    // remove limb indicated
+    std::vector<int>::iterator cid = contactLimbs.begin();
+    std::vector<Eigen::Vector3d>::iterator cpos = contactLimbPositions.begin();
+    std::vector<Eigen::Vector3d>::iterator cnorm = contactLimbPositionsNormals.begin();
+    std::vector<double>::iterator cmanip = manipulabilities.begin();
+    for(; cid != contactLimbs.end(); ++cid, ++cpos, ++cnorm)
+    {
+        if(*cid == except)
+        {
+            contactLimbs.erase(cid);
+            contactLimbPositions.erase(cpos);
+            contactLimbPositionsNormals.erase(cnorm);
+            if(cmanip != manipulabilities.end())
+            {
+                manipulabilities.erase(cmanip);
+            }
+            return;
+        }
+        if(cmanip != manipulabilities.end())
+        {
+            ++ cmanip;
+        }
+    }
+}
+
 CompleteScenario::CompleteScenario()
     : scenario(0)
     , robot(0)

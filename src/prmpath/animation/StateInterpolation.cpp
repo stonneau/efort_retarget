@@ -155,7 +155,6 @@ namespace
                 {
                     model.SetPosition(model.GetPosition() + 1* offset);
                     ok = collider.IsColliding(model.englobed);
-                    std::cout << "col " << ok << std::endl;
                 }
                 if(true)
                 {
@@ -170,7 +169,6 @@ namespace
         }
         delete initpath;
         res.push_back(MakeConfiguration(limbTo->current));
-        std::cout << "res" << res.size() << std::endl;
         return new planner::InterpolatePath(res, true);
     }
 
@@ -204,7 +202,7 @@ namespace
             }
         }
 
-        void operator ()(planner::State* state)
+        void operator ()(planner::State* state, int limit = 10)
         {
             ik::IKSolver solver;
             std::vector<Eigen::Vector3d>::iterator posit = state->contactLimbPositions.begin();
@@ -214,7 +212,7 @@ namespace
                 cit != state->contactLimbs.end(); ++cit, ++posit, ++normit, ++limbId)
             {
                 planner::Node* limb =  planner::GetChild(state->value,scenario.limbs[*cit]->id);
-                int limite = 10;
+                int limite = limit;
                 while(limite > 0 && !solver.StepClamping(limb, *posit, *posit, allconstraints[limbId], true))
                 {
                     limite--;
@@ -369,6 +367,103 @@ namespace
     }
 }
 
+
+#include "prmpath/smoothing/InterpolateRRT.h"
+
+planner::T_State insertRRT(const planner::CompleteScenario& scenario,
+                           planner::InterpolateRRT& rrt, planner::Node* limb, const int limbIndex, const planner::State& from, const planner::State& to)
+{
+    planner::T_State res;
+    planner::Node* limbfrom =  planner::GetChild(from.value,limb->id);
+    planner::Node* limbTo =  planner::GetChild(to.value,limb->id);
+    planner::sampling::Sample sFrom(limbfrom);
+    planner::sampling::Sample sTo(limbTo);
+    std::vector<planner::LimbNode*> nodes = planner::computeKeyFrames(rrt,from.value, to.value,sFrom,sTo);
+    if(nodes.size() <=2)
+    {
+        std::cout << "rrt failed " <<  limb->tag <<  std::endl;
+        res.push_back(new planner::State(&from));
+        res.push_back(new planner::State(&to));
+        return res;
+    }
+    DoIk doIk(scenario,&to);
+    for(std::vector<planner::LimbNode*>::const_iterator cit = nodes.begin();cit != nodes.end()-1; ++cit)
+    {
+        planner::LimbNode* ln = *cit;
+        planner::State* ns (0);
+        if(cit == nodes.begin())
+        {
+            ns = new planner::State(&from);
+        }
+        else if(cit == nodes.end()-1)
+        {
+            ns = new planner::State(&to);
+        }
+        else
+        {
+            ns = new planner::State(&from, limbIndex);
+            ns->value->SetRotation(ln->configuration_.second, false);
+            ns->value->SetPosition(ln->configuration_.first, true);
+            planner::Node* limb = planner::GetChild(ns->value, ln->limb_->id);
+            planner::sampling::LoadSample(*ln->sample_,limb);
+            doIk(ns, 20);
+        }
+        res.push_back(ns);
+    }
+    return res;
+}
+
+void insertRRT(const planner::CompleteScenario& scenario,
+                           std::vector<planner::InterpolateRRT*>& rrts,
+                           const planner::State& from, const planner::State& to,
+                           planner::T_State& res)
+{
+    // iterate over each contacts, and add intermediate states
+    std::vector<int> modifiedContacts = GetModifiedContacts(from,to);
+    planner::T_State resPerLimb;
+    for(std::vector<int>::const_iterator cit = modifiedContacts.begin();
+        cit != modifiedContacts.end(); ++cit)
+    {
+        int limbindex = to.contactLimbs[*cit];
+        planner::Node * limb = planner::GetChild(from.value, scenario.limbs[limbindex]->id);
+        resPerLimb = insertRRT(scenario,*rrts[limbindex],limb,limbindex,from,to);
+break;
+    }
+    for(planner::T_State::const_iterator cit = resPerLimb.begin(); cit != resPerLimb.end();
+        ++cit)
+    {
+        res.push_back(*cit);
+    }
+}
+
+planner::T_State insertRRT(const planner::CompleteScenario& scenario, const planner::T_State& fullpath)
+{
+    planner::T_State res;
+    // create RRTInterpolate for each limb,
+    Collider collider(scenario.scenario->objects_);
+    std::vector<planner::InterpolateRRT*> rrts;
+    for(int i = 0; i< scenario.limbs.size(); ++i)
+    {
+        rrts.push_back(new InterpolateRRT(
+                           scenario.robot,scenario.limbs[i],scenario.limbSamples[i],collider));
+    }
+    planner::T_State::const_iterator cit1 = fullpath.begin(); ++cit1;
+    planner::T_State::const_iterator cit2 = fullpath.begin(); ++cit2;++cit2;
+    int i = 0;
+    do
+    {
+        insertRRT(scenario,rrts,**cit1,**cit2,res);
+        ++cit1; ++cit2;
+         ++i;
+    } while(cit2 != fullpath.end());
+    for(std::vector<planner::InterpolateRRT*>::const_iterator cit = rrts.begin();
+        cit != rrts.end(); ++cit)
+    {
+        delete * cit;
+    }
+    return res;
+}
+
 planner::T_State planner::Animate(const planner::CompleteScenario& scenario, const planner::State& from, const planner::State& to, int framerate)
 {
     planner::T_State res;
@@ -378,16 +473,16 @@ planner::T_State planner::Animate(const planner::CompleteScenario& scenario, con
 
 planner::T_State planner::Animate(const planner::CompleteScenario& scenario, const planner::T_State& fullpath, int framerate)
 {
+    planner::T_State rrtres = insertRRT(scenario, fullpath);
     planner::T_State res;
-    res.reserve(framerate);
-    planner::T_State::const_iterator cit1 = fullpath.begin(); ++cit1;
-    planner::T_State::const_iterator cit2 = fullpath.begin(); ++cit2;++cit2;
+    planner::T_State::const_iterator cit1 = rrtres.begin(); ++cit1;
+    planner::T_State::const_iterator cit2 = rrtres.begin(); ++cit2;++cit2;
     int i = 0;
     do
     {
         AnimateInternal(scenario,**cit1,**cit2,res,framerate);
         ++cit1; ++cit2;
          ++i;
-    } while(cit2 != fullpath.end());
+    } while(cit2 != rrtres.end());
     return res;
 }
