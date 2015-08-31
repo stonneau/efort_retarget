@@ -136,9 +136,11 @@ namespace
         Eigen::Vector3d offset = parent->position - limbTo->position;
         offset =  Eigen::Vector3d (0,1,0);
         offset.normalize();
-        planner::InterpolatePath* initpath = new  planner::InterpolatePath(MakeConfiguration(limbFrom->current),MakeConfiguration(limbTo->current),0,1);
+        C2_Point cFrom = MakeConfiguration(limbFrom->current);
+        C2_Point cTo = MakeConfiguration(limbTo->current);
+        planner::InterpolatePath* initpath = new  planner::InterpolatePath(cFrom,cTo,0,1);
         double start(0);
-        bool collisionFree(false);
+        bool collisionFree= (cFrom.first - cTo.first).norm() < 0.001;
         int nbsteps = (int)((limbFrom->position - limbTo->position).norm() * 20.);
         int step = 0;
         double stepsize = 0.05;
@@ -153,7 +155,7 @@ namespace
                 bool ok(false);
                 for (int i = 0; i<1 && !ok; ++i)
                 {
-                    model.SetPosition(model.GetPosition() + 1* offset);
+                    model.SetPosition(model.GetPosition() + 0.3* offset);
                     ok = collider.IsColliding(model.englobed);
                 }
                 if(true)
@@ -379,7 +381,7 @@ planner::T_State insertRRTForOneLimb(const planner::CompleteScenario& scenario,
     planner::sampling::Sample sFrom(limbfrom);
     planner::sampling::Sample sTo(limbTo);
     std::vector<planner::LimbNode*> nodes = planner::computeKeyFrames(rrt,from.value, to.value,sFrom,sTo);
-    if(nodes.size() <=2)
+    if(nodes.empty())
     {
         std::cout << "rrt failed " <<  limb->tag <<  std::endl;
         //res.push_back(new planner::State(&from));
@@ -484,16 +486,19 @@ planner::T_State insertRRT(const planner::CompleteScenario& scenario, const plan
 }
 
 planner::T_State planner::Animate(const planner::CompleteScenario& scenario, const planner::State& from, const planner::State& to, int framerate)
-{
-    planner::T_State res;
-    AnimateInternal(scenario,from,to,res,framerate);
-    return res;
+{    
+    planner::T_State fullpath;
+    fullpath.push_back(new State(&from));fullpath.push_back(new State(&to));
+    planner::T_State rrtres = insertRRT(scenario, fullpath);
+    /*planner::T_State res;
+    AnimateInternal(scenario,from,to,res,framerate);*/
+    return rrtres;
 }
 
 planner::T_State planner::Animate(const planner::CompleteScenario& scenario, const planner::T_State& fullpath, int framerate)
 {
     planner::T_State rrtres = insertRRT(scenario, fullpath);
-    /*planner::T_State res;
+    planner::T_State res;
     planner::T_State::const_iterator cit1 = rrtres.begin(); ++cit1;
     planner::T_State::const_iterator cit2 = rrtres.begin(); ++cit2;++cit2;
     int i = 0;
@@ -503,6 +508,6 @@ planner::T_State planner::Animate(const planner::CompleteScenario& scenario, con
         ++cit1; ++cit2;
          ++i;
     } while(cit2 != rrtres.end());
-    return res;*/
+    return res;
     return rrtres;
 }
