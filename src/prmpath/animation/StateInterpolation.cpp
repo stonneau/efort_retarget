@@ -370,7 +370,7 @@ namespace
 
 #include "prmpath/smoothing/InterpolateRRT.h"
 
-planner::T_State insertRRT(const planner::CompleteScenario& scenario,
+planner::T_State insertRRTForOneLimb(const planner::CompleteScenario& scenario,
                            planner::InterpolateRRT& rrt, planner::Node* limb, const int limbIndex, const planner::State& from, const planner::State& to)
 {
     planner::T_State res;
@@ -382,12 +382,12 @@ planner::T_State insertRRT(const planner::CompleteScenario& scenario,
     if(nodes.size() <=2)
     {
         std::cout << "rrt failed " <<  limb->tag <<  std::endl;
-        res.push_back(new planner::State(&from));
+        //res.push_back(new planner::State(&from));
         res.push_back(new planner::State(&to));
         return res;
     }
     DoIk doIk(scenario,&to);
-    for(std::vector<planner::LimbNode*>::const_iterator cit = nodes.begin();cit != nodes.end()-1; ++cit)
+    for(std::vector<planner::LimbNode*>::const_iterator cit = nodes.begin()+1;cit != nodes.end(); ++cit)
     {
         planner::LimbNode* ln = *cit;
         planner::State* ns (0);
@@ -395,7 +395,7 @@ planner::T_State insertRRT(const planner::CompleteScenario& scenario,
         {
             ns = new planner::State(&from);
         }
-        else if(cit == nodes.end()-1)
+        else if(cit +1 == nodes.end())
         {
             ns = new planner::State(&to);
         }
@@ -406,38 +406,49 @@ planner::T_State insertRRT(const planner::CompleteScenario& scenario,
             ns->value->SetPosition(ln->configuration_.first, true);
             planner::Node* limb = planner::GetChild(ns->value, ln->limb_->id);
             planner::sampling::LoadSample(*ln->sample_,limb);
-            doIk(ns, 20);
+            doIk(ns, 10);
         }
         res.push_back(ns);
     }
     return res;
 }
 
-void insertRRT(const planner::CompleteScenario& scenario,
+
+planner::T_State insertRRT(const planner::CompleteScenario& scenario, const planner::T_State& fullpath);
+
+void insertRRTBetweenStates(const planner::CompleteScenario& scenario,
                            std::vector<planner::InterpolateRRT*>& rrts,
                            const planner::State& from, const planner::State& to,
-                           planner::T_State& res)
+                           planner::T_State& res, int limbindex)
 {
-    // iterate over each contacts, and add intermediate states
     std::vector<int> modifiedContacts = GetModifiedContacts(from,to);
     planner::T_State resPerLimb;
+    bool limbChanged (false);
     for(std::vector<int>::const_iterator cit = modifiedContacts.begin();
         cit != modifiedContacts.end(); ++cit)
     {
-        int limbindex = to.contactLimbs[*cit];
-        planner::Node * limb = planner::GetChild(from.value, scenario.limbs[limbindex]->id);
-        resPerLimb = insertRRT(scenario,*rrts[limbindex],limb,limbindex,from,to);
-break;
+        if (limbindex == to.contactLimbs[*cit])
+        {
+            planner::Node * limb = planner::GetChild(from.value, scenario.limbs[limbindex]->id);
+            resPerLimb = insertRRTForOneLimb(scenario,*rrts[limbindex],limb,limbindex,from,to);
+            limbChanged = true;
+            for(planner::T_State::const_iterator cit = resPerLimb.begin(); cit != resPerLimb.end();
+                ++cit)
+            {
+                res.push_back(*cit);
+            }
+            break;
+        }
     }
-    for(planner::T_State::const_iterator cit = resPerLimb.begin(); cit != resPerLimb.end();
-        ++cit)
+    if(!limbChanged)
     {
-        res.push_back(*cit);
+        res.push_back(new planner::State(&to));
     }
 }
 
 planner::T_State insertRRT(const planner::CompleteScenario& scenario, const planner::T_State& fullpath)
 {
+    planner::T_State limbres = fullpath;
     planner::T_State res;
     // create RRTInterpolate for each limb,
     Collider collider(scenario.scenario->objects_);
@@ -447,21 +458,29 @@ planner::T_State insertRRT(const planner::CompleteScenario& scenario, const plan
         rrts.push_back(new InterpolateRRT(
                            scenario.robot,scenario.limbs[i],scenario.limbSamples[i],collider));
     }
-    planner::T_State::const_iterator cit1 = fullpath.begin(); ++cit1;
-    planner::T_State::const_iterator cit2 = fullpath.begin(); ++cit2;++cit2;
-    int i = 0;
-    do
+    for(int lid = 0; lid < scenario.limbs.size(); ++lid)
+    //for(int lid = 2; lid < 3; ++lid)
     {
-        insertRRT(scenario,rrts,**cit1,**cit2,res);
-        ++cit1; ++cit2;
-         ++i;
-    } while(cit2 != fullpath.end());
+        res.push_back(new planner::State (fullpath.front()));
+        planner::T_State::const_iterator cit1 = limbres.begin();
+        planner::T_State::const_iterator cit2 = limbres.begin(); ++cit2;
+        //int i = 0;
+        do
+        {
+            insertRRTBetweenStates(scenario,rrts,**cit1,**cit2,res, lid);
+            ++cit1; ++cit2;
+             //++i;
+        } while(cit2 != limbres.end());
+        limbres = res;
+        res.clear();
+    }
+    // todo delete states
     for(std::vector<planner::InterpolateRRT*>::const_iterator cit = rrts.begin();
         cit != rrts.end(); ++cit)
     {
         delete * cit;
     }
-    return res;
+    return limbres;
 }
 
 planner::T_State planner::Animate(const planner::CompleteScenario& scenario, const planner::State& from, const planner::State& to, int framerate)
@@ -474,7 +493,7 @@ planner::T_State planner::Animate(const planner::CompleteScenario& scenario, con
 planner::T_State planner::Animate(const planner::CompleteScenario& scenario, const planner::T_State& fullpath, int framerate)
 {
     planner::T_State rrtres = insertRRT(scenario, fullpath);
-    planner::T_State res;
+    /*planner::T_State res;
     planner::T_State::const_iterator cit1 = rrtres.begin(); ++cit1;
     planner::T_State::const_iterator cit2 = rrtres.begin(); ++cit2;++cit2;
     int i = 0;
@@ -484,5 +503,6 @@ planner::T_State planner::Animate(const planner::CompleteScenario& scenario, con
         ++cit1; ++cit2;
          ++i;
     } while(cit2 != rrtres.end());
-    return res;
+    return res;*/
+    return rrtres;
 }
