@@ -754,8 +754,8 @@ void Retarget(const Eigen::Vector3d& delta, const planner::Object* object)
     {
         res.push_back(planner::AsPosition(states[current+i]->value->node));
     }
-    //std::vector<planner::Robot*> robs = motion->RetargetMotionInternal(res, replacement, current, efort::collision, true);
-    std::vector<planner::Robot*> robs = motion->RetargetContactInternal(current, planner::AsPosition(robik.node), replacement, true);
+    std::vector<planner::Robot*> robs = motion->RetargetMotionInternal(res, replacement, current, efort::collision, true);
+    //std::vector<planner::Robot*> robs = motion->RetargetContactInternal(current, planner::AsPosition(robik.node), replacement, true);
     //states[current] = motion->Retarget(cScenario->robot, current, targets, cScenario->scenario->objects_);
     for(int i =0; i< robs.size(); ++i)
     {
@@ -864,6 +864,7 @@ void command(int cmd)   /**  key control function; */
             //cScenario->robot->SetConfiguration(cScenario->path[current]);
             cScenario->robot = states[current]->value;
 std::cout << "frame id" << current << std::endl;
+//std::cout << "vector configuration"  <<  planner::AsPosition(states[current]->value->node) << std::endl;
             /*DumpIds(states[current]->value->node);
             std::cout << "frame id" << current << std::endl;
             std::cout << "position" << planner::AsPosition(cScenario->robot->node) << std::endl;*/
@@ -877,6 +878,7 @@ std::cout << "frame id" << current << std::endl;
             //cScenario->robot->SetConfiguration(states[current]);
             cScenario->robot = states[current]->value;
             std::cout << "frame id" << current << std::endl;
+//            std::cout << "vector configuration"  <<  planner::AsPosition(states[current]->value->node) << std::endl;
 
             //currentSample = 0;
             //samples = planner::GetPosturesInContact(*cScenario->robot, cScenario->limbs[0], cScenario->limbSamples[0], cScenario->scenario->objects_ );

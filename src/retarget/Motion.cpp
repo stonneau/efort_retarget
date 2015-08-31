@@ -8,6 +8,35 @@
 #include "prmpath/ik/VectorAlignmentConstraint.h"
 
 
+void KeptIndices(planner::Node* node, int& last, int& current, std::vector<std::pair<int, int> >& res)
+{
+    if(node->offset != Eigen::Vector3d::Zero())
+    {
+        current += 3;
+    }
+    if(node->children.size() == 0 && node->tag.find("head") == std::string::npos)
+    {
+        res.push_back(std::make_pair(last, current));
+        current +=3;
+        last = current;
+    }
+    for(std::vector<planner::Node*>::const_iterator cit = node->children.begin();
+        cit != node->children.end(); ++cit)
+    {
+        KeptIndices(*cit, last, current, res);
+    }
+}
+
+
+std::vector<std::pair<int, int> > KeptIndices(planner::Robot* robot)
+{
+    std::vector<std::pair<int, int> > res;
+    int current = 2;
+    int last = 0;
+    KeptIndices(robot->node,last,current,res);
+    return res;
+}
+
 struct efort::PImpl
 {
     PImpl(const std::string& scenario)
@@ -20,6 +49,17 @@ struct efort::PImpl
         {
             std::vector<Contact> limbContacts;
             contacts_.push_back(limbContacts);
+        }
+
+
+        if(planner::GetChild(cScenario_->initstate.value,"upper_left_leg_z_joint") != 0)
+        {
+            useFantomJoints = true;
+            keptIndexes_ = KeptIndices(cScenario_->initstate.value);
+        }
+        else
+        {
+            useFantomJoints = false;
         }
     }
 
@@ -34,6 +74,41 @@ struct efort::PImpl
             std::vector<Contact> limbContacts;
             contacts_.push_back(limbContacts);
         }
+        if(planner::GetChild(cScenario_->initstate.value,"upper_left_leg_z_joint") != 0)
+        {
+            useFantomJoints = true;
+            keptIndexes_ = KeptIndices(cScenario_->initstate.value);
+        }
+        else
+        {
+            useFantomJoints = false;
+        }
+    }
+
+    Eigen::VectorXd adaptVector(const Eigen::VectorXd& input)
+    {
+        std::size_t size = input.rows() - 18 * 3;
+        Eigen::VectorXd res(size);
+        int current(0);
+        for(std::vector<std::pair<int, int> >::const_iterator cit = keptIndexes_.begin();
+        cit != keptIndexes_.end(); ++cit)
+        {
+            int margin = cit->second - cit->first;
+            res.segment(current, margin) = input.segment(cit->first, margin);
+            current+= margin;
+        }
+        return res;
+    }
+
+    std::vector<Eigen::VectorXd> adaptVector(const std::vector<Eigen::VectorXd>& framePositions)
+    {
+        std::vector<Eigen::VectorXd>  res;
+        for( std::vector<Eigen::VectorXd>::const_iterator cit = framePositions.begin();
+             cit != framePositions.end(); ++cit)
+        {
+            res.push_back(adaptVector(*cit));
+        }
+        return res;
     }
 
     ~PImpl()
@@ -43,7 +118,9 @@ struct efort::PImpl
     planner::CompleteScenario* cScenario_;
     planner::T_State states_;
     std::vector<std::vector<Contact> > contacts_;
+    std::vector<std::pair<int, int> > keptIndexes_;
     ik::IKSolver fullBodyIkSolver_;
+    bool useFantomJoints;
 };
 
 using namespace efort;
@@ -323,7 +400,7 @@ std::cout << "configuration invalid for limb" << limb->tag << std::endl;
         delete objects[*cit];
     }
     Eigen::VectorXd res = framePositions;
-    res.tail(framePositions.rows()-3) =planner::AsPosition(robot.node->children[0]);
+    res.tail(framePositions.rows()-3) =planner::AsPosition(robot.node->children[0], pImpl_->useFantomJoints);
     return res;
 }
 
@@ -444,7 +521,7 @@ std::cout << "no contact found contact" << limb->tag << std::endl;
     {
         Eigen::VectorXd res = framePositions;
         res.head(3) = robot->currentPosition;
-        res.tail(framePositions.rows()-3) =planner::AsPosition(r[i]->node->children[0]);
+        res.tail(framePositions.rows()-3) =planner::AsPosition(r[i]->node->children[0], pImpl_->useFantomJoints);
         delete r[i];
         positions.push_back(res);
     }
@@ -455,6 +532,15 @@ std::cout << "no contact found contact" << limb->tag << std::endl;
 std::vector<Eigen::VectorXd> Motion::RetargetContact(const std::size_t frameid, const Eigen::VectorXd& framePositions,
                                                      const T_PointReplacement& objectModifications, const std::vector<bool>& forcemask) const
 {
+    Eigen::VectorXd position;
+    if(pImpl_->useFantomJoints)
+    {
+        position = pImpl_->adaptVector(framePositions);
+    }
+    else
+    {
+        position = framePositions;
+    }
     std::vector<Eigen::VectorXd> positions;
     // check how we are doing this frame
     // retrieving frame
@@ -462,11 +548,11 @@ std::vector<Eigen::VectorXd> Motion::RetargetContact(const std::size_t frameid, 
     // cloning reference robot from frame.
     planner::Robot* robot = new planner::Robot(*pImpl_->states_[frameid]->value);
     // moving robot to new position
-    robot->SetPosition(framePositions.head<3>(), true);
+    robot->SetPosition(position.head<3>(), true);
     // performing ik to reconstruct joint variation:
-    PerformFullIk(*robot, framePositions, pImpl_->fullBodyIkSolver_);
+    PerformFullIk(*robot, position, pImpl_->fullBodyIkSolver_);
     // retrieve effector targets
-    std::vector<Eigen::Vector3d> targets = RetrieveEffectorTargets(framePositions, *robot);
+    std::vector<Eigen::Vector3d> targets = RetrieveEffectorTargets(position, *robot);
 
     //retrieving updated objects
     const ObjectDictionary& dictionnary = pImpl_->cScenario_->scenario->objDictionnary;
@@ -569,7 +655,7 @@ std::cout << "no contact found contact" << limb->tag << std::endl;
     {
         Eigen::VectorXd res = framePositions;
         res.head(3) = robot->currentPosition;
-        res.tail(framePositions.rows()-3) =planner::AsPosition(r[i]->node->children[0]);
+        res.tail(framePositions.rows()-3) =planner::AsPosition(r[i]->node->children[0], pImpl_->useFantomJoints);
         delete r[i];
         positions.push_back(res);
     }
@@ -696,7 +782,7 @@ std::cout << "size contacts" << failedContacts.size() << std::endl;
             //cit->pose_ = planner::AsPosition(r[cit->frameId_]->node->children[0]);
             cit->pose_ = framePositions[0];
             cit->pose_.head(3) = r[cit->frameId_]->currentPosition;
-            cit->pose_.tail(cit->pose_.rows()-3) = planner::AsPosition(r[cit->frameId_]->node->children[0]);
+            cit->pose_.tail(cit->pose_.rows()-3) = planner::AsPosition(r[cit->frameId_]->node->children[0], pImpl_->useFantomJoints);
         }
         delete r[cit->frameId_];
     }
@@ -753,7 +839,7 @@ std::cout << "size contacts" << failedContacts.size() << std::endl;
             //cit->pose_ = planner::AsPosition(r[cit->frameId_]->node->children[0]);
             cit->pose_ = framePositions[0];
             cit->pose_.head(3) = r[cit->frameId_]->currentPosition;
-            cit->pose_.tail(cit->pose_.rows()-3) = planner::AsPosition(r[cit->frameId_]->node->children[0]);
+            cit->pose_.tail(cit->pose_.rows()-3) = planner::AsPosition(r[cit->frameId_]->node->children[0], pImpl_->useFantomJoints);
         }
         delete r[cit->frameId_];
     }
@@ -773,17 +859,26 @@ std::vector<planner::Robot*> Motion::RetargetMotionInternal(const std::vector<Ei
 {
     //collect object updates
     //retrieving updated objects
+    std::vector<Eigen::VectorXd> position;
+    if(pImpl_->useFantomJoints)
+    {
+        position = pImpl_->adaptVector(framePositions);
+    }
+    else
+    {
+        position = framePositions;
+    }
     const ObjectDictionary& dictionnary = pImpl_->cScenario_->scenario->objDictionnary;
     std::vector<std::size_t> newObjectIds;
     planner::Object::T_Object objects =  dictionnary.recreate(objectModifications, pImpl_->cScenario_->scenario->objects_, newObjectIds);
 
 
     std::vector<FrameReport> res;
-    assert(framePositions.size() + frameStart  < this->frames_.size());
+    assert(position.size() + frameStart  < this->frames_.size());
     // create robot for each frame;
     int nbLimbs = pImpl_->cScenario_->limbs.size();
     planner::Robot* r [400];
-    for(std::size_t i = frameStart; i < frameStart + framePositions.size(); ++i)
+    for(std::size_t i = frameStart; i < frameStart + position.size(); ++i)
     {
         r[i] = new planner::Robot(*pImpl_->states_[i]->value);
         res.push_back(FrameReport(i, nbLimbs));
@@ -792,9 +887,9 @@ std::vector<planner::Robot*> Motion::RetargetMotionInternal(const std::vector<Ei
     // i incremented by frameInvalid
     T_FailedContact failedContacts;
     std::vector<Eigen::Vector3d> targets;
-    for(std::size_t i = frameStart; i < frameStart + framePositions.size();)
+    for(std::size_t i = frameStart; i < frameStart + position.size();)
     {
-        i = FrameInvalid(pImpl_.get(), *r[i],failedContacts, *this, i, framePositions[i-frameStart],targets, objects, retargetType, force);
+        i = FrameInvalid(pImpl_.get(), *r[i],failedContacts, *this, i, position[i-frameStart],targets, objects, retargetType, force);
     }
 
 
@@ -803,7 +898,7 @@ std::cout << "size contacts" << failedContacts.size() << std::endl;
     for(T_FailedContact::const_iterator cit = failedContacts.begin();
         cit != failedContacts.end(); ++cit)
     {
-        RetargetLimbContact(this->pImpl_.get(), r, *cit, objects, res, frameStart, frameStart + framePositions.size()-1);
+        RetargetLimbContact(this->pImpl_.get(), r, *cit, objects, res, frameStart, frameStart + position.size()-1);
     }
 
     std::vector<FrameReport>::iterator cit = res.begin();
@@ -814,7 +909,7 @@ std::cout << "size contacts" << failedContacts.size() << std::endl;
             //cit->pose_ = planner::AsPosition(r[cit->frameId_]->node->children[0]);
             cit->pose_ = framePositions[0];
             cit->pose_.head(3) = r[cit->frameId_]->currentPosition;
-            cit->pose_.tail(cit->pose_.rows()-3) = planner::AsPosition(r[cit->frameId_]->node->children[0]);
+            cit->pose_.tail(cit->pose_.rows()-3) = planner::AsPosition(r[cit->frameId_]->node->children[0], pImpl_->useFantomJoints);
         }
 // load robot TMP
         //delete r[cit->frameId_];
@@ -851,16 +946,25 @@ std::cout << "size contacts" << failedContacts.size() << std::endl;
 #if INTERNAL
 planner::Robot* Motion::RetargetInternal(const std::size_t frameid, const Eigen::VectorXd& framePositions, const T_PointReplacement& objectModifications) const
 {
+    Eigen::VectorXd position;
+    if(pImpl_->useFantomJoints)
+    {
+        position = pImpl_->adaptVector(framePositions);
+    }
+    else
+    {
+        position = framePositions;
+    }
     // retrieving frame
     const Frame& cframe = frames_[frameid];
     // cloning reference robot from frame.
     planner::Robot* robot = new planner::Robot(*pImpl_->states_[frameid]->value);
     // moving robot to new position
-    robot->SetPosition(framePositions.head<3>(), true);
+    robot->SetPosition(position.head<3>(), true);
     // performing ik to reconstruct joint variation:
-    PerformFullIk(*robot, framePositions, pImpl_->fullBodyIkSolver_);
+    PerformFullIk(*robot, position, pImpl_->fullBodyIkSolver_);
     // retrieve effector targets
-    std::vector<Eigen::Vector3d> targets = RetrieveEffectorTargets(framePositions, *robot);
+    std::vector<Eigen::Vector3d> targets = RetrieveEffectorTargets(position, *robot);
 
     //retrieving updated objects
     const ObjectDictionary& dictionnary = pImpl_->cScenario_->scenario->objDictionnary;
@@ -925,6 +1029,15 @@ std::cout << "no contact found contact" << limb->tag << std::endl;
 
 std::vector<planner::Robot*> Motion::RetargetContactInternal(const std::size_t frameid, const Eigen::VectorXd& framePositions, const T_PointReplacement& objectModifications, bool force) const
 {
+    Eigen::VectorXd position;
+    if(pImpl_->useFantomJoints)
+    {
+        position = pImpl_->adaptVector(framePositions);
+    }
+    else
+    {
+        position = framePositions;
+    }
     std::vector<planner::Robot*> res;
     // check how we are doing this frame
     // retrieving frame
@@ -932,11 +1045,11 @@ std::vector<planner::Robot*> Motion::RetargetContactInternal(const std::size_t f
     // cloning reference robot from frame.
     planner::Robot* robot = new planner::Robot(*pImpl_->states_[frameid]->value);
     // moving robot to new position
-    robot->SetPosition(framePositions.head<3>(), true);
+    robot->SetPosition(position.head<3>(), true);
     // performing ik to reconstruct joint variation:
-    PerformFullIk(*robot, framePositions, pImpl_->fullBodyIkSolver_);
+    PerformFullIk(*robot, position, pImpl_->fullBodyIkSolver_);
     // retrieve effector targets
-    std::vector<Eigen::Vector3d> targets = RetrieveEffectorTargets(framePositions, *robot);
+    std::vector<Eigen::Vector3d> targets = RetrieveEffectorTargets(position, *robot);
 
     //retrieving updated objects
     const ObjectDictionary& dictionnary = pImpl_->cScenario_->scenario->objDictionnary;
@@ -1146,6 +1259,7 @@ Motion* efort::LoadMotion(CompleteScenario *scenario)
 {
     Motion* motion = new Motion;
     motion->pImpl_.reset(new PImpl(scenario));
+motion->pImpl_->useFantomJoints = false;
     motion->frames_ = FramesFromStates(motion->pImpl_.get());
     DumpFrames(motion->pImpl_->contacts_);
     return motion;

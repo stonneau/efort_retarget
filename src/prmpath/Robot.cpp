@@ -845,9 +845,14 @@ Eigen::VectorXd planner::AsConfiguration(Robot* robot)
     return res;
 }
 
-void AsPositionRec(planner::Node* node, Eigen::VectorXd& condiguration, std::size_t& cid)
+void AsPositionRec(planner::Node* node, Eigen::VectorXd& condiguration, std::size_t& cid, bool fantom)
 {
     if(node->offset != Eigen::Vector3d::Zero())
+    {
+        condiguration.block<3,1>(cid,0) = node->position;
+        cid += 3;
+    }
+    if(fantom && node->children.size() == 0 && node->tag.find("head") == std::string::npos)
     {
         condiguration.block<3,1>(cid,0) = node->position;
         cid += 3;
@@ -859,16 +864,17 @@ void AsPositionRec(planner::Node* node, Eigen::VectorXd& condiguration, std::siz
         for(std::vector<Node*>::const_iterator cit = node->children.begin();
             cit != node->children.end(); ++cit)
         {
-            AsPositionRec(*cit, condiguration, cid);
+            AsPositionRec(*cit, condiguration, cid, fantom);
         }
     }
 }
 
-Eigen::VectorXd planner::AsPosition(Node* robot)
+Eigen::VectorXd planner::AsPosition(Node* robot, bool fantom)
 {
     std::size_t size = GetNumNodes(robot) * 3;
+    if(fantom) size += 18 * 3;
     Eigen::VectorXd res(size);
     std::size_t cid = 0;
-    AsPositionRec(robot, res, cid);
+    AsPositionRec(robot, res, cid, fantom);
     return res.block(0,0,cid,1);
 }

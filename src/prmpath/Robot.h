@@ -119,7 +119,7 @@ public:
 int GetNumChildren(const Node* node);
 int GetNumNodes(const Node* node);
 Eigen::VectorXd AsConfiguration(Robot* robot);
-Eigen::VectorXd AsPosition(Node *robot);
+Eigen::VectorXd AsPosition(Node *robot, bool fantom = false);
 Eigen::Vector3d GetEffectorCenter(Node* node);
 std::vector<Node*> GetEffectors(Node* node, bool onePerLimb=false);
 std::vector<Node*> AsVector(Node* node);

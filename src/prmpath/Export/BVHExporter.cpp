@@ -41,7 +41,7 @@ namespace
                 f << f.nl() << "End Site" << f.nl() << "{";
                 f.AddTab();
                     // last offset corresponds to half length of final cube according to ParserBVH.hpp
-                    offset.normalize(); offset *= 0.001 / 2;
+                    offset.normalize(); offset *= 0.0001;
                     WriteOffsetLine(f, offset);
                 f.RemoveTab();
                 f << "}";
