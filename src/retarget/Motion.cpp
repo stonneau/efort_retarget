@@ -663,6 +663,110 @@ std::cout << "no contact found contact" << limb->tag << std::endl;
     return positions; // TODO
 }
 
+#include "prmpath/animation/StateInterpolation.h"
+
+namespace
+{
+    std::vector<Frame> FramesFromStates(efort::PImpl* pImpl)
+    {
+        std::vector<Frame> res;
+        // pour le moment on charge le chemin
+        int numFrame = 0;
+        std::vector< std::vector<std::size_t> > contactids; // storing references to contacts created at each frame
+        for(planner::T_State::const_iterator sit_1 = pImpl->states_.begin();
+            sit_1 != pImpl->states_.end(); ++sit_1, ++numFrame)
+        {
+            std::vector<std::size_t> frameContactIds;
+            for(int i=0; i< pImpl->contacts_.size(); ++i)
+            {
+                frameContactIds.push_back(-1);
+            }
+            // create vectors
+            State& cState = **sit_1;
+            int cid = 0;
+            for(std::vector<int>::const_iterator cit = cState.contactLimbs.begin();
+                cit != cState.contactLimbs.end(); ++cit, ++cid)
+            {
+                //find position
+                bool newContact(true);
+                if(!pImpl->contacts_[*cit].empty())
+                {
+                    Contact& previous = pImpl->contacts_[*cit].back();
+                    if(previous.endFrame_ == numFrame-1) // && (previous.worldPosition_ - cState.contactLimbPositions[cid]).norm() < 0.15)
+                    {
+                        previous.endFrame_ = numFrame;
+                        newContact = false;
+                    }
+                }
+                if(newContact)
+                {
+                    Contact contact;
+                    contact.startFrame_ = numFrame;
+                    contact.endFrame_ = numFrame;
+                    contact.limbIndex_ = *cit;
+                    contact.surfaceNormal_ =  cState.contactLimbPositionsNormals[cid];
+                    /*contact.triangleId_ = -1;
+                    contact.objectId_ = -1;*/
+                    contact.worldPosition_ =cState.contactLimbPositions[cid];
+                    pImpl->contacts_[*cit].push_back(contact);
+                }
+                frameContactIds[*cit] = pImpl->contacts_[*cit].size()-1;
+            }
+            contactids.push_back(frameContactIds);
+        }
+        numFrame = 0;
+        for(planner::T_State::const_iterator sit_1 = pImpl->states_.begin();
+            sit_1 != pImpl->states_.end(); ++sit_1, ++numFrame)
+        {
+            Frame frame;
+            //frame.configuration_ = planner::AsConfiguration((*sit_1)->value);
+            for(int i=0; i< pImpl->contacts_.size(); ++i)
+            {
+                std::size_t id = contactids[numFrame][i];
+                if(id != -1)
+                {
+                    frame.contacts_.push_back(pImpl->contacts_[i][id]);
+                }
+            }
+            res.push_back(frame);
+
+        }
+        return res;
+    }
+}
+
+void Motion::ReloadMotion()
+{
+    pImpl_->states_ = pImpl_->cScenario_->states;
+    frames_ = FramesFromStates(pImpl_.get());
+}
+
+void Motion::Interpolate(const std::size_t frameid, const Eigen::VectorXd& frameFrom, const Eigen::VectorXd& frameTo, bool useSplines)
+{
+    Eigen::VectorXd positionFrom, positionTo;
+    if(pImpl_->useFantomJoints)
+    {
+        positionFrom = pImpl_->adaptVector(frameFrom);
+        positionTo = pImpl_->adaptVector(frameTo);
+    }
+    else
+    {
+        positionFrom = frameFrom;
+        positionTo = frameTo;
+    }
+    planner::State* sFrom = new planner::State(pImpl_->states_[frameid]);
+    planner::State* sTo = new planner::State(pImpl_->states_[frameid+1]);
+    planner::Robot* robotFrom = sFrom->value;
+    planner::Robot* robotTo = sTo->value;
+    robotFrom->SetPosition(positionFrom.head<3>(), true);
+    robotTo->SetPosition(positionTo.head<3>(), true);
+    PerformFullIk(*robotFrom, positionFrom, pImpl_->fullBodyIkSolver_);
+    PerformFullIk(*robotTo, positionTo, pImpl_->fullBodyIkSolver_);
+    planner::T_State newStates = planner::Animate(*pImpl_->cScenario_, *sFrom, *sTo, 24, useSplines);
+    pImpl_->cScenario_->states.insert(pImpl_->cScenario_->states.begin()+frameid+1,newStates.begin()+1,newStates.end()-1);
+    ReloadMotion();
+}
+
 
 
 bool RetargetLimbContact(const efort::PImpl* pImpl_, planner::Robot* r[], const Contact& contact,  planner::Object::T_Object& objects, std::vector<FrameReport>& res
@@ -1158,76 +1262,6 @@ std::cout << "no contact found contact" << limb->tag << std::endl;
 
 #endif
 
-
-namespace
-{
-    std::vector<Frame> FramesFromStates(efort::PImpl* pImpl)
-    {
-        std::vector<Frame> res;
-        // pour le moment on charge le chemin
-        int numFrame = 0;
-        std::vector< std::vector<std::size_t> > contactids; // storing references to contacts created at each frame
-        for(planner::T_State::const_iterator sit_1 = pImpl->states_.begin();
-            sit_1 != pImpl->states_.end(); ++sit_1, ++numFrame)
-        {
-            std::vector<std::size_t> frameContactIds;
-            for(int i=0; i< pImpl->contacts_.size(); ++i)
-            {
-                frameContactIds.push_back(-1);
-            }
-            // create vectors
-            State& cState = **sit_1;
-            int cid = 0;
-            for(std::vector<int>::const_iterator cit = cState.contactLimbs.begin();
-                cit != cState.contactLimbs.end(); ++cit, ++cid)
-            {
-                //find position
-                bool newContact(true);
-                if(!pImpl->contacts_[*cit].empty())
-                {
-                    Contact& previous = pImpl->contacts_[*cit].back();
-                    if(previous.endFrame_ == numFrame-1) // && (previous.worldPosition_ - cState.contactLimbPositions[cid]).norm() < 0.15)
-                    {
-                        previous.endFrame_ = numFrame;
-                        newContact = false;
-                    }
-                }
-                if(newContact)
-                {
-                    Contact contact;
-                    contact.startFrame_ = numFrame;
-                    contact.endFrame_ = numFrame;
-                    contact.limbIndex_ = *cit;
-                    contact.surfaceNormal_ =  cState.contactLimbPositionsNormals[cid];
-                    /*contact.triangleId_ = -1;
-                    contact.objectId_ = -1;*/
-                    contact.worldPosition_ =cState.contactLimbPositions[cid];
-                    pImpl->contacts_[*cit].push_back(contact);
-                }
-                frameContactIds[*cit] = pImpl->contacts_[*cit].size()-1;
-            }
-            contactids.push_back(frameContactIds);
-        }
-        numFrame = 0;
-        for(planner::T_State::const_iterator sit_1 = pImpl->states_.begin();
-            sit_1 != pImpl->states_.end(); ++sit_1, ++numFrame)
-        {
-            Frame frame;
-            //frame.configuration_ = planner::AsConfiguration((*sit_1)->value);
-            for(int i=0; i< pImpl->contacts_.size(); ++i)
-            {
-                std::size_t id = contactids[numFrame][i];
-                if(id != -1)
-                {
-                    frame.contacts_.push_back(pImpl->contacts_[i][id]);
-                }
-            }
-            res.push_back(frame);
-
-        }
-        return res;
-    }
-}
 
 Motion* efort::LoadMotion(const std::string& scenario)
 {

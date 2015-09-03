@@ -163,6 +163,10 @@ struct Motion
     std::vector<Eigen::VectorXd> RetargetContact(const std::size_t frameid, const Eigen::VectorXd& framePositions,
                                                  const T_PointReplacement& objectModifications, const std::vector<bool>& forcemask) const;
 
+
+    void Interpolate(const std::size_t frameidFrom, const Eigen::VectorXd& frameFrom, const Eigen::VectorXd& frameTo,
+                                                 bool useSplines);
+
     ///parameter retargetType help you choose collision and or / reachability for retargetting decision
     std::vector<FrameReport> RetargetMotion(const std::vector<Eigen::VectorXd>& framePositions, const T_PointReplacement& objectModifications,
                                             const int retargetType, const std::size_t frameStart = 0, bool force = false) const;
@@ -180,6 +184,7 @@ struct Motion
 private:
     std::auto_ptr<PImpl> pImpl_;
     friend Motion* LoadMotion(const std::string& scenario);
+    void ReloadMotion();
 #if INTERNAL
     friend Motion* LoadMotion(planner::CompleteScenario* completeScenario);
 #endif

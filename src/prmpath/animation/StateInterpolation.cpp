@@ -122,8 +122,10 @@ namespace
         return CheckPathRec(collider, object, path, step, start);
     }
 
-    InterpolatePath* createInitPath(const State& from, const State& to, Collider& collider, Model& model, const int effectorid)
+    InterpolatePath* createInitPath(const State& from, const State& to, Collider& collider, Model& model, const int effectorid, const Eigen::Vector3d& offset)
     {
+        from.value->node->Update();
+        to.value->node->Update();
         const planner::Node* limbFrom = planner::GetChild(from.value, effectorid);
         const planner::Node* limbTo = planner::GetChild(to.value, effectorid);
 
@@ -133,9 +135,9 @@ namespace
             parent = parent->parent;
         }
         std::vector<C2_Point> res; res.push_back(MakeConfiguration(limbFrom->current));
-        Eigen::Vector3d offset = parent->position - limbTo->position;
+        /*Eigen::Vector3d offset = parent->position - limbTo->position;
         offset =  Eigen::Vector3d (0,1,0);
-        offset.normalize();
+        offset.normalize();*/
         C2_Point cFrom = MakeConfiguration(limbFrom->current);
         C2_Point cTo = MakeConfiguration(limbTo->current);
         planner::InterpolatePath* initpath = new  planner::InterpolatePath(cFrom,cTo,0,1);
@@ -155,7 +157,7 @@ namespace
                 bool ok(false);
                 for (int i = 0; i<1 && !ok; ++i)
                 {
-                    model.SetPosition(model.GetPosition() + 0.3* offset);
+                    model.SetPosition(model.GetPosition() + 0.1 * i * offset);
                     ok = collider.IsColliding(model.englobed);
                 }
                 if(true)
@@ -180,7 +182,15 @@ namespace
             : scenario(scenario)
             , solver(0.001, 0.01)
         {
-            for(std::vector<int>::const_iterator cit = state->contactLimbs.begin();
+            for(int i =0; i < scenario.limbs.size(); ++i)
+            {
+                planner::Node* limb =  planner::GetChild(state->value,scenario.limbs[i]->id);
+                std::vector<ik::PartialDerivativeConstraint*> constraints;
+                ik::MatchTargetConstraint* constraint = new ik::MatchTargetConstraint(limb);
+                constraints.push_back(constraint);
+                allconstraints.push_back(constraints);
+            }
+            /*for(std::vector<int>::const_iterator cit = state->contactLimbs.begin();
                 cit != state->contactLimbs.end(); ++cit)
             {
                 planner::Node* limb =  planner::GetChild(state->value,scenario.limbs[*cit]->id);
@@ -188,7 +198,7 @@ namespace
                 ik::MatchTargetConstraint* constraint = new ik::MatchTargetConstraint(limb);
                 constraints.push_back(constraint);
                 allconstraints.push_back(constraints);
-            }
+            }*/
         }
 
         ~DoIk()
@@ -207,15 +217,15 @@ namespace
         void operator ()(planner::State* state, int limit = 10)
         {
             ik::IKSolver solver;
-            std::vector<Eigen::Vector3d>::iterator posit = state->contactLimbPositions.begin();
-            std::vector<Eigen::Vector3d>::iterator normit = state->contactLimbPositionsNormals.begin();
+            std::map<int, Eigen::Vector3d>::iterator posit = state->targets.begin();
             int limbId = 0;
-            for(std::vector<int>::const_iterator cit = state->contactLimbs.begin();
-                cit != state->contactLimbs.end(); ++cit, ++posit, ++normit, ++limbId)
+            //for(std::vector<int>::const_iterator cit = state->contactLimbs.begin();
+            //    cit != state->contactLimbs.end(); ++cit, ++posit, ++normit, ++limbId)
+            for(; posit != state->targets.end(); ++posit, ++limbId)
             {
-                planner::Node* limb =  planner::GetChild(state->value,scenario.limbs[*cit]->id);
+                planner::Node* limb =  planner::GetChild(state->value,scenario.limbs[posit->first]->id);
                 int limite = limit;
-                while(limite > 0 && !solver.StepClamping(limb, *posit, *posit, allconstraints[limbId], true))
+                while(limite > 0 && !solver.StepClamping(limb, posit->second, posit->second, allconstraints[posit->first], true))
                 {
                     limite--;
                 }
@@ -246,16 +256,44 @@ namespace
                 {
                     const Eigen::Vector3d& positionFrom = to.contactLimbPositions[lIndex2];
                     notfound = false;
-                    if((positionFrom - positionTo).norm() > 0.00001)
+                    if((positionFrom - positionTo).norm() > 0.001)
                     {
-                        res.push_back(lIndex);
+                        //res.push_back(lIndex);
+                        res.push_back(*cit);
                     }
                     break;
                 }
             }
             if(notfound) // new contact created
             {
-                res.push_back(lIndex);
+                //res.push_back(lIndex);
+                res.push_back(*cit);
+            }
+        }
+        return res;
+    }
+
+    std::vector<int> GetContactFreeContacts(const planner::CompleteScenario& scenario,
+                                            const planner::State& from, const planner::State& to)
+    {
+
+        std::vector<int> res;
+        int id;
+        for(int i = 0; i < scenario.limbs.size(); ++i)
+        {
+            bool found(false);
+            for(std::vector<int>::const_iterator cit2 = to.contactLimbs.begin();
+                cit2 != to.contactLimbs.end() && !found; ++cit2)
+            {
+                if(*cit2 == i)
+                {
+                    found = true;
+                    id = *cit2;
+                }
+            }
+            if(!found)
+            {
+                res.push_back(i);
             }
         }
         return res;
@@ -282,22 +320,63 @@ namespace
         for(std::vector<int>::const_iterator cit = contacts.begin();
             cit != contacts.end(); ++cit)
         {
-            int limbindex = to.contactLimbs[*cit];
+            int limbindex = *cit;
             // Find position in initial Configuration
             //create Model
             int effId(-1);
             planner::Node * limb = planner::GetChild(from.value, scenario.limbs[limbindex]->id);
+            Eigen::Vector3d normal = to.contactLimbPositionsNormals[*cit];
+            Eigen::Vector3d toRoot = to.contactLimbPositions[*cit] - limb->position;
+            toRoot.normalize();
+            normal += toRoot;
+            normal.normalize();
             planner::Object* obj = GetEffector(limb, effId);
             Collider collider(scenario.scenario->objects_);
             Model model; model.englobed = new planner::Object(*obj);
-            res.push_back(new InterpolateSpline( createInitPath(from, to, collider, model, effId), collider, model));
+            Eigen::Vector3d offset = normal;
+            res.push_back(new InterpolateSpline( createInitPath(from, to, collider, model, effId, offset), collider, model));
         }
         return res;
     }
 
-    double GetMinTime(const planner::CompleteScenario& scenario, const std::vector<InterpolateSpline*>& lines)
+    std::vector<InterpolateSpline*> NoContactSplineInterpolation(const std::vector<int>& nocontacts, const planner::CompleteScenario& scenario, const planner::State& from, const planner::State& to)
+    {
+        std::vector<InterpolateSpline*> res;
+        for(std::vector<int>::const_iterator cit = nocontacts.begin();
+            cit != nocontacts.end(); ++cit)
+        {
+            int limbindex = *cit;
+            // Find position in initial Configuration
+            //create Model
+            int effId(-1);
+            planner::Node * limb = planner::GetChild(from.value, scenario.limbs[limbindex]->id);
+            Eigen::Vector3d normal(0,0,1);
+            Eigen::Vector3d toRoot =  planner::GetEffectorCenter(limb) - limb->position;
+            toRoot.normalize();
+            normal += toRoot;
+            normal.normalize();
+            planner::Object* obj = GetEffector(limb, effId);
+            Collider collider(scenario.scenario->objects_);
+            Model model; model.englobed = new planner::Object(*obj);
+            Eigen::Vector3d offset = normal;
+            res.push_back(new InterpolateSpline( createInitPath(from, to, collider, model, effId, offset), collider, model));
+        }
+        return res;
+    }
+
+    double GetMinTime(const planner::CompleteScenario& scenario, const std::vector<InterpolateSpline*>& lines,
+                       const std::vector<InterpolateSpline*>& lines2)
     {
         double min = 0;
+        for(std::vector<InterpolateSpline*>::const_iterator cit = lines2.begin()
+            ; cit != lines2.end(); ++cit)
+        {
+            double time = std::min ((*cit)->distance() / (scenario.limbspeed.front() + 0.000000000001), 4.); // TODO
+            if(time > min)
+            {
+                min = time;
+            }
+        }
         for(std::vector<InterpolateSpline*>::const_iterator cit = lines.begin()
             ; cit != lines.end(); ++cit)
         {
@@ -314,8 +393,10 @@ namespace
     {
         InterpolateContacts(const planner::CompleteScenario& scenario, const planner::State& from, const planner::State& to)
             :involvedContacts_(GetModifiedContacts(from, to))
-            ,contactInterpolation_(ContactSplineInterpolation(involvedContacts_, scenario, from, to))
-            , minTime_(GetMinTime(scenario, contactInterpolation_))
+            , contactFree_(GetContactFreeContacts(scenario, from, to))
+            , contactInterpolation_(ContactSplineInterpolation(involvedContacts_, scenario, from, to))
+            , noContactInterpolation_(NoContactSplineInterpolation(contactFree_, scenario, from, to))
+            , minTime_(GetMinTime(scenario, contactInterpolation_, noContactInterpolation_))
         {
             // NOTHING
         }
@@ -326,6 +407,11 @@ namespace
             {
                 delete *cit;
             }
+            for(std::vector<InterpolateSpline*>::const_iterator cit = noContactInterpolation_.begin()
+                ; cit != noContactInterpolation_.end(); ++cit)
+            {
+                delete *cit;
+            }
         }
         void operator ()(planner::State& current, double time) const
         {
@@ -333,11 +419,20 @@ namespace
             for(std::vector<int>::const_iterator cit = involvedContacts_.begin();
                 cit!= involvedContacts_.end(); ++cit, ++intit)
             {
-                current.contactLimbPositions[*cit] = (**intit)(time);
+               current.targets[*cit] = (**intit)(time);
+               //current.contactLimbPositions[*cit] = (**intit)(time);
+            }
+            intit = noContactInterpolation_.begin();
+            for(std::vector<int>::const_iterator cit = contactFree_.begin();
+                cit!= contactFree_.end(); ++cit, ++intit)
+            {
+                current.targets[*cit] = (**intit)(time);
             }
         }
         const std::vector<int> involvedContacts_;
+        const std::vector<int> contactFree_;
         const std::vector<InterpolateSpline*> contactInterpolation_;
+        const std::vector<InterpolateSpline*> noContactInterpolation_;
         const double minTime_;
     };
 
@@ -404,6 +499,12 @@ planner::T_State insertRRTForOneLimb(const planner::CompleteScenario& scenario,
         else
         {
             ns = new planner::State(&from, limbIndex);
+            std::vector<Eigen::Vector3d>::const_iterator posId = ns->contactLimbPositions.begin();
+            for(std::vector<int>::const_iterator cit = ns->contactLimbs.begin();
+                            cit != ns->contactLimbs.end(); ++cit, ++posId)
+            {
+                ns->targets.insert(std::make_pair(*cit,*posId));
+            }
             ns->value->SetRotation(ln->configuration_.second, false);
             ns->value->SetPosition(ln->configuration_.first, true);
             planner::Node* limb = planner::GetChild(ns->value, ln->limb_->id);
@@ -485,22 +586,20 @@ planner::T_State insertRRT(const planner::CompleteScenario& scenario, const plan
     return limbres;
 }
 
-planner::T_State planner::Animate(const planner::CompleteScenario& scenario, const planner::State& from, const planner::State& to, int framerate)
+planner::T_State planner::Animate(const planner::CompleteScenario& scenario, const planner::State& from, const planner::State& to, int framerate, bool useSplines)
 {    
     planner::T_State fullpath;
     fullpath.push_back(new State(&from));fullpath.push_back(new State(&to));
-    planner::T_State rrtres = insertRRT(scenario, fullpath);
-    /*planner::T_State res;
-    AnimateInternal(scenario,from,to,res,framerate);*/
-    return rrtres;
+    return Animate(scenario, fullpath, framerate, useSplines);
 }
 
-planner::T_State planner::Animate(const planner::CompleteScenario& scenario, const planner::T_State& fullpath, int framerate)
+planner::T_State planner::Animate(const planner::CompleteScenario& scenario, const planner::T_State& fullpath, int framerate, bool useSplines)
 {
     planner::T_State rrtres = insertRRT(scenario, fullpath);
+    if(!useSplines) return rrtres;
     planner::T_State res;
-    planner::T_State::const_iterator cit1 = rrtres.begin(); ++cit1;
-    planner::T_State::const_iterator cit2 = rrtres.begin(); ++cit2;++cit2;
+    planner::T_State::const_iterator cit1 = rrtres.begin();
+    planner::T_State::const_iterator cit2 = rrtres.begin();++cit2;
     int i = 0;
     do
     {
@@ -509,5 +608,4 @@ planner::T_State planner::Animate(const planner::CompleteScenario& scenario, con
          ++i;
     } while(cit2 != rrtres.end());
     return res;
-    return rrtres;
 }

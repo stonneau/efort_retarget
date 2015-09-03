@@ -774,6 +774,14 @@ void SaveRetarget()
     retargeter.Save("./retarget.bvh");
 }
 
+void Interpolate()
+{
+    Eigen::VectorXd from = planner::AsPosition(states[current]->value->node);
+    Eigen::VectorXd to = planner::AsPosition(states[current+1]->value->node);
+    motion->Interpolate(current,from,to,true);
+    states = cScenario->states;
+}
+
 void DumpIds(planner::Node* current)
 {
     std::cout << current->tag << "  " << current->id << std::endl;
@@ -838,7 +846,8 @@ void command(int cmd)   /**  key control function; */
         case 'f' :
         {
             std::cout << "computing animation " << std::endl;
-            states = planner::Animate(*cScenario, states, 24);
+            Interpolate();
+            //states = planner::Animate(*cScenario, states, 24);
             //interpolaterrt();
             std::cout << "done " << std::endl;
             break;

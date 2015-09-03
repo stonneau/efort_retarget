@@ -11,6 +11,7 @@
 #define _STRUCT_COMPLETESCENARIO
 
 #include <vector>
+#include <map>
 #include <string>
 
 #include "prm/Scenario.h"
@@ -29,6 +30,7 @@ struct State
     State(const State* parent);
     State(const State* parent, int except);
     ~State(){if(value)delete value;}
+    std::map<int, Eigen::Vector3d> targets;
     std::vector<int> contactLimbs;
     std::vector<Eigen::Vector3d> contactLimbPositions;
     std::vector<Eigen::Vector3d> contactLimbPositionsNormals;
