@@ -192,7 +192,7 @@ public:
         dVec /= (mb->t_ - ma->t_); // speed
         for(int i =0; i < dVec.rows() -1; ++i)
         {
-            if(dVec(i) > 0.3)
+            if(dVec(i) > 5)
             {
                 //std::cout << "trop grosse vitesse " << i << "\n" << dVec << std::endl;
                 return false;

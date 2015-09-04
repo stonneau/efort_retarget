@@ -191,7 +191,6 @@ private:
             {
                 erased = true;
                 res.erase(res.begin() + currentIndex + 1, res.begin() + i);
-                std::cout << "je sers a qqe chose " << std::endl;
             }
         }
         if(erased)

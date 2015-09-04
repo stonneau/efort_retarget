@@ -782,6 +782,20 @@ void Interpolate()
     states = cScenario->states;
 }
 
+void InterpolateAll()
+{
+    int save = current;
+    while(current < states.size()-3)
+    {
+        Eigen::VectorXd from = planner::AsPosition(states[current]->value->node);
+        Eigen::VectorXd to = planner::AsPosition(states[current+1]->value->node);
+        motion->Interpolate(current,from,to,true,true);
+        current += cScenario->states.size() - states.size() +1;
+        states = cScenario->states;
+    }
+    current = save;
+}
+
 void DumpIds(planner::Node* current)
 {
     std::cout << current->tag << "  " << current->id << std::endl;
@@ -846,7 +860,7 @@ void command(int cmd)   /**  key control function; */
         case 'f' :
         {
             std::cout << "computing animation " << std::endl;
-            Interpolate();
+            InterpolateAll();
             //states = planner::Animate(*cScenario, states, 24);
             //interpolaterrt();
             std::cout << "done " << std::endl;

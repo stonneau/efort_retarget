@@ -18,16 +18,22 @@ using namespace planner;
 namespace
 {
     typedef Eigen::Vector3d point_t;
-    //typedef spline::exact_cubic <double, double, 3, true, point_t> exact_cubic_t;
-    typedef spline::bezier_curve  <double, double, 3, true, point_t> exact_cubic_t;
-    //typedef std::pair<double, point_t> Waypoint;
-    typedef point_t Waypoint;
+    typedef spline::exact_cubic <double, double, 3, true, point_t> exact_cubic_t;
+    //typedef spline::bezier_curve  <double, double, 3, true, point_t> exact_cubic_t;
+    typedef std::pair<double, point_t> Waypoint;
+    //typedef point_t Waypoint;
     typedef std::vector<Waypoint> T_Waypoint;
 
     planner::C2_Point MakeConfiguration(const planner::State& state)
     {
         matrices::ExpMap emap(state.value->currentRotation);
         return std::make_pair(state.value->currentPosition, emap.log());
+    }
+
+    planner::C2_Point MakeConfiguration(const Eigen::Vector3d& position, const planner::Object* state)
+    {
+        matrices::ExpMap emap(state->GetOrientation());
+        return std::make_pair(position, emap.log());
     }
 
     planner::C2_Point MakeConfiguration(const planner::Object* state)
@@ -78,8 +84,8 @@ namespace
         for(T_MilePoint::const_iterator cit = path->milePoints_.begin();
             cit != path->milePoints_.end(); ++cit)
         {
-            //waypoints.push_back(std::make_pair(cit->first,cit->second.first));
-            waypoints.push_back(cit->second.first);
+            waypoints.push_back(std::make_pair(cit->first,cit->second.first));
+            //waypoints.push_back(cit->second.first);
         }
         //waypoints.push_back(std::make_pair(1.,path->max().first));
         return new exact_cubic_t(waypoints.begin(),waypoints.end());
@@ -87,26 +93,45 @@ namespace
 
     struct InterpolateSpline
     {
-        InterpolateSpline(const InterpolatePath* path, Collider& collider, const Model& model)
-            : cspline_(createSpline(path))
+        InterpolateSpline(const InterpolatePath* path, Collider& collider, const Model& model, bool usepath = false)
+            : cspline_(usepath ? 0 :  createSpline(path))
             , path_(path)
+            , usepath_(usepath)
+            , distance_((path_->max().first - (*path_)(0).first).norm())
+            , straight_(distance_ < 0.05)
         {
 
         }
-        ~InterpolateSpline(){delete cspline_;delete path_;}
+        ~InterpolateSpline(){if (cspline_) delete cspline_;delete path_;}
 
         Eigen::Vector3d operator () (double t) const
         {
-            return (*cspline_)(t);
+            if(straight_ || t>0.1)
+            {
+                return path_->max().first;
+            }
+            else if(usepath_)
+            {
+                return path_->operator ()(t).first;
+            }
+            else
+            {
+                return (*cspline_)(t);
+            }
         }
 
         double distance() const
         {
-            return ((*cspline_)(1) - (*cspline_)(0)).norm();
+            if(cspline_)
+                return ((*cspline_)(1) - (*cspline_)(0)).norm();
+            return distance_;
         }
         exact_cubic_t* cspline_;
         //planner::SplinePath spline_;
         const ParamFunction* path_;
+        const bool usepath_;
+        const double distance_;
+        const bool straight_;
     };
 
     bool CheckPathRec(Collider& collider, planner::Object& object, const planner::InterpolatePath& path, const double step, double& start)
@@ -126,11 +151,11 @@ namespace
     {
         from.value->node->Update();
         to.value->node->Update();
-        const planner::Node* limbFrom = planner::GetChild(from.value, effectorid);
-        const planner::Node* limbTo = planner::GetChild(to.value, effectorid);
+        planner::Node* limbFrom = planner::GetChild(from.value, effectorid);
+        planner::Node* limbTo = planner::GetChild(to.value, effectorid);
 
         const planner::Node* parent = limbTo;
-        while(parent->position == limbTo->position)
+        while(parent->position == limbTo->position || parent->children.size() == 1)
         {
             parent = parent->parent;
         }
@@ -157,12 +182,19 @@ namespace
                 bool ok(false);
                 for (int i = 0; i<1 && !ok; ++i)
                 {
-                    model.SetPosition(model.GetPosition() + 0.1 * i * offset);
-                    ok = collider.IsColliding(model.englobed);
+                    /*std::cout << "offset " << offset << " ok " << ok << std::endl;
+                    model.SetPosition(initpath->operator ()(0.5).first);
+                    model.SetPosition(model.GetPosition() + 1 * i * offset);
+                    ok = collider.IsColliding(model.englobed);*/
                 }
                 if(true)
                 {
-                    res.push_back(MakeConfiguration(model.englobed));
+                    model.SetPosition(initpath->operator ()(0.3).first);
+                    model.SetPosition(model.GetPosition() + 0.3 * 1 * offset);
+                    //res.push_back(MakeConfiguration(model.englobed));
+                    model.SetPosition(initpath->operator ()(0.7).first);
+                    model.SetPosition(model.GetPosition() + 0.3 * 1 * offset);
+                    //res.push_back(MakeConfiguration(model.englobed));
                     delete initpath;
                     initpath = new planner::InterpolatePath(MakeConfiguration(model.englobed),MakeConfiguration(limbTo->current),0,1);
                     start = 0;
@@ -173,6 +205,14 @@ namespace
         }
         delete initpath;
         res.push_back(MakeConfiguration(limbTo->current));
+        // now recreate path with real configuration, because ik use effector center
+        std::vector<C2_Point> res2;
+        res2.push_back(MakeConfiguration(planner::GetEffectorCenter(limbFrom),limbFrom->current));
+        for(int i = 1; i< res.size()-1; ++i)
+        {
+            res2.push_back(res[i]);
+        }
+        res2.push_back(MakeConfiguration(planner::GetEffectorCenter(limbTo),limbTo->current));
         return new planner::InterpolatePath(res, true);
     }
 
@@ -214,7 +254,7 @@ namespace
             }
         }
 
-        void operator ()(planner::State* state, int limit = 10)
+        void operator ()(planner::State* state, int limit = 30)
         {
             ik::IKSolver solver;
             std::map<int, Eigen::Vector3d>::iterator posit = state->targets.begin();
@@ -273,6 +313,37 @@ namespace
         return res;
     }
 
+    std::vector<int> GetContactStaticContacts(const planner::State& from, const planner::State& to
+                                              ,std::vector<Eigen::Vector3d>& staticvectors)
+    {
+        std::vector<int> res;
+        int lIndex = 0;
+        for(std::vector<int>::const_iterator cit = to.contactLimbs.begin();
+            cit != to.contactLimbs.end(); ++cit, ++lIndex)
+        {
+            const Eigen::Vector3d& positionTo = from.contactLimbPositions[lIndex];
+
+            int lIndex2 = 0;
+            for(std::vector<int>::const_iterator cit2 = from.contactLimbs.begin();
+                cit2 != from.contactLimbs.end(); ++cit2, ++lIndex2)
+            {
+                if(*cit2 == *cit)
+                {
+                    const Eigen::Vector3d& positionFrom = to.contactLimbPositions[lIndex2];
+                    if((positionFrom - positionTo).norm() < 0.001)
+                    {
+                        //res.push_back(lIndex);
+                        res.push_back(*cit);
+                        staticvectors.push_back(positionTo);
+                    }
+                    break;
+                }
+            }
+        }
+        return res;
+    }
+
+
     std::vector<int> GetContactFreeContacts(const planner::CompleteScenario& scenario,
                                             const planner::State& from, const planner::State& to)
     {
@@ -328,13 +399,25 @@ namespace
             Eigen::Vector3d normal = to.contactLimbPositionsNormals[*cit];
             Eigen::Vector3d toRoot = to.contactLimbPositions[*cit] - limb->position;
             toRoot.normalize();
-            normal += toRoot;
+            normal += 10*toRoot;
             normal.normalize();
             planner::Object* obj = GetEffector(limb, effId);
             Collider collider(scenario.scenario->objects_);
             Model model; model.englobed = new planner::Object(*obj);
             Eigen::Vector3d offset = normal;
-            res.push_back(new InterpolateSpline( createInitPath(from, to, collider, model, effId, offset), collider, model));
+            if((to.contactLimbPositions[*cit] - from.contactLimbPositions[*cit]).norm() < 0.1)
+            {
+                const planner::Node* limbFrom = planner::GetChild(from.value, effId);
+                const planner::Node* limbTo = planner::GetChild(to.value, effId);
+                C2_Point cFrom = MakeConfiguration(from.contactLimbPositions[*cit], limbFrom->current);
+                C2_Point cTo = MakeConfiguration(to.contactLimbPositions[*cit], limbTo->current);
+                planner::InterpolatePath* initpath = new planner::InterpolatePath(cFrom,cTo,0,1);
+                res.push_back(new InterpolateSpline( initpath, collider, model));
+            }
+            else
+            {
+                res.push_back(new InterpolateSpline( createInitPath(from, to, collider, model, effId, offset), collider, model));
+            }
         }
         return res;
     }
@@ -359,7 +442,7 @@ namespace
             Collider collider(scenario.scenario->objects_);
             Model model; model.englobed = new planner::Object(*obj);
             Eigen::Vector3d offset = normal;
-            res.push_back(new InterpolateSpline( createInitPath(from, to, collider, model, effId, offset), collider, model));
+            res.push_back(new InterpolateSpline( createInitPath(from, to, collider, model, effId, offset), collider, model, true));
         }
         return res;
     }
@@ -397,6 +480,7 @@ namespace
             , contactInterpolation_(ContactSplineInterpolation(involvedContacts_, scenario, from, to))
             , noContactInterpolation_(NoContactSplineInterpolation(contactFree_, scenario, from, to))
             , minTime_(GetMinTime(scenario, contactInterpolation_, noContactInterpolation_))
+            , static_(GetContactStaticContacts(from, to, targetsStatic_))
         {
             // NOTHING
         }
@@ -428,11 +512,19 @@ namespace
             {
                 current.targets[*cit] = (**intit)(time);
             }
+            std::vector<Eigen::Vector3d>::const_iterator vecit = targetsStatic_.begin();
+            for(std::vector<int>::const_iterator cit = static_.begin();
+                cit!= static_.end(); ++cit, ++vecit)
+            {
+                current.targets[*cit] = *vecit;
+            }
         }
         const std::vector<int> involvedContacts_;
         const std::vector<int> contactFree_;
         const std::vector<InterpolateSpline*> contactInterpolation_;
         const std::vector<InterpolateSpline*> noContactInterpolation_;
+        std::vector<Eigen::Vector3d> targetsStatic_;
+        const std::vector<int> static_;
         const double minTime_;
     };
 
@@ -459,7 +551,7 @@ namespace
             res.push_back(current);
             step += stepsize;
         }
-        res.push_back(new State(&to));
+        //res.push_back(new State(&to));
         return res;
     }
 }
@@ -509,7 +601,7 @@ planner::T_State insertRRTForOneLimb(const planner::CompleteScenario& scenario,
             ns->value->SetPosition(ln->configuration_.first, true);
             planner::Node* limb = planner::GetChild(ns->value, ln->limb_->id);
             planner::sampling::LoadSample(*ln->sample_,limb);
-            doIk(ns, 10);
+            doIk(ns, 20);
         }
         res.push_back(ns);
     }
@@ -586,16 +678,16 @@ planner::T_State insertRRT(const planner::CompleteScenario& scenario, const plan
     return limbres;
 }
 
-planner::T_State planner::Animate(const planner::CompleteScenario& scenario, const planner::State& from, const planner::State& to, int framerate, bool useSplines)
+planner::T_State planner::Animate(const planner::CompleteScenario& scenario, const planner::State& from, const planner::State& to, int framerate, bool useSplines, bool useRRT)
 {    
     planner::T_State fullpath;
     fullpath.push_back(new State(&from));fullpath.push_back(new State(&to));
-    return Animate(scenario, fullpath, framerate, useSplines);
+    return Animate(scenario, fullpath, framerate, useSplines,useRRT);
 }
 
-planner::T_State planner::Animate(const planner::CompleteScenario& scenario, const planner::T_State& fullpath, int framerate, bool useSplines)
+planner::T_State planner::Animate(const planner::CompleteScenario& scenario, const planner::T_State& fullpath, int framerate, bool useSplines, bool useRRT)
 {
-    planner::T_State rrtres = insertRRT(scenario, fullpath);
+    planner::T_State rrtres = useRRT ? insertRRT(scenario, fullpath) : fullpath; // = insertRRT(scenario, fullpath);
     if(!useSplines) return rrtres;
     planner::T_State res;
     planner::T_State::const_iterator cit1 = rrtres.begin();

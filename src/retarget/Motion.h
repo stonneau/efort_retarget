@@ -165,7 +165,7 @@ struct Motion
 
 
     void Interpolate(const std::size_t frameidFrom, const Eigen::VectorXd& frameFrom, const Eigen::VectorXd& frameTo,
-                                                 bool useSplines);
+                                                 bool useSplines, bool useRRT = true);
 
     ///parameter retargetType help you choose collision and or / reachability for retargetting decision
     std::vector<FrameReport> RetargetMotion(const std::vector<Eigen::VectorXd>& framePositions, const T_PointReplacement& objectModifications,
