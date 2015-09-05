@@ -71,15 +71,21 @@ Scenario::Scenario(const std::string& filepath, double scaleEnglobing)
 				loading = true;
 				prmfile = line.substr(10);
 			}
-			else if(line.find("SIZE = ") == 0 && !loading)
+            else if(line.find("SIZE = ") == 0)
 			{
-				generating = true;
-				std::string::size_type sz, sz2;     // alias of size_t
-				line = line.substr(7);
+                if(!loading)
+                {
+                    generating = true;
+                }
+                std::string::size_type sz, sz2;     // alias of size_t
+                line = line.substr(7);
                 size = std::stoi (line,&sz);
-				sz2 = sz;
+                sz2 = sz;
                 neighbourDistance = std::stof (line.substr(sz), &sz);
                 neighbours = std::stoi (line.substr(sz2 + sz));
+                neighbours_ = neighbours;
+                size_ = size;
+                neighbourDistance_ = neighbourDistance;
 			}
 			else if(line.find("VISIBILITY") == 0)
 			{
@@ -106,6 +112,9 @@ std::cout << " prm construction timer, time :" << tp.elapsedTime() << "\n mon ti
             }
             else
             {
+                neighbours_ = neighbours;
+                size_ = size;
+                neighbourDistance_ = neighbourDistance;
                 prm = new SimplePRM(model_, contactObjects_, objects_, neighbourDistance, size, neighbours, visibility);
             }
 		}

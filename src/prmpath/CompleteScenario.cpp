@@ -63,6 +63,7 @@ CompleteScenario::CompleteScenario()
     , from(0)
     , to(0)
     , spline(0)
+    , sPrm_(0)
 {
     // NOTHING
 }
@@ -78,6 +79,10 @@ CompleteScenario::~CompleteScenario()
         it != completePath.end(); ++it)
     {
         delete *it;
+    }
+    if(sPrm_)
+    {
+        delete sPrm_;
     }
 }
 
@@ -367,6 +372,9 @@ cScenario->limbspeed.push_back(1); // TODO HAVE ACTUAL SPEED
 Timer timer; timer.Start();
 std::cout << " path request timer" << std::endl;
         cScenario->path = cScenario->scenario->prm->GetPath(*(cScenario->from), *(cScenario->to), 10, true, true);
+    /*cScenario->sPrm_ = new SimpleRRT(cScenario->from,cScenario->to, cScenario->scenario->objects_, cScenario->scenario->neighbourDistance_,
+                   cScenario->scenario->size_, cScenario->scenario->neighbours_);
+    cScenario->path = cScenario->sPrm_->GetPath();*/
 std::cout << " path request end timer, time :" <<  timer.GetTime() << std::endl;
 timer.Stop();
         }

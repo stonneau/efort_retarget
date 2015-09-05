@@ -63,6 +63,9 @@ struct Scenario
     Object* point_;
 	Model model_;
 	SimplePRM* prm;
+    double neighbourDistance_;
+    int neighbours_;
+    int size_;
     ObjectDictionary objDictionnary;
 };
 

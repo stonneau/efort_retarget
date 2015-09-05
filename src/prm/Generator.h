@@ -25,6 +25,7 @@ public:
 public:
     ///\brief Constructor
     Generator(Object::T_Object& objects, Object::T_Object& collisionObjects,  const Model& model);
+    Generator(const std::vector<double>& bounds, Object::T_Object& objects, Object::T_Object& collisionObjects,  const Model& model);
 
     ///\brief Destructor
     ~Generator();
@@ -43,6 +44,7 @@ private:
     void InitWeightedTriangles();
     SampleTriangle RandomPointIntriangle();
     const SampleTriangle& WeightedTriangles();
+    const std::vector<double> bounds_;
 
 private:
     std::vector<float> weights_;

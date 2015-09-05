@@ -727,7 +727,7 @@ namespace
                     state->contactLimbPositions.push_back(target);
                     state->contactLimbPositionsNormals.push_back(normal);
 
-                    int limit = 10;
+                    int limit = 20;
                     //int limit2 = 100;
                     ik::IKSolver solver;
                     ik::VectorAlignmentConstraint constraint(normal);
@@ -953,25 +953,25 @@ namespace
 }
 
 
-planner::T_State planner::PostureSequence(planner::CompleteScenario& scenario, int dpethcontact)
+planner::T_State planner::PostureSequence(planner::CompleteScenario& scenario, CT_Model& pat, planner::State* sFrom, int dpethcontact)
 {
     planner::T_State res;
-    State* current = &scenario.initstate;
+    State* current = sFrom;
     planner::Collider collider(scenario.scenario->objects_);
     current->stable = Stable(current);
     res.push_back(current);
     CT_Model path;
-    if(scenario.path.size() >= 2)
+    if(pat.size() >= 2)
     {
         //scenario.spline = new planner::SplinePath(planner::SplineFromPath(collider,scenario.path,2,2));
-        scenario.spline = new planner::SplinePath(planner::SplineShortCut(collider,scenario.path,2,2,2));
+        scenario.spline = new planner::SplinePath(planner::SplineShortCut(collider,pat,2,2,2));
         //CT_Model path0 = developPathSpline(*scenario.spline, scenario.scenario->model_);
-        CT_Model path0 = developPath(scenario.path);
+        CT_Model path0 = developPath(pat);
         path = PartialShortcut(path0, collider);
     }
     else
     {
-        path = scenario.path;
+        path = pat;
     }
     Timer tp; tp.Start();
     CT_Model depth;
@@ -1013,4 +1013,9 @@ planner::T_State planner::PostureSequence(planner::CompleteScenario& scenario, i
         res.push_back(current);
     }
     return res;
+}
+
+planner::T_State planner::PostureSequence(planner::CompleteScenario& scenario, int dpethcontact)
+{
+    return PostureSequence(scenario,scenario.path, &scenario.initstate, dpethcontact);
 }

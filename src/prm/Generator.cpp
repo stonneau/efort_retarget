@@ -47,6 +47,47 @@ namespace
             to.push_back(*cit);
         }
     }
+
+    std::vector<double> DefaultBounds()
+    {
+        std::vector<double> res;
+        // rx ry rz then x y z
+        res.push_back(-M_PI);res.push_back(M_PI);
+        res.push_back(-M_PI);res.push_back(M_PI);
+        res.push_back(-M_PI);res.push_back(M_PI);
+        res.push_back(-100);res.push_back(100);
+        res.push_back(-100);res.push_back(100);
+        res.push_back(-100);res.push_back(100);
+        return res;
+    }
+
+    bool CheckBoundsTranslation(const std::vector<double>& bounds, const Eigen::Vector3d& P)
+    {
+        if(bounds.empty())
+        {
+             return P.y() > -0.3;
+        }
+        else
+        {
+            return     P.x() >= bounds[6] && P.x() <= bounds[7]
+                    && P.y() >= bounds[8] && P.y() <= bounds[9]
+                    && P.z() >= bounds[10] && P.z() <= bounds[11];
+        }
+    }
+    bool CheckBoundsRotation(const std::vector<double>& bounds, const matrices::Matrix3& rotation)
+    {
+        if(bounds.empty())
+        {
+             true;
+        }
+        else
+        {
+            Eigen::Vector3d rot = rotation.eulerAngles(0, 1, 2);
+            return     rot.x() >= bounds[0] && rot.x() <= bounds[1]
+                    && rot.y() >= bounds[2] && rot.y() <= bounds[3]
+                    && rot.z() >= bounds[4] && rot.z() <= bounds[5];
+        }
+    }
 }
 
 using namespace planner;
@@ -56,6 +97,22 @@ Generator::Generator(Object::T_Object &objects, Object::T_Object &collisionObjec
     , objects_(objects)
     , contactObjects_(collisionObjects)
     , collider_(collisionObjects)
+    //, bounds_(DefaultBounds())
+{
+    if(! ::generatorInit)
+    {
+        ::generatorInit = true;
+        srand((unsigned int)(time(0))); //Init Random generation
+    }
+    InitWeightedTriangles();
+}
+
+Generator::Generator(const std::vector<double>& bounds, Object::T_Object &objects, Object::T_Object &collisionObjects, const Model &model)
+    : model_(model)
+    , objects_(objects)
+    , contactObjects_(collisionObjects)
+    , collider_(collisionObjects)
+    , bounds_(bounds)
 {
     if(! ::generatorInit)
     {
@@ -103,7 +160,7 @@ Model* Generator::operator()(std::vector<std::size_t>& limbs)
         double r1, r2;
         r1 = ((double) rand() / (RAND_MAX)); r2 = ((double) rand() / (RAND_MAX));
         Eigen::Vector3d P = (1 - sqrt(r1)) * A + (sqrt(r1) * (1 - r2)) * B + (sqrt(r1) * r2) * C;
-if(P.y() > -0.3)
+if(CheckBoundsTranslation(bounds_, P))
 		{
 			configuration.SetPosition(P);
 			// random rotation
@@ -129,7 +186,7 @@ if(P.y() > -0.3)
             while( !(y.dot(tranformComplete.block<3,1>(0,0)) < 0 // && // torso not facing upward
                     // y.dot(tranformComplete.block<3,1>(0,1)) > 0.3 &&
                      //&& x.dot(tranformComplete.block<3,1>(0,1)) < -0.1
-                   )); // head not pointing too down
+                     ) && CheckBoundsRotation(bounds_, tranformComplete)); // head not pointing too down
            // while( y.dot(tranformComplete.block<3,1>(0,0)) < 0.9);
             //while(false);
 			// find random direction

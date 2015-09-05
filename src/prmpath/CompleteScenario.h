@@ -20,6 +20,7 @@
 #include "prmpath/sampling/Sample.h"
 #include "smoothing/smooth.h"
 #include "collision/Sphere.h"
+#include "prm/SimpleRRT.h"
 
 namespace planner
 {
@@ -90,6 +91,7 @@ struct CompleteScenario
     SplinePath* spline;
     bool relocateEnglobing;
     T_State states; // optional
+    SimpleRRT* sPrm_;
 };
 
 /*

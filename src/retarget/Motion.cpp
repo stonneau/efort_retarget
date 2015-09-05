@@ -111,6 +111,15 @@ struct efort::PImpl
         return res;
     }
 
+
+    planner::Model* ModelFromRobot(planner::Robot* robot)
+    {
+        planner::Model* model = new planner::Model(cScenario_->scenario->model_);
+        model->SetPosition(robot->currentPosition);
+        model->SetOrientation(robot->currentRotation);
+        return model;
+    }
+
     ~PImpl()
     {
         delete cScenario_;
@@ -739,6 +748,63 @@ void Motion::ReloadMotion()
 {
     pImpl_->states_ = pImpl_->cScenario_->states;
     frames_ = FramesFromStates(pImpl_.get());
+}
+
+#include "prm/SimpleRRT.h"
+
+void Motion::DoRRT(const std::size_t frameidFrom, const Eigen::VectorXd& frameFrom, const Eigen::VectorXd& frameTo,
+                                             const T_PointReplacement &objectModifications, bool useSplines)
+{
+    Eigen::VectorXd positionFrom, positionTo;
+    if(pImpl_->useFantomJoints)
+    {
+        positionFrom = pImpl_->adaptVector(frameFrom);
+        positionTo = pImpl_->adaptVector(frameTo);
+    }
+    else
+    {
+        positionFrom = frameFrom;
+        positionTo = frameTo;
+    }
+    planner::State* sFrom = new planner::State(pImpl_->states_[frameidFrom]);
+    planner::State* sTo = new planner::State(pImpl_->states_[frameidFrom+1]);
+    planner::Robot* robotFrom = sFrom->value;
+    planner::Robot* robotTo = sTo->value;
+    robotFrom->SetPosition(positionFrom.head<3>(), true);
+    robotTo->SetPosition(positionTo.head<3>(), true);
+    PerformFullIk(*robotFrom, positionFrom, pImpl_->fullBodyIkSolver_);
+    PerformFullIk(*robotTo, positionTo, pImpl_->fullBodyIkSolver_);
+
+    Model* mFrom = pImpl_->ModelFromRobot(robotFrom);
+    Model* mTo = pImpl_->ModelFromRobot(robotTo);
+
+    const ObjectDictionary& dictionnary = pImpl_->cScenario_->scenario->objDictionnary;
+    std::vector<std::size_t> newObjectIds;
+    planner::Object::T_Object objects =  dictionnary.recreate(objectModifications, pImpl_->cScenario_->scenario->objects_, newObjectIds);
+
+    SimpleRRT rrt(mFrom,mTo,objects,pImpl_->cScenario_->scenario->neighbourDistance_,
+                   pImpl_->cScenario_->scenario->size_, pImpl_->cScenario_->scenario->neighbours_);
+
+    CT_Model path(rrt.GetPath());
+    planner::T_State res = planner::PostureSequence(*pImpl_->cScenario_, path, sFrom);
+    planner::T_State newStates;
+    if(useSplines && !res.empty())
+    {
+        planner::T_State::const_iterator cit = res.begin();
+        planner::T_State::const_iterator cit2 = res.begin(); ++cit2;
+        for(;cit2 != res.end(); ++cit, ++cit2)
+        {
+            planner::T_State tmp = planner::Animate(*pImpl_->cScenario_, *(*cit), *(*cit2), 24, useSplines, false);
+            newStates.insert(newStates.end(),tmp.begin(), tmp.end());
+        }
+    }
+    else
+    {
+        newStates = res;
+    }
+    //planner::T_State newStates = planner::Animate(*pImpl_->cScenario_, *sFrom, *sTo, 24, useSplines, useRRT);
+    pImpl_->cScenario_->states.insert(pImpl_->cScenario_->states.begin()+frameidFrom+1,newStates.begin(),newStates.end());
+    ReloadMotion();
 }
 
 void Motion::Interpolate(const std::size_t frameid, const Eigen::VectorXd& frameFrom, const Eigen::VectorXd& frameTo, bool useSplines, bool useRRT)

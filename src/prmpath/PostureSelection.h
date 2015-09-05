@@ -40,5 +40,6 @@ sampling::T_Samples GetPosturesOnTarget(Robot& robot, Node* limb, const sampling
                                          , Object::T_Object& obstacles, const Eigen::Vector3d &worldposition);
 
 planner::T_State PostureSequence(planner::CompleteScenario& scenario, int dpethcontact = 2);
+planner::T_State PostureSequence(planner::CompleteScenario& scenario, CT_Model& path, planner::State* sFrom, int dpethcontact = 2);
 } // namespace planner
 #endif //_POSTURESELECTION

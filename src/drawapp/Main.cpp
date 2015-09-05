@@ -569,8 +569,8 @@ void start()
     //cScenario = planner::CompleteScenarioFromFile("../humandes/fullscenarios/truck_test.scen");
     //cScenario = planner::CompleteScenarioFromFile("../humandes/fullscenarios/race2.scen");
     //cScenario = planner::CompleteScenarioFromFile("../humandes/fullscenarios/between.scen");
-    //cScenario = planner::CompleteScenarioFromFile("../rami/scenarios/rami.scen");
-    cScenario = planner::CompleteScenarioFromFile("../rami/scenarios/climb.scen");
+    cScenario = planner::CompleteScenarioFromFile("../rami/scenarios/rami.scen");
+    //cScenario = planner::CompleteScenarioFromFile("../rami/scenarios/climb.scen");
     //cScenario = planner::CompleteScenarioFromFile("../rami/scenarios/statestest.scen");
     //cScenario = planner::CompleteScenarioFromFile("../humandes/fullscenarios/race_climb.scen");
     //cScenario = planner::CompleteScenarioFromFile("../humandes/fullscenarios/climbing.scen");
@@ -777,8 +777,11 @@ void SaveRetarget()
 void Interpolate()
 {
     Eigen::VectorXd from = planner::AsPosition(states[current]->value->node);
-    Eigen::VectorXd to = planner::AsPosition(states[current+1]->value->node);
-    motion->Interpolate(current,from,to,true);
+    Eigen::VectorXd to = planner::AsPosition(states[current+40]->value->node);
+    //motion->Interpolate(current,from,to,true);
+    efort::T_PointReplacement replacement;
+    motion->DoRRT(current,from,to,replacement,true);
+    //current += cScenario->states.size() - states.size() +1;
     states = cScenario->states;
 }
 
@@ -860,7 +863,7 @@ void command(int cmd)   /**  key control function; */
         case 'f' :
         {
             std::cout << "computing animation " << std::endl;
-            InterpolateAll();
+            Interpolate();
             //states = planner::Animate(*cScenario, states, 24);
             //interpolaterrt();
             std::cout << "done " << std::endl;

@@ -20,6 +20,8 @@ set(SOURCES
     Model.h
     SimplePRM.h
     SimplePRM.cpp
+    SimpleRRT.h
+    SimpleRRT.cpp
     LocalPlanner.h
     LocalPlanner.cpp
     Generator.h
