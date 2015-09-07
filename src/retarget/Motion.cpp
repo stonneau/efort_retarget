@@ -843,6 +843,32 @@ void Motion::Interpolate(const std::size_t frameid, const Eigen::VectorXd& frame
 }
 
 
+void Motion::Interpolate(const std::size_t frameid, const Eigen::VectorXd& frameFrom, const Eigen::VectorXd& frameTo, const int nbFrames, bool useSplines, bool useRRT)
+{
+    Eigen::VectorXd positionFrom, positionTo;
+    if(pImpl_->useFantomJoints)
+    {
+        positionFrom = pImpl_->adaptVector(frameFrom);
+        positionTo = pImpl_->adaptVector(frameTo);
+    }
+    else
+    {
+        positionFrom = frameFrom;
+        positionTo = frameTo;
+    }
+    planner::State* sFrom = new planner::State(pImpl_->states_[frameid]);
+    planner::State* sTo = new planner::State(pImpl_->states_[frameid+1]);
+    planner::Robot* robotFrom = sFrom->value;
+    planner::Robot* robotTo = sTo->value;
+    robotFrom->SetPosition(positionFrom.head<3>(), true);
+    robotTo->SetPosition(positionTo.head<3>(), true);
+    PerformFullIk(*robotFrom, positionFrom, pImpl_->fullBodyIkSolver_);
+    PerformFullIk(*robotTo, positionTo, pImpl_->fullBodyIkSolver_);
+    planner::T_State newStates = planner::Animate(*pImpl_->cScenario_, *sFrom, *sTo, nbFrames, useSplines, useRRT, true);
+    pImpl_->cScenario_->states.insert(pImpl_->cScenario_->states.begin()+frameid+1,newStates.begin(),newStates.end());
+    ReloadMotion();
+}
+
 
 bool RetargetLimbContact(const efort::PImpl* pImpl_, planner::Robot* r[], const Contact& contact,  planner::Object::T_Object& objects, std::vector<FrameReport>& res
                          , const std::size_t frameStart, const std::size_t frameEnd)

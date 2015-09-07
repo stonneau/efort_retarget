@@ -168,6 +168,9 @@ struct Motion
     void DoRRT(const std::size_t frameidFrom, const Eigen::VectorXd& frameFrom, const Eigen::VectorXd& frameTo, const T_PointReplacement& objectModifications,
                                                  bool useSplines = true);
 
+    void Interpolate(const std::size_t frameidFrom, const Eigen::VectorXd& frameFrom, const Eigen::VectorXd& frameTo, const int nbFrames,
+                                                 bool useSplines, bool useRRT = true);
+
     void Interpolate(const std::size_t frameidFrom, const Eigen::VectorXd& frameFrom, const Eigen::VectorXd& frameTo,
                                                  bool useSplines, bool useRRT = true);
 

@@ -528,7 +528,8 @@ namespace
         const double minTime_;
     };
 
-    planner::T_State AnimateInternal(const planner::CompleteScenario& scenario, const planner::State& from, const planner::State& to, planner::T_State& res, int framerate)
+    planner::T_State AnimateInternal(const planner::CompleteScenario& scenario, const planner::State& from, const planner::State& to, planner::T_State& res, int framerate,
+                                     bool framerameIsFramenb)
     {
         InterpolateContacts interpolate(scenario,from,to);
         planner::InterpolatePath path(MakeConfiguration(from),MakeConfiguration(to),0,1);
@@ -538,7 +539,7 @@ namespace
         current->contactLimbPositions = to.contactLimbPositions;
         current->contactLimbPositionsNormals = to.contactLimbPositionsNormals;
         current->contactLimbs = to.contactLimbs;
-        double nbFrames = std::max((double)(framerate)*interpolate.minTime_,2.);
+        double nbFrames = framerameIsFramenb ?  framerate : std::max((double)(framerate)*interpolate.minTime_,2.);
         double stepsize = double(1) / double(nbFrames-1); double step = stepsize;
         for(int i = 1; i< nbFrames-1; ++i)
         {
@@ -678,14 +679,15 @@ planner::T_State insertRRT(const planner::CompleteScenario& scenario, const plan
     return limbres;
 }
 
-planner::T_State planner::Animate(const planner::CompleteScenario& scenario, const planner::State& from, const planner::State& to, int framerate, bool useSplines, bool useRRT)
+planner::T_State planner::Animate(const planner::CompleteScenario& scenario, const planner::State& from, const planner::State& to, int framerate, bool useSplines, bool useRRT
+                                  , bool framerameIsFramenb)
 {    
     planner::T_State fullpath;
     fullpath.push_back(new State(&from));fullpath.push_back(new State(&to));
-    return Animate(scenario, fullpath, framerate, useSplines,useRRT);
+    return Animate(scenario, fullpath, framerate, useSplines,useRRT,framerameIsFramenb);
 }
 
-planner::T_State planner::Animate(const planner::CompleteScenario& scenario, const planner::T_State& fullpath, int framerate, bool useSplines, bool useRRT)
+planner::T_State planner::Animate(const planner::CompleteScenario& scenario, const planner::T_State& fullpath, int framerate, bool useSplines, bool useRRT, bool framerameIsFramenb)
 {
     planner::T_State rrtres = useRRT ? insertRRT(scenario, fullpath) : fullpath; // = insertRRT(scenario, fullpath);
     if(!useSplines) return rrtres;
@@ -695,7 +697,7 @@ planner::T_State planner::Animate(const planner::CompleteScenario& scenario, con
     int i = 0;
     do
     {
-        AnimateInternal(scenario,**cit1,**cit2,res,framerate);
+        AnimateInternal(scenario,**cit1,**cit2,res,framerate,framerameIsFramenb);
         ++cit1; ++cit2;
          ++i;
     } while(cit2 != rrtres.end());
