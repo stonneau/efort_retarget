@@ -778,9 +778,9 @@ void Interpolate()
 {
     Eigen::VectorXd from = planner::AsPosition(states[current]->value->node);
     Eigen::VectorXd to = planner::AsPosition(states[current+40]->value->node);
-    //motion->Interpolate(current,from,to,true);
+    motion->Interpolate(current,from,to,true);
     efort::T_PointReplacement replacement;
-    motion->DoRRT(current,from,to,replacement,true);
+    //motion->DoRRT(current,from,to,replacement,true);
     //current += cScenario->states.size() - states.size() +1;
     states = cScenario->states;
 }

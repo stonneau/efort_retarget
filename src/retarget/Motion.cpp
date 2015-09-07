@@ -729,6 +729,10 @@ namespace
         {
             Frame frame;
             //frame.configuration_ = planner::AsConfiguration((*sit_1)->value);
+            Eigen::VectorXd conf = planner::AsPosition((*sit_1)->value->node->children[0], pImpl->useFantomJoints);
+            frame.configuration_ = Eigen::VectorXd(conf.rows()+3);
+            frame.configuration_.head(3) = (*sit_1)->value->currentPosition;
+            frame.configuration_.tail(conf.rows()) =conf;
             for(int i=0; i< pImpl->contacts_.size(); ++i)
             {
                 std::size_t id = contactids[numFrame][i];
