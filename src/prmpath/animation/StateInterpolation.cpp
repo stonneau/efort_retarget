@@ -106,6 +106,8 @@ namespace
 
         Eigen::Vector3d operator () (double t) const
         {
+            std::cout << "dafuq" << path_->max().first;
+            return path_->max().first;
             if(straight_ || t>0.1)
             {
                 return path_->max().first;
@@ -147,7 +149,7 @@ namespace
         return CheckPathRec(collider, object, path, step, start);
     }
 
-    InterpolatePath* createInitPath(const State& from, const State& to, Collider& collider, Model& model, const int effectorid, const Eigen::Vector3d& offset)
+    InterpolatePath* createInitPath(const State& from, const State& to, Collider& collider, Model& model, const int effectorid, const Eigen::Vector3d& offset, const Eigen::Vector3d& target)
     {
         from.value->node->Update();
         to.value->node->Update();
@@ -163,8 +165,8 @@ namespace
         /*Eigen::Vector3d offset = parent->position - limbTo->position;
         offset =  Eigen::Vector3d (0,1,0);
         offset.normalize();*/
-        C2_Point cFrom = MakeConfiguration(limbFrom->current);
-        C2_Point cTo = MakeConfiguration(limbTo->current);
+        C2_Point cFrom = MakeConfiguration(planner::GetEffectorCenter(limbTo),limbFrom->current);
+        C2_Point cTo = MakeConfiguration(target,limbTo->current);
         planner::InterpolatePath* initpath = new  planner::InterpolatePath(cFrom,cTo,0,1);
         double start(0);
         bool collisionFree= (cFrom.first - cTo.first).norm() < 0.001;
@@ -204,7 +206,7 @@ namespace
             }
         }
         delete initpath;
-        res.push_back(MakeConfiguration(limbTo->current));
+        res.push_back(cTo);
         // now recreate path with real configuration, because ik use effector center
         std::vector<C2_Point> res2;
         res2.push_back(MakeConfiguration(planner::GetEffectorCenter(limbFrom),limbFrom->current));
@@ -407,6 +409,7 @@ namespace
             Eigen::Vector3d offset = normal;
             if((to.contactLimbPositions[*cit] - from.contactLimbPositions[*cit]).norm() < 0.1)
             {
+                std::cout << "target a " << to.contactLimbPositions[*cit] << std::endl;
                 const planner::Node* limbFrom = planner::GetChild(from.value, effId);
                 const planner::Node* limbTo = planner::GetChild(to.value, effId);
                 C2_Point cFrom = MakeConfiguration(from.contactLimbPositions[*cit], limbFrom->current);
@@ -416,7 +419,9 @@ namespace
             }
             else
             {
-                res.push_back(new InterpolateSpline( createInitPath(from, to, collider, model, effId, offset), collider, model));
+
+                std::cout << "target  b" << to.contactLimbPositions[*cit] << std::endl;
+                res.push_back(new InterpolateSpline( createInitPath(from, to, collider, model, effId, offset, to.contactLimbPositions[*cit]), collider, model));
             }
         }
         return res;
@@ -442,7 +447,11 @@ namespace
             Collider collider(scenario.scenario->objects_);
             Model model; model.englobed = new planner::Object(*obj);
             Eigen::Vector3d offset = normal;
-            res.push_back(new InterpolateSpline( createInitPath(from, to, collider, model, effId, offset), collider, model, true));
+            for(int i = 0; i < to.contactLimbPositions.size(); ++ i)
+            {
+                std::cout << "target c" << to.contactLimbPositions[i] << std::endl;
+            }
+            res.push_back(new InterpolateSpline( createInitPath(from, to, collider, model, effId, offset, to.contactLimbPositions[*cit]), collider, model, true));
         }
         return res;
     }
