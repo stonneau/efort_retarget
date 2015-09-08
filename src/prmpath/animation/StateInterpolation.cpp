@@ -106,9 +106,8 @@ namespace
 
         Eigen::Vector3d operator () (double t) const
         {
-            std::cout << "dafuq" << path_->max().first;
-            return path_->max().first;
-            if(straight_ || t>0.1)
+            //return path_->max().first;
+            if(straight_ || t>0.97)
             {
                 return path_->max().first;
             }
@@ -409,7 +408,6 @@ namespace
             Eigen::Vector3d offset = normal;
             if((to.contactLimbPositions[*cit] - from.contactLimbPositions[*cit]).norm() < 0.1)
             {
-                std::cout << "target a " << to.contactLimbPositions[*cit] << std::endl;
                 const planner::Node* limbFrom = planner::GetChild(from.value, effId);
                 const planner::Node* limbTo = planner::GetChild(to.value, effId);
                 C2_Point cFrom = MakeConfiguration(from.contactLimbPositions[*cit], limbFrom->current);
@@ -419,8 +417,6 @@ namespace
             }
             else
             {
-
-                std::cout << "target  b" << to.contactLimbPositions[*cit] << std::endl;
                 res.push_back(new InterpolateSpline( createInitPath(from, to, collider, model, effId, offset, to.contactLimbPositions[*cit]), collider, model));
             }
         }
@@ -447,10 +443,6 @@ namespace
             Collider collider(scenario.scenario->objects_);
             Model model; model.englobed = new planner::Object(*obj);
             Eigen::Vector3d offset = normal;
-            for(int i = 0; i < to.contactLimbPositions.size(); ++ i)
-            {
-                std::cout << "target c" << to.contactLimbPositions[i] << std::endl;
-            }
             res.push_back(new InterpolateSpline( createInitPath(from, to, collider, model, effId, offset, to.contactLimbPositions[*cit]), collider, model, true));
         }
         return res;
