@@ -1,0 +1,15 @@
+PRMSCENARIO file="../rami/scenarios/table.txt"
+ROBOT_SKELETON file="../rami/modelinria/table.urdf"
+ROBOT_CONSTRAINTS file="../rami/modelinria/jointconstraints.txt"
+PATH_FROM matrix="1 0 0 0 0 1 0 0.8 0 0 1 0 0 0 0 1"
+PATH_BACKsTO matrix="0 1 0 -1 1 0 0 1.0 0 0 1 0 0 0 0 1"
+PATH_TO matrix="0 0 -1 0 0 1 0 1. 1 0 0 1 0 0 0 1"
+STATES FILE="../rami/bvh/t1.states"
+AutrePATH_f matrix="0 0 1 0 0 1 0 1. -1 0 0 1 0 0 0 1"
+LIMB joint_name="RightArm_z_joint" SPHERE="-0.3275 -0.1005 0.3404 0.5929"
+LIMB joint_name="LeftArm_z_joint"  SPHERE="0.4072 -0.0600 0.3756 0.5394"	
+LIMB joint_name="RightUpLeg_z_joint" SPHERE="-0.10791 -0.1046 -0.39344 0.5910"
+LIMB joint_name="LeftUpLeg_z_joint"  SPHERE="0.08362 -0.1046 -0.39344 0.5910" 
+NBSAMPLES N="100"
+INITCONTACTS 
+

@@ -325,7 +325,7 @@ namespace
         ox = from_double(node->offset(0));
         oy = from_double(node->offset(1));
         oz = from_double(node->offset(2));
-        std::string destobj("../rami/model/"+ node->tag);
+        std::string destobj("../rami/modelinria/"+ node->tag);
         Eigen::Vector3d off (0.001,0.001,0.001);
         if(node->children.size()) off =  node->children[0]->offset;
         objects::create_obj_box(destobj, off);
@@ -355,7 +355,7 @@ namespace
         outstream <<  "          <origin rpy=\"0 0 0\" xyz=\"0 0 0\"/>" <<'\n';
         outstream <<  "          <geometry>" <<'\n';
         //outstream <<  "            <mesh filename=\"./"<< "dummy" <<".obj\"/>" <<'\n';
-        outstream <<  "            <mesh filename=\"../rami/model/"<< name <<".obj\"/>" <<'\n';
+        outstream <<  "            <mesh filename=\"../rami/modelinria/"<< name <<".obj\"/>" <<'\n';
         outstream <<  "          </geometry>" <<'\n';
         outstream <<  "          <material name=\"Blue\"/>" <<'\n';
         outstream <<  "        </visual>" <<'\n';
@@ -364,7 +364,7 @@ namespace
         outstream <<  "          <geometry>" <<'\n';
         //outstream <<  "            <mesh filename=\"./"<< "dummy" <<".obj\"/>" <<'\n';
         //outstream <<  "            <mesh filename=\"./"<< name <<".obj\"/>" <<'\n';
-        outstream <<  "            <mesh filename=\"../rami/model/"<< name <<".obj\"/>" <<'\n';
+        outstream <<  "            <mesh filename=\"../rami/modelinria/"<< name <<".obj\"/>" <<'\n';
         outstream <<  "          </geometry>" <<'\n';
         outstream <<  "        </collision>" <<'\n';
         outstream <<  "      </link>" <<'\n';
@@ -418,6 +418,7 @@ namespace
         }
         else
         {
+            ++cit;++cit;++cit;
             double r[3];
             Eigen::Matrix3d rotx, roty, rotz;
             for(int i=0; i<3; ++i, ++cit)
@@ -478,6 +479,7 @@ namespace
             outstream << ea[i] << " ";
         }*/
         //idx+=3;
+        cit-=3;
         bvh_line_to_state_rec(root,cit, outstream);
         outstream << "\n";
     }
