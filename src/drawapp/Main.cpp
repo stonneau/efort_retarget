@@ -570,7 +570,8 @@ void start()
     //cScenario = planner::CompleteScenarioFromFile("../humandes/fullscenarios/race2.scen");
     //cScenario = planner::CompleteScenarioFromFile("../humandes/fullscenarios/between.scen");
     //cScenario = planner::CompleteScenarioFromFile("../rami/scenarios/rami.scen");
-    cScenario = planner::CompleteScenarioFromFile("../rami/scenarios/table.scen");
+    cScenario = planner::CompleteScenarioFromFile("../rami/scenarios/stones.scen");
+    //cScenario = planner::CompleteScenarioFromFile("../rami/scenarios/table.scen");
     //cScenario = planner::CompleteScenarioFromFile("../rami/scenarios/climb.scen");
     //cScenario = planner::CompleteScenarioFromFile("../rami/scenarios/statestest.scen");
     //cScenario = planner::CompleteScenarioFromFile("../humandes/fullscenarios/race_climb.scen");
