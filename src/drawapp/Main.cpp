@@ -570,8 +570,8 @@ void start()
     //cScenario = planner::CompleteScenarioFromFile("../humandes/fullscenarios/race2.scen");
     //cScenario = planner::CompleteScenarioFromFile("../humandes/fullscenarios/between.scen");
     //cScenario = planner::CompleteScenarioFromFile("../rami/scenarios/rami.scen");
-    cScenario = planner::CompleteScenarioFromFile("../rami/scenarios/stones.scen");
-    //cScenario = planner::CompleteScenarioFromFile("../rami/scenarios/table.scen");
+    //cScenario = planner::CompleteScenarioFromFile("../rami/scenarios/stones.scen");
+    cScenario = planner::CompleteScenarioFromFile("../rami/scenarios/table.scen");
     //cScenario = planner::CompleteScenarioFromFile("../rami/scenarios/climb.scen");
     //cScenario = planner::CompleteScenarioFromFile("../rami/scenarios/statestest.scen");
     //cScenario = planner::CompleteScenarioFromFile("../humandes/fullscenarios/race_climb.scen");
@@ -756,8 +756,8 @@ void Retarget(const Eigen::Vector3d& delta, const planner::Object* object)
     {
         res.push_back(planner::AsPosition(states[current+i]->value->node));
     }
-    std::vector<planner::Robot*> robs = motion->RetargetMotionInternal(res, replacement, current, efort::collision, true);
-    //std::vector<planner::Robot*> robs = motion->RetargetContactInternal(current, planner::AsPosition(robik.node), replacement, true);
+    //std::vector<planner::Robot*> robs = motion->RetargetMotionInternal(res, replacement, current, efort::collision, true);
+    std::vector<planner::Robot*> robs = motion->RetargetContactInternal(current, planner::AsPosition(robik.node), replacement, true);
     //states[current] = motion->Retarget(cScenario->robot, current, targets, cScenario->scenario->objects_);
     for(int i =0; i< robs.size(); ++i)
     {
@@ -918,17 +918,17 @@ std::cout << "frame id" << current << std::endl;
 
         std::cout << " SAMPLES" << cScenario->limbSamples[0].size() << std::endl;
             if(cScenario->limbSamples[0].empty()) return;
-            currentSample ++; if(cScenario->limbSamples[0].size() <= currentSample) currentSample = cScenario->limbSamples[0].size()-1;
-            planner::sampling::LoadSample(*(cScenario->limbSamples[0][currentSample]),planner::GetChild(cScenario->robot, "upper_right_arm_z_joint"));
+            currentSample ++; if(cScenario->limbSamples[1].size() <= currentSample) currentSample = cScenario->limbSamples[0].size()-1;
+            planner::sampling::LoadSample(*(cScenario->limbSamples[1][currentSample]),planner::GetChild(cScenario->robot, "LeftArm_z_joint"));
             break;
         }
         break;
         case '2' :
         {
-        std::cout << " SAMPLES" << cScenario->limbSamples[3].size() << std::endl;
+        std::cout << " SAMPLES" << cScenario->limbSamples[2].size() << std::endl;
             if(samples.empty()) return;
-            currentSample --; if(currentSample < 0) currentSample = 0;
-            planner::sampling::LoadSample(*(cScenario->limbSamples[3][currentSample]),planner::GetChild(cScenario->robot, "upper_left_leg_z_joint"));
+            currentSample ++; if(currentSample < 0) currentSample = 0;
+            planner::sampling::LoadSample(*(cScenario->limbSamples[2][currentSample]),planner::GetChild(cScenario->robot, "RightUpLeg_z_joint"));
             break;
         }
         case 'm' :
