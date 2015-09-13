@@ -702,7 +702,8 @@ planner::Node* planner::LoadRobot(const std::string& urdfpath)
 
 void GetOtherObjectsRec(planner::Node* current, planner::Node* limb, Object::T_Object& objects )
 {
-    if(current->tag == limb->tag)
+    if(current->tag == limb->tag || (current->tag == "LeftShoulder_z_joint")
+            || (current->tag == "RightShoulder_z_joint"))
         return;
     else if(current->current)
         objects.push_back(current->current);
@@ -744,7 +745,9 @@ bool planner::IsSelfColliding(planner::Robot* robot, planner::Node* limb)
         lit != limbObjects.end(); ++lit)
     {
         if((*lit)->IsColliding(otherObjects))
+        {
             return true;
+        }
     }
     return false;
 }

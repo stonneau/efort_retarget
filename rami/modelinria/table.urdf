@@ -384,21 +384,7 @@
       </joint>
       <link name="LeftHandPinky1_z_link"/>
       <link name="LeftHandPinky1_y_link"/>
-      <link name="LeftHandPinky1_x_link">
-        <visual>
-          <origin rpy="0 0 0" xyz="0 0 0"/>
-          <geometry>
-            <mesh filename="../rami/modelinria/LeftHandPinky1.obj"/>
-          </geometry>
-          <material name="Blue"/>
-        </visual>
-        <collision>
-          <origin rpy="0 0 0" xyz="0 0 0"/>
-          <geometry>
-            <mesh filename="../rami/modelinria/LeftHandPinky1.obj"/>
-          </geometry>
-        </collision>
-      </link>
+      <link name="LeftHandPinky1_x_link"/>
       <joint name="LeftHandPinky1_z_joint" type ="revolute">
           <axis xyz="0 0 1"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>
@@ -688,20 +674,7 @@
       </joint>
       <link name="RightHandPinky1_z_link"/>
       <link name="RightHandPinky1_y_link"/>
-      <link name="RightHandPinky1_x_link">
-        <visual>
-          <origin rpy="0 0 0" xyz="0 0 0"/>
-          <geometry>
-            <mesh filename="../rami/modelinria/RightHandPinky1.obj"/>
-          </geometry>
-          <material name="Blue"/>
-        </visual>
-        <collision>
-          <origin rpy="0 0 0" xyz="0 0 0"/>
-          <geometry>
-            <mesh filename="../rami/modelinria/RightHandPinky1.obj"/>
-          </geometry>
-        </collision>
+      <link name="RightHandPinky1_x_link"/>
       </link>
       <joint name="RightHandPinky1_z_joint" type ="revolute">
           <axis xyz="0 0 1"/>

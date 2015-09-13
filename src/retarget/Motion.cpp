@@ -506,7 +506,7 @@ std::cout << "no contact found contact" << limb->tag << std::endl;
     //Eigen::VectorXd res = framePositions;
     //res.tail(framePositions.rows()-3) =planner::AsPosition(robot->node->children[0]);
     //res.push_back(robot);
-    planner::Robot* r [100];
+    planner::Robot* r [300];
     r[0] = robot;
     #pragma omp parallel for
     for(int i = frameid; i <=furtherframe_; ++i)
@@ -640,7 +640,7 @@ std::cout << "no contact found contact" << limb->tag << std::endl;
     //Eigen::VectorXd res = framePositions;
     //res.tail(framePositions.rows()-3) =planner::AsPosition(robot->node->children[0]);
     //res.push_back(robot);
-    planner::Robot* r [100];
+    planner::Robot* r [300];
     r[0] = robot;
     #pragma omp parallel for
     for(int i = frameid; i <=furtherframe_; ++i)
@@ -794,7 +794,7 @@ void Motion::DoRRT(const std::size_t frameidFrom, const Eigen::VectorXd& frameFr
     planner::T_State newStates;
     if(useSplines && !res.empty())
     {
-        planner::T_State statesinterpolate[100];
+        planner::T_State statesinterpolate[300];
         //planner::T_State::const_iterator cit = res.begin();
         //planner::T_State::const_iterator cit2 = res.begin(); ++cit2;
         #pragma omp parallel for
@@ -1333,7 +1333,7 @@ std::cout << "no contact found contact" << limb->tag << std::endl;
     //Eigen::VectorXd res = framePositions;
     //res.tail(framePositions.rows()-3) =planner::AsPosition(robot->node->children[0]);
     //res.push_back(robot);
-    planner::Robot* r [100];
+    planner::Robot* r [300];
     r[0] = robot;
     #pragma omp parallel for
     for(int i = frameid; i <=furtherframe_; ++i)
