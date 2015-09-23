@@ -1058,6 +1058,25 @@ std::cout << "size contacts" << failedContacts.size() << std::endl;
     return res;
 }
 
+std::vector<FrameReport> Motion::ReturnMotion() const
+{
+    std::vector<FrameReport> res;
+    // create robot for each frame;
+    int nbLimbs = pImpl_->cScenario_->limbs.size();
+    for(std::size_t i = 0; i < pImpl_->states_.size(); ++i)
+    {
+        FrameReport report (i, nbLimbs);
+        planner::Robot* r = (pImpl_->states_[i]->value);
+        Eigen::VectorXd pos = planner::AsPosition(r->node->children[0], pImpl_->useFantomJoints);
+        Eigen::VectorXd totpos(pos.rows() + 3);
+        report.pose_ = totpos;
+        report.pose_.head(3)= r->currentPosition;
+        report.pose_.tail(report.pose_.rows()-3)= pos;
+        res.push_back(report);
+    }
+    return res;
+}
+
 #if INTERNAL
 std::vector<planner::Robot*> Motion::RetargetMotionInternal(const std::vector<Eigen::VectorXd>& framePositions, const T_PointReplacement& objectModifications,
                                                             const std::size_t frameStart, const int retargetType, bool force) const

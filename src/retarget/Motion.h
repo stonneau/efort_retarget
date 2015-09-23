@@ -180,6 +180,8 @@ struct Motion
     std::vector<FrameReport> RetargetMotion(const std::vector<Eigen::VectorXd>& framePositions, const T_PointReplacement& objectModifications,
                                             const int retargetType, const std::size_t frameStart, const std::vector<bool>& forcemask) const;
 
+    std::vector<FrameReport> ReturnMotion() const;
+
 
 #if INTERNAL
     planner::Robot* RetargetInternal(const std::size_t frameid, const Eigen::VectorXd& framePositions, const T_PointReplacement& objectModifications) const;
