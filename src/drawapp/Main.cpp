@@ -70,6 +70,7 @@ namespace
     exporter::BVHExporter retargeter;
     planner::Robot* objectm(0);
     Eigen::VectorXd targetIk;
+    planner::Model* model(0);
 }
 
 /*Draw*/
@@ -499,12 +500,21 @@ void interpolaterrt()
 }
 }
 
+
+planner::Model* ModelFromRobot(planner::Robot* robot)
+{
+    model->SetPosition(robot->currentPosition);
+    model->SetOrientation(robot->currentRotation);
+    return model;
+}
+
 static void simLoop (int pause)
 {
     DrawSpline();
     DrawObjects();
     dsSetColorAlpha(0,0, 0.7,1);
     DrawNode(cScenario->robot->node);
+    //DrawModel(ModelFromRobot(cScenario->robot));
     DrawPoint(itompTransform * cScenario->robot->currentPosition);
     const planner::T_State& tstates = states;
     std::vector<Eigen::Vector3d>::iterator nit = states[current]->contactLimbPositionsNormals.begin();
@@ -559,6 +569,8 @@ static void simLoop (int pause)
     Vect3ToArray(p2, itompTransform * Eigen::Vector3d(0,0,1));
     dsDrawLineD(p1, p2);
 }
+
+
 void start()
 {
     constraints.push_back(new ik::VectorAlignmentConstraint(Eigen::Vector3d(0,1,0)));
@@ -571,7 +583,8 @@ void start()
     //cScenario = planner::CompleteScenarioFromFile("../humandes/fullscenarios/between.scen");
     //cScenario = planner::CompleteScenarioFromFile("../rami/scenarios/rami.scen");
     //cScenario = planner::CompleteScenarioFromFile("../rami/scenarios/stones.scen");
-    cScenario = planner::CompleteScenarioFromFile("../rami/scenarios/table.scen");
+    cScenario = planner::CompleteScenarioFromFile("../rami/scenarios/stonesprm.scen");
+    //cScenario = planner::CompleteScenarioFromFile("../rami/scenarios/table.scen");
     //cScenario = planner::CompleteScenarioFromFile("../rami/scenarios/climb.scen");
     //cScenario = planner::CompleteScenarioFromFile("../rami/scenarios/statestest.scen");
     //cScenario = planner::CompleteScenarioFromFile("../humandes/fullscenarios/race_climb.scen");
@@ -636,6 +649,7 @@ void start()
 
 
     InitFullClampling();
+    model = new planner::Model(cScenario->scenario->model_);
 }
 
 void WriteNodeLine(const Eigen::Matrix3d& rotation, const Eigen::Vector3d& position, std::stringstream& outstream)
@@ -779,11 +793,11 @@ void SaveRetarget()
 void Interpolate()
 {
     Eigen::VectorXd from = planner::AsPosition(states[current]->value->node);
-    Eigen::VectorXd to = planner::AsPosition(states[current+1]->value->node);
-    motion->Interpolate(current,from,to,true,false);
+    Eigen::VectorXd to = planner::AsPosition(states[current+30]->value->node);
+    //motion->Interpolate(current,from,to,true,false);
     efort::T_PointReplacement replacement;
-    //motion->DoRRT(current,from,to,replacement,true);
-    //current += cScenario->states.size() - states.size() +1;
+    motion->DoRRT(current,from,to,replacement,false);
+    current += cScenario->states.size() - states.size() +1;
     states = cScenario->states;
 }
 
@@ -865,8 +879,9 @@ void command(int cmd)   /**  key control function; */
         case 'f' :
         {
             std::cout << "computing animation " << std::endl;
-            Interpolate();
-            //states = planner::Animate(*cScenario, states, 24);
+            //Interpolate();
+            planner::T_State res = planner::Animate(*cScenario, states[current], states[current+1], 24, true, false);
+            states.insert(states.begin()+current+1,res.begin(),res.end());
             //interpolaterrt();
             std::cout << "done " << std::endl;
             break;

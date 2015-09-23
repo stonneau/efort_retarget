@@ -1155,21 +1155,7 @@
       </joint>
       <link name="RightToeBaseendsite_z_link"/>
       <link name="RightToeBaseendsite_y_link"/>
-      <link name="RightToeBaseendsite_x_link">
-        <visual>
-          <origin rpy="0 0 0" xyz="0 0 0"/>
-          <geometry>
-            <mesh filename="../rami/modelinria/RightToeBaseendsite.obj"/>
-          </geometry>
-          <material name="Blue"/>
-        </visual>
-        <collision>
-          <origin rpy="0 0 0" xyz="0 0 0"/>
-          <geometry>
-            <mesh filename="../rami/modelinria/RightToeBaseendsite.obj"/>
-          </geometry>
-        </collision>
-      </link>
+      <link name="RightToeBaseendsite_x_link"/>
       <joint name="RightToeBaseendsite_z_joint" type ="revolute">
           <axis xyz="0 0 1"/>
           <limit effort="10000" lower ="-3.14" upper="3.14" velocity ="0.6"/>

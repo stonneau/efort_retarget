@@ -26,13 +26,13 @@ constraint joint_name="RightUpLeg_z_joint" min="-45" max="45" default="0"
 constraint joint_name="RightUpLeg_y_joint" min="-10" max="10" default="0"
 constraint joint_name="RightUpLeg_x_joint" min="0" max="90" default="0"
                                            
-constraint joint_name="RightLeg_x_joint"   min="0" max="90" default="0"
+constraint joint_name="RightLeg_x_joint"   min="70" max="180" default="0"
 
 constraint joint_name="LeftUpLeg_z_joint" min="-45" max="45" default="0"
 constraint joint_name="LeftUpLeg_y_joint" min="-10" max="10" default="0"
 constraint joint_name="LeftUpLeg_x_joint" min="0" max="90" default="0"
 
-constraint joint_name="LeftLeg_x_joint"   min="0" max="90" default="0"
+constraint joint_name="LeftLeg_x_joint"   min="70" max="180" default="0"
 
 normal limb="RightArm_z_joint" normal="0 0 1"
 normal limb="LeftArm_z_joint" normal="0 0 1"

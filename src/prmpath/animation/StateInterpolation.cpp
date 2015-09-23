@@ -177,6 +177,20 @@ namespace
             if(CheckPathRec(collider,*model.englobed,*initpath,stepsize,start))
             {
                 collisionFree = true;
+                if(limbFrom->tag.find("arm") != std::string::npos)
+                {
+/*model.SetPosition(initpath->operator ()(0.5).first);
+model.SetPosition(model.GetPosition() + 1 * 3 * offset);
+res.push_back(MakeConfiguration(model.englobed));
+model.SetPosition(initpath->operator ()(0.7).first);
+model.SetPosition(model.GetPosition() + 0.3 * 1 * offset);
+//res.push_back(MakeConfiguration(model.englobed));
+delete initpath;
+initpath = new planner::InterpolatePath(MakeConfiguration(model.englobed),MakeConfiguration(limbTo->current),0,1);
+start = 0;
+stepsize = 0.05 * nbsteps / (nbsteps - step); // adjusting stepsize to reduced path
+collisionFree = true;*/
+                }
             }
             else // collision
             {
@@ -190,9 +204,9 @@ namespace
                 }
                 if(true)
                 {
-                    model.SetPosition(initpath->operator ()(0.3).first);
+                    model.SetPosition(initpath->operator ()(0.5).first);
                     model.SetPosition(model.GetPosition() + 0.3 * 1 * offset);
-                    //res.push_back(MakeConfiguration(model.englobed));
+                    res.push_back(MakeConfiguration(model.englobed));
                     model.SetPosition(initpath->operator ()(0.7).first);
                     model.SetPosition(model.GetPosition() + 0.3 * 1 * offset);
                     //res.push_back(MakeConfiguration(model.englobed));
@@ -227,8 +241,9 @@ namespace
             {
                 planner::Node* limb =  planner::GetChild(state->value,scenario.limbs[i]->id);
                 std::vector<ik::PartialDerivativeConstraint*> constraints;
-                ik::MatchTargetConstraint* constraint = new ik::MatchTargetConstraint(limb);
-                constraints.push_back(constraint);
+                //ik::MatchTargetConstraint* constraint = new ik::MatchTargetConstraint(limb);
+ik::VectorAlignmentConstraint* constraint = new ik::VectorAlignmentConstraint(Eigen::Vector3d(0,1,0));
+//constraints.push_back(constraint);
                 allconstraints.push_back(constraints);
             }
             /*for(std::vector<int>::const_iterator cit = state->contactLimbs.begin();
@@ -255,7 +270,7 @@ namespace
             }
         }
 
-        void operator ()(planner::State* state, int limit = 30)
+        void operator ()(planner::State* state, int limit = 10)
         {
             ik::IKSolver solver;
             std::map<int, Eigen::Vector3d>::iterator posit = state->targets.begin();
@@ -286,7 +301,7 @@ namespace
         for(std::vector<int>::const_iterator cit = to.contactLimbs.begin();
             cit != to.contactLimbs.end(); ++cit, ++lIndex)
         {
-            const Eigen::Vector3d& positionTo = from.contactLimbPositions[lIndex];
+            const Eigen::Vector3d& positionTo = to.contactLimbPositions[lIndex];
 
             int lIndex2 = 0;
             bool notfound(true);
@@ -295,9 +310,9 @@ namespace
             {
                 if(*cit2 == *cit)
                 {
-                    const Eigen::Vector3d& positionFrom = to.contactLimbPositions[lIndex2];
+                    const Eigen::Vector3d& positionFrom = from.contactLimbPositions[lIndex2];
                     notfound = false;
-                    if((positionFrom - positionTo).norm() > 0.001)
+                    if((positionFrom - positionTo).norm() > 0.01)
                     {
                         //res.push_back(lIndex);
                         res.push_back(*cit);
@@ -322,7 +337,7 @@ namespace
         for(std::vector<int>::const_iterator cit = to.contactLimbs.begin();
             cit != to.contactLimbs.end(); ++cit, ++lIndex)
         {
-            const Eigen::Vector3d& positionTo = from.contactLimbPositions[lIndex];
+            const Eigen::Vector3d& positionTo = to.contactLimbPositions[lIndex];
 
             int lIndex2 = 0;
             for(std::vector<int>::const_iterator cit2 = from.contactLimbs.begin();
@@ -330,8 +345,8 @@ namespace
             {
                 if(*cit2 == *cit)
                 {
-                    const Eigen::Vector3d& positionFrom = to.contactLimbPositions[lIndex2];
-                    if((positionFrom - positionTo).norm() < 0.001)
+                    const Eigen::Vector3d& positionFrom = from.contactLimbPositions[lIndex2];
+                    if((positionFrom - positionTo).norm() < 0.01)
                     {
                         //res.push_back(lIndex);
                         res.push_back(*cit);
@@ -392,32 +407,44 @@ namespace
         for(std::vector<int>::const_iterator cit = contacts.begin();
             cit != contacts.end(); ++cit)
         {
-            int limbindex = *cit;
+            int limbindex = to.indexIfContact(*cit);
             // Find position in initial Configuration
             //create Model
             int effId(-1);
-            planner::Node * limb = planner::GetChild(from.value, scenario.limbs[limbindex]->id);
-            Eigen::Vector3d normal = to.contactLimbPositionsNormals[*cit];
-            Eigen::Vector3d toRoot = to.contactLimbPositions[*cit] - limb->position;
+            planner::Node * limb = planner::GetChild(from.value, scenario.limbs[*cit]->id);
+            Eigen::Vector3d normal = to.contactLimbPositionsNormals[limbindex];
+            Eigen::Vector3d toRoot = to.contactLimbPositions[limbindex] - limb->position;
             toRoot.normalize();
             normal += 10*toRoot;
             normal.normalize();
             planner::Object* obj = GetEffector(limb, effId);
             Collider collider(scenario.scenario->objects_);
             Model model; model.englobed = new planner::Object(*obj);
-            Eigen::Vector3d offset = normal;
-            if((to.contactLimbPositions[*cit] - from.contactLimbPositions[*cit]).norm() < 0.1)
+Eigen::Vector3d offset = Eigen::Vector3d(0,1,0);
+            //Eigen::Vector3d offset = normal;
+offset.normalize();
+            Eigen::Vector3d fromPos;
+            /*if(from.contactLimbPositions.size() > *cit)
+            {
+                fromPos = from.contactLimbPositions[*cit];
+            }
+            else*/
+            {
+                planner::Node* limbFrom = planner::GetChild(from.value, effId);
+                fromPos = planner::GetEffectorCenter(limbFrom);
+            }
+            if((to.contactLimbPositions[limbindex] - fromPos).norm() < 0.1)
             {
                 const planner::Node* limbFrom = planner::GetChild(from.value, effId);
                 const planner::Node* limbTo = planner::GetChild(to.value, effId);
-                C2_Point cFrom = MakeConfiguration(from.contactLimbPositions[*cit], limbFrom->current);
-                C2_Point cTo = MakeConfiguration(to.contactLimbPositions[*cit], limbTo->current);
+                C2_Point cFrom = MakeConfiguration(fromPos, limbFrom->current);
+                C2_Point cTo = MakeConfiguration(to.contactLimbPositions[to.indexIfContact(*cit)], limbTo->current);
                 planner::InterpolatePath* initpath = new planner::InterpolatePath(cFrom,cTo,0,1);
-                res.push_back(new InterpolateSpline( initpath, collider, model));
+                res.push_back(new InterpolateSpline( initpath, collider, model,false));
             }
             else
             {
-                res.push_back(new InterpolateSpline( createInitPath(from, to, collider, model, effId, offset, to.contactLimbPositions[*cit]), collider, model));
+                res.push_back(new InterpolateSpline( createInitPath(from, to, collider, model, effId, offset, to.contactLimbPositions[to.indexIfContact(*cit)]), collider, model));
             }
         }
         return res;
@@ -443,7 +470,17 @@ namespace
             Collider collider(scenario.scenario->objects_);
             Model model; model.englobed = new planner::Object(*obj);
             Eigen::Vector3d offset = normal;
-            res.push_back(new InterpolateSpline( createInitPath(from, to, collider, model, effId, offset, to.contactLimbPositions[*cit]), collider, model, true));
+            Eigen::Vector3d target;
+            /*if(to.contactLimbPositions.size() > *cit)
+            {
+                target = to.contactLimbPositions[*cit];
+            }
+            else*/
+            {
+                planner::Node* limbTo = planner::GetChild(to.value, effId);
+                target = planner::GetEffectorCenter(limbTo);
+            }
+            res.push_back(new InterpolateSpline( createInitPath(from, to, collider, model, effId, offset, target), collider, model, true));
         }
         return res;
     }
@@ -624,15 +661,15 @@ void insertRRTBetweenStates(const planner::CompleteScenario& scenario,
     for(std::vector<int>::const_iterator cit = modifiedContacts.begin();
         cit != modifiedContacts.end(); ++cit)
     {
-        if (limbindex == to.contactLimbs[*cit])
+        if (limbindex == *cit)
         {
             planner::Node * limb = planner::GetChild(from.value, scenario.limbs[limbindex]->id);
             resPerLimb = insertRRTForOneLimb(scenario,*rrts[limbindex],limb,limbindex,from,to);
             limbChanged = true;
-            for(planner::T_State::const_iterator cit = resPerLimb.begin(); cit != resPerLimb.end();
-                ++cit)
+            for(planner::T_State::const_iterator cit2 = resPerLimb.begin(); cit2 != resPerLimb.end();
+                ++cit2)
             {
-                res.push_back(*cit);
+                res.push_back(*cit2);
             }
             break;
         }

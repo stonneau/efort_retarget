@@ -92,7 +92,7 @@ public:
          planner::Node* node = limb_;
          sampling::Sample s(limb);
          int nbIt = (int)s.values.size();
-         while(nbIt>0)
+         while(nbIt>0 && node)
          {
              if(node->id != limb_->id && node->offset.norm() != 0)
              {
@@ -100,7 +100,10 @@ public:
              }
              weights.push_back(w);
              totalWeight += w;
-             node = node->children[0];
+             if(node->children.empty())
+                 node = 0;
+             else
+                node = node->children[0];
              --nbIt;
          }
          // normalize
@@ -199,6 +202,7 @@ public:
             }
         }
         double inc = (distance > 0) ? (1 / (distance * dStep_)) : 1;
+inc *= 0.1;
         std::vector<planner::Configuration> cas;
         std::vector<planner::Configuration> cbs;
         std::vector<planner::Object*> objs1 = CollectObjects(ma->limb_);

@@ -794,13 +794,13 @@ void Motion::DoRRT(const std::size_t frameidFrom, const Eigen::VectorXd& frameFr
     planner::T_State newStates;
     if(useSplines && !res.empty())
     {
-        planner::T_State statesinterpolate[300];
+        planner::T_State statesinterpolate[1000];
         //planner::T_State::const_iterator cit = res.begin();
         //planner::T_State::const_iterator cit2 = res.begin(); ++cit2;
         #pragma omp parallel for
         for(int i =1; i< res.size(); ++i)
         {
-            statesinterpolate[i] = planner::Animate(*pImpl_->cScenario_, res[i-1], res[i], 24, useSplines, false);
+            statesinterpolate[i] = planner::Animate(*pImpl_->cScenario_, res[i-1], res[i], 24, useSplines, false, true);
         }
         for(int i =0; i< res.size()-1; ++i)
         {

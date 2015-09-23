@@ -78,11 +78,15 @@ namespace
     {
         if(bounds.empty())
         {
-             true;
+             return true;
         }
         else
         {
             Eigen::Vector3d rot = rotation.eulerAngles(0, 1, 2);
+            /*std::cout << "rot" << rot << std::endl;
+            std::cout << "x " << bounds[0] << " " << bounds[1] << std::endl;
+            std::cout << "y " << bounds[2] << " " << bounds[3] << std::endl;
+            std::cout << "z " << bounds[4] << " " << bounds[5] << std::endl;*/
             return     rot.x() >= bounds[0] && rot.x() <= bounds[1]
                     && rot.y() >= bounds[2] && rot.y() <= bounds[3]
                     && rot.z() >= bounds[4] && rot.z() <= bounds[5];
@@ -183,10 +187,10 @@ if(CheckBoundsTranslation(bounds_, P))
                 tranformComplete*= matrices::Rotx3(rx);
             }
             //while( (false // && // torso not facing upward
-            while( !(y.dot(tranformComplete.block<3,1>(0,0)) < 0 // && // torso not facing upward
+            while( /*!(y.dot(tranformComplete.block<3,1>(0,0)) < 0 // && // torso not facing upward
                     // y.dot(tranformComplete.block<3,1>(0,1)) > 0.3 &&
                      //&& x.dot(tranformComplete.block<3,1>(0,1)) < -0.1
-                     ) && CheckBoundsRotation(bounds_, tranformComplete)); // head not pointing too down
+                     ) &&*/ !CheckBoundsRotation(bounds_, tranformComplete)); // head not pointing too down
            // while( y.dot(tranformComplete.block<3,1>(0,0)) < 0.9);
             //while(false);
 			// find random direction
@@ -219,14 +223,14 @@ if(CheckBoundsTranslation(bounds_, P))
 //while(collisions.size()>0 && maxStep >0)
                 while(collisions.size()>0)
 				{
-					if(!collider_.IsColliding(configuration.englobed))
+                    if(!collider_.IsColliding(configuration.englobed))
 					{
 //if(configuration.GetPosition().y() > 0 && configuration.GetPosition().y() < 5 && std::abs(configuration.GetPosition().z()) < 1.3 ) // && std::abs(configuration.GetPosition().x()) < 1)
 //if(configuration.GetPosition().y() > -0.3 )
                             copy(collisions, limbs);
                             return new Model(configuration);
 						break;
-					}
+                    }
                     configuration.SetPosition(configuration.GetPosition() + (double) rand() / (RAND_MAX) / 8 * dir);
                     collisions = configuration.EnglobingCollisionClimb(contactObjects_, 0.3);
 //collisions = configuration.EnglobingCollisionGround(sampled.first);
@@ -265,7 +269,7 @@ if(CheckBoundsTranslation(bounds_, P))
 //while(collisions.size()>0)
                 while(collisions.size()>0) // || (configuration.GetPosition().y() > 3.7 && collisions.size()>0))
                 {
-					if(!collider_.IsColliding(configuration.englobed))
+                    if(!collider_.IsColliding(configuration.englobed))
 					{
 //if(configuration.GetPosition().y() > 0  && configuration.GetPosition().y() < 5 && std::abs(configuration.GetPosition().z()) < 1.3 ) ; //&& std::abs(configuration.GetPosition().x()) < 1)
 //if(configuration.GetPosition().y() > -0.3)

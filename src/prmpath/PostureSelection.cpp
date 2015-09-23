@@ -296,13 +296,14 @@ Sample* planner::GetPosturesInContact(Robot& robot, Node* limb, const sampling::
                 for(Object::T_Object::iterator oit = obstacles.begin(); oit != obstacles.end(); ++oit)
                 {
 //if(effector->InContact(*oit,epsilon, normal, projection) && !planner::IsSelfColliding(&robot, limb) && !LimbColliding(limb, obstacles))
-                    if(effector->InContact(*oit,epsilon, normal, projection) && planner::SafeTargetDistance(limb,projection,0.9) )//&& NextIsInRange(limb, projection, rom, scenario.scenario->point_))
+                    if(effector->InContact(*oit,epsilon, normal, projection) && planner::SafeTargetDistance(limb,projection,0.9)
+                            && normal.dot(Eigen::Vector3d(0,1,0)) > 0.5)//&& NextIsInRange(limb, projection, rom, scenario.scenario->point_))
                     //if(planner::MinDistance(effectorCentroid, *oit, projection, normal) < epsilon && !planner::IsSelfColliding(&robot, limb) && !LimbColliding(limb, obstacles))
                     {
                         tempweightedmanip = tmp_manip; // * dirn.dot(robot.currentRotation * normal);
                         tempweightedmanip *= 1 / CostMaintainContact(current_rom, next_rom, projection);
-                        //tempweightedmanip = 1 / CostMaintainContact(current_rom, next_rom, projection);
-                        tempweightedmanip *= dir.dot(robot.currentRotation * normal);
+                        tempweightedmanip = 1 / CostMaintainContact(current_rom, next_rom, projection);
+                        tempweightedmanip = dir.dot(robot.currentRotation * normal);
                         if(tempweightedmanip > bestManip)// && (planner::SafeTargetDistance(limb,projection,0.9)))
                         {
                             bestManip = tempweightedmanip;
@@ -465,8 +466,11 @@ sampling::T_Samples planner::GetContactCandidates(Robot& robot, Node* limb, cons
         {
             if(effector->InContact(*oit,epsilon, normal, projection) && !planner::IsSelfColliding(&robot, limb) && !effector->IsColliding(obstacles))
             {
-                res.push_back(*sit);
-                break;
+                if(normal.dot(Eigen::Vector3d(0,0,1)) > 0.7)
+                {
+                    res.push_back(*sit);
+                    break;
+                }
             }
         }
     }
@@ -791,7 +795,7 @@ namespace
 
         /*Perform linear interpolation*/
         float linenorm = (float)line.norm();
-        float nbSteps = (float)(linenorm / 0.01);
+        float nbSteps = (float)(linenorm / 0.1);
         float inc = 1 / nbSteps;
         for(double t = 0; t < 1; t = t + inc)
         {

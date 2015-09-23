@@ -337,6 +337,7 @@ bool Object::IsColliding(T_Object& objects)
                     (*it)->pqpOrientation_, (*it)->pqpPosition_, (*it)->model_, PQP_FIRST_CONTACT);
         if (cres.Colliding())
         {
+            //std::cout << "collision " << this->name_ << " " << (*it)->name_ << std::endl;
             return true;
         }
     }

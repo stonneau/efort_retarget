@@ -44,23 +44,27 @@ namespace planner
         PImpl(Model* from, Model* to, Object::T_Object& objects, Object::T_Object& collisionObjects, float neighbourDistance, int size, int k)
             : planner_(objects, collisionObjects, *from)
         {
+            Eigen::Matrix3d ori = from->GetOrientation();
+            std::cout << "from orientation" << ori.eulerAngles(0, 1, 2) << std::endl;
+            std::cout << "from position" << from->GetPosition() << std::endl;
+            std::cout << "to position" << to->GetPosition() << std::endl;
              std::vector<double> bounds; // min max rotations
-            bounds.push_back(-M_PI_4);bounds.push_back(M_PI_2);
-            bounds.push_back(M_PI);bounds.push_back(M_PI);
-            bounds.push_back(-M_PI_4);bounds.push_back(M_PI_4);
+            bounds.push_back(-1.72524);bounds.push_back(-1.);
+            bounds.push_back(-0.1);bounds.push_back(0.);
+            bounds.push_back(-1);bounds.push_back(1);
             const Eigen::Vector3d& pf = from->GetPosition();
             const Eigen::Vector3d& pt = to->GetPosition();
-            bounds.push_back(std::min(pt.x(),pf.x()) -2);bounds.push_back(std::max(pt.x(),pf.x()) +2);
-            bounds.push_back(std::min(pt.y(),pf.y()) -1);bounds.push_back(std::max(pt.y(),pf.y()) +1);
-            bounds.push_back(std::min(pt.z(),pf.z()) -2);bounds.push_back(std::max(pt.z(),pf.z())-2);
-            //Generator* gen = new Generator(bounds, objects, collisionObjects, *from); // TODO MEME
-            Generator* gen = new Generator(objects, collisionObjects, *from); // TODO MEME
+            bounds.push_back(std::min(pt.x(),pf.x()) -20);bounds.push_back(std::max(pt.x(),pf.x()) +20);
+            bounds.push_back(std::min(pt.y(),pf.y()) -10);bounds.push_back(std::max(pt.y(),pf.y())+10 );
+            bounds.push_back(std::min(pt.z(),pf.z()) );bounds.push_back(std::max(pt.z(),pf.z()));
+            Generator* gen = new Generator(bounds, objects, collisionObjects, *from); // TODO MEME
+            //Generator* gen = new Generator(objects, collisionObjects, *from); // TODO MEME
 			
 #if PROFILE
 Timer timer;
 timer.Start();
 #endif
-            rrt_ = new rrt_t(gen, &planner_, from, to, DistanceRRT, neighbourDistance, size, k);
+            rrt_ = new rrt_t(gen, &planner_, from, to, DistanceRRT, neighbourDistance, size, k, true);
 #if PROFILE
 timer.Stop();
 std::cout << " rrt Generation log " << std::endl;

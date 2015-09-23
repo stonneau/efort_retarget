@@ -15,6 +15,6 @@
 namespace planner
 {
 planner::T_State Animate(const planner::CompleteScenario& scenario, const planner::State& from, const planner::State& to, int framerate, bool useSplines=false, bool useRRT=true, bool framerameIsFramenb = false);
-planner::T_State Animate(const planner::CompleteScenario& scenario, const planner::T_State& fullpath, int framerate, bool useSplines=false, bool useRRT=true, bool framerameIsFramenb = false);
+planner::T_State Animate(const planner::CompleteScenario& scenario, const planner::T_State& fullpath, int framerate, bool useSplines=true, bool useRRT=false, bool framerameIsFramenb = false);
 } // namespace planner
 #endif //_CLASS_STATE_INTERPOLATION
