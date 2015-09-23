@@ -795,7 +795,7 @@ namespace
 
         /*Perform linear interpolation*/
         float linenorm = (float)line.norm();
-        float nbSteps = (float)(linenorm / 0.1);
+        float nbSteps = (float)(linenorm / 0.01);
         float inc = 1 / nbSteps;
         for(double t = 0; t < 1; t = t + inc)
         {

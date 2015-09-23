@@ -514,7 +514,7 @@ static void simLoop (int pause)
     DrawObjects();
     dsSetColorAlpha(0,0, 0.7,1);
     DrawNode(cScenario->robot->node);
-    //DrawModel(ModelFromRobot(cScenario->robot));
+    DrawModel(ModelFromRobot(cScenario->robot));
     DrawPoint(itompTransform * cScenario->robot->currentPosition);
     const planner::T_State& tstates = states;
     std::vector<Eigen::Vector3d>::iterator nit = states[current]->contactLimbPositionsNormals.begin();
@@ -581,9 +581,9 @@ void start()
     //cScenario = planner::CompleteScenarioFromFile("../humandes/fullscenarios/truck_test.scen");
     //cScenario = planner::CompleteScenarioFromFile("../humandes/fullscenarios/race2.scen");
     //cScenario = planner::CompleteScenarioFromFile("../humandes/fullscenarios/between.scen");
-    //cScenario = planner::CompleteScenarioFromFile("../rami/scenarios/rami.scen");
+    cScenario = planner::CompleteScenarioFromFile("../rami/scenarios/rami.scen");
     //cScenario = planner::CompleteScenarioFromFile("../rami/scenarios/stones.scen");
-    cScenario = planner::CompleteScenarioFromFile("../rami/scenarios/stonesprm.scen");
+    //cScenario = planner::CompleteScenarioFromFile("../rami/scenarios/stonesprm.scen");
     //cScenario = planner::CompleteScenarioFromFile("../rami/scenarios/table.scen");
     //cScenario = planner::CompleteScenarioFromFile("../rami/scenarios/climb.scen");
     //cScenario = planner::CompleteScenarioFromFile("../rami/scenarios/statestest.scen");
@@ -793,7 +793,7 @@ void SaveRetarget()
 void Interpolate()
 {
     Eigen::VectorXd from = planner::AsPosition(states[current]->value->node);
-    Eigen::VectorXd to = planner::AsPosition(states[current+30]->value->node);
+    Eigen::VectorXd to = planner::AsPosition(states[current+50]->value->node);
     //motion->Interpolate(current,from,to,true,false);
     efort::T_PointReplacement replacement;
     motion->DoRRT(current,from,to,replacement,false);
@@ -879,9 +879,9 @@ void command(int cmd)   /**  key control function; */
         case 'f' :
         {
             std::cout << "computing animation " << std::endl;
-            //Interpolate();
-            planner::T_State res = planner::Animate(*cScenario, states[current], states[current+1], 24, true, false);
-            states.insert(states.begin()+current+1,res.begin(),res.end());
+            Interpolate();
+            //planner::T_State res = planner::Animate(*cScenario, states[current], states[current+1], 24, true, false);
+            //states.insert(states.begin()+current+1,res.begin(),res.end());
             //interpolaterrt();
             std::cout << "done " << std::endl;
             break;

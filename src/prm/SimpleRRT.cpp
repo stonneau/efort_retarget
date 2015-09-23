@@ -49,9 +49,9 @@ namespace planner
             std::cout << "from position" << from->GetPosition() << std::endl;
             std::cout << "to position" << to->GetPosition() << std::endl;
              std::vector<double> bounds; // min max rotations
-            bounds.push_back(-1.72524);bounds.push_back(-1.);
-            bounds.push_back(-0.1);bounds.push_back(0.);
-            bounds.push_back(-1);bounds.push_back(1);
+            bounds.push_back(-M_PI);bounds.push_back(M_PI);
+            bounds.push_back(-M_PI);bounds.push_back(M_PI);
+            bounds.push_back(-M_PI);bounds.push_back(M_PI);
             const Eigen::Vector3d& pf = from->GetPosition();
             const Eigen::Vector3d& pt = to->GetPosition();
             bounds.push_back(std::min(pt.x(),pf.x()) -20);bounds.push_back(std::max(pt.x(),pf.x()) +20);

@@ -346,7 +346,7 @@ ik::VectorAlignmentConstraint* constraint = new ik::VectorAlignmentConstraint(Ei
                 if(*cit2 == *cit)
                 {
                     const Eigen::Vector3d& positionFrom = from.contactLimbPositions[lIndex2];
-                    if((positionFrom - positionTo).norm() < 0.01)
+                    if((positionFrom - positionTo).norm() < 0.001)
                     {
                         //res.push_back(lIndex);
                         res.push_back(*cit);
