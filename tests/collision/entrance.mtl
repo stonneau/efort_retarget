@@ -1,0 +1,60 @@
+# Blender MTL File: 'None'
+# Material Count: 6
+
+newmtl apartmentstaticfbx-hardwoodfloor
+Ns 0.000000
+Ka 0.000000 0.000000 0.000000
+Kd 0.384000 0.384000 0.384000
+Ks 0.900000 0.900000 0.900000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd woodFloorTexture.tif
+
+newmtl apartmentstaticfbx-lambert1
+Ns 0.000000
+Ka 0.000000 0.000000 0.000000
+Kd 0.384000 0.384000 0.384000
+Ks 0.900000 0.900000 0.900000
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl apartmentstaticfbx-trimmaterial
+Ns 0.000000
+Ka 0.000000 0.000000 0.000000
+Kd 0.384000 0.384000 0.384000
+Ks 0.900000 0.900000 0.900000
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl computerdesk-maplematerial
+Ns 0.000000
+Ka 0.000000 0.000000 0.000000
+Kd 0.384000 0.384000 0.384000
+Ks 0.900000 0.900000 0.900000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd mapleWood.psd
+
+newmtl couch-couchfabricmaterial
+Ns 0.000000
+Ka 0.000000 0.000000 0.000000
+Kd 0.384000 0.384000 0.384000
+Ks 0.900000 0.900000 0.900000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd couchFabric.psd
+
+newmtl couch-kitchencountermaterial
+Ns 0.000000
+Ka 0.000000 0.000000 0.000000
+Kd 0.384000 0.384000 0.384000
+Ks 0.900000 0.900000 0.900000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd kitchenButcherBlock.psd

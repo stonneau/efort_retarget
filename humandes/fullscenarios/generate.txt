@@ -1,0 +1,4 @@
+MODEL = ../tests/collision/cenglobed.obj ../rocketboxmale/roms.obj
+OBJECT = ../tests/collision/entrance.obj
+PRMFILE = ../tests/entrance_path.txt
+VISIBILITY

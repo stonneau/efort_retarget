@@ -1,0 +1,182 @@
+digraph G {
+node [shape=box];
+"root_link" [label="root_link"];
+"base_prismatic_dummy1" [label="base_prismatic_dummy1"];
+"base_prismatic_dummy2" [label="base_prismatic_dummy2"];
+"pelvis_link" [label="pelvis_link"];
+"pelvis1_z_link" [label="pelvis1_z_link"];
+"pelvis1_y_link" [label="pelvis1_y_link"];
+"pelvis1_x_link" [label="pelvis1_x_link"];
+"torso_z_link" [label="torso_z_link"];
+"torso_y_link" [label="torso_y_link"];
+"torso_x_link" [label="torso_x_link"];
+"torso2_z_link" [label="torso2_z_link"];
+"torso2_y_link" [label="torso2_y_link"];
+"torso2_x_link" [label="torso2_x_link"];
+"torso3_z_link" [label="torso3_z_link"];
+"torso3_y_link" [label="torso3_y_link"];
+"torso3_x_link" [label="torso3_x_link"];
+"head_z_link" [label="head_z_link"];
+"head_y_link" [label="head_y_link"];
+"head_x_link" [label="head_x_link"];
+"head_endeffector_link" [label="head_endeffector_link"];
+"upper_left_arm_specula_link" [label="upper_left_arm_specula_link"];
+"upper_left_arm_z_link" [label="upper_left_arm_z_link"];
+"upper_left_arm_y_link" [label="upper_left_arm_y_link"];
+"upper_left_arm_x_link" [label="upper_left_arm_x_link"];
+"lower_left_arm_link" [label="lower_left_arm_link"];
+"left_hand_z_link" [label="left_hand_z_link"];
+"left_hand_y_link" [label="left_hand_y_link"];
+"left_hand_x_link" [label="left_hand_x_link"];
+"left_hand_endeffector_link" [label="left_hand_endeffector_link"];
+"upper_right_arm_specula_link" [label="upper_right_arm_specula_link"];
+"upper_right_arm_z_link" [label="upper_right_arm_z_link"];
+"upper_right_arm_y_link" [label="upper_right_arm_y_link"];
+"upper_right_arm_x_link" [label="upper_right_arm_x_link"];
+"lower_right_arm_link" [label="lower_right_arm_link"];
+"right_hand_z_link" [label="right_hand_z_link"];
+"right_hand_y_link" [label="right_hand_y_link"];
+"right_hand_x_link" [label="right_hand_x_link"];
+"right_hand_endeffector_link" [label="right_hand_endeffector_link"];
+"upper_left_leg_z_link" [label="upper_left_leg_z_link"];
+"upper_left_leg_y_link" [label="upper_left_leg_y_link"];
+"upper_left_leg_x_link" [label="upper_left_leg_x_link"];
+"lower_left_leg_link" [label="lower_left_leg_link"];
+"left_foot_z_link" [label="left_foot_z_link"];
+"left_foot_y_link" [label="left_foot_y_link"];
+"left_foot_x_link" [label="left_foot_x_link"];
+"left_foot2_z_link" [label="left_foot2_z_link"];
+"left_foot2_y_link" [label="left_foot2_y_link"];
+"left_foot2_x_link" [label="left_foot2_x_link"];
+"left_foot_endeffector_link" [label="left_foot_endeffector_link"];
+"upper_right_leg_z_link" [label="upper_right_leg_z_link"];
+"upper_right_leg_y_link" [label="upper_right_leg_y_link"];
+"upper_right_leg_x_link" [label="upper_right_leg_x_link"];
+"lower_right_leg_link" [label="lower_right_leg_link"];
+"right_foot_z_link" [label="right_foot_z_link"];
+"right_foot_y_link" [label="right_foot_y_link"];
+"right_foot_x_link" [label="right_foot_x_link"];
+"right_foot2_z_link" [label="right_foot2_z_link"];
+"right_foot2_y_link" [label="right_foot2_y_link"];
+"right_foot2_x_link" [label="right_foot2_x_link"];
+"right_foot_endeffector_link" [label="right_foot_endeffector_link"];
+node [shape=ellipse, color=blue, fontcolor=blue];
+"root_link" -> "base_prismatic_joint_x" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"base_prismatic_joint_x" -> "base_prismatic_dummy1"
+"base_prismatic_dummy1" -> "base_prismatic_joint_y" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"base_prismatic_joint_y" -> "base_prismatic_dummy2"
+"base_prismatic_dummy2" -> "base_rotate_joint" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"base_rotate_joint" -> "pelvis_link"
+"pelvis_link" -> "pelvis1_z_joint" [label="xyz: 0 0.163 12.026 \nrpy: 0 -0 0"]
+"pelvis1_z_joint" -> "pelvis1_z_link"
+"pelvis1_z_link" -> "pelvis1_y_joint" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"pelvis1_y_joint" -> "pelvis1_y_link"
+"pelvis1_y_link" -> "pelvis1_x_joint" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"pelvis1_x_joint" -> "pelvis1_x_link"
+"pelvis1_x_link" -> "torso_z_joint" [label="xyz: 0 0.694 15.302 \nrpy: 0 -0 0"]
+"torso_z_joint" -> "torso_z_link"
+"torso_z_link" -> "torso_y_joint" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"torso_y_joint" -> "torso_y_link"
+"torso_y_link" -> "torso_x_joint" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"torso_x_joint" -> "torso_x_link"
+"torso_x_link" -> "torso2_z_joint" [label="xyz: 0 1.112 15.277 \nrpy: 0 -0 0"]
+"torso2_z_joint" -> "torso2_z_link"
+"torso2_z_link" -> "torso2_y_joint" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"torso2_y_joint" -> "torso2_y_link"
+"torso2_y_link" -> "torso2_x_joint" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"torso2_x_joint" -> "torso2_x_link"
+"torso2_x_link" -> "torso3_z_joint" [label="xyz: 0 -0.751 19.961 \nrpy: 0 -0 0"]
+"torso3_z_joint" -> "torso3_z_link"
+"torso3_z_link" -> "torso3_y_joint" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"torso3_y_joint" -> "torso3_y_link"
+"torso3_y_link" -> "torso3_x_joint" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"torso3_x_joint" -> "torso3_x_link"
+"torso3_x_link" -> "head_z_joint" [label="xyz: 0 -2.032 6.622 \nrpy: 0 -0 0"]
+"head_z_joint" -> "head_z_link"
+"head_z_link" -> "head_y_joint" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"head_y_joint" -> "head_y_link"
+"head_y_link" -> "head_x_joint" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"head_x_joint" -> "head_x_link"
+"head_x_link" -> "head_endeffector_joint" [label="xyz: 0 -3.14 20.528 \nrpy: 0 -0 0"]
+"head_endeffector_joint" -> "head_endeffector_link"
+"head_x_link" -> "upper_left_specula_joint" [label="xyz: 7.2819 3.175 -12.763 \nrpy: 0 -0 0"]
+"upper_left_specula_joint" -> "upper_left_arm_specula_link"
+"upper_left_arm_specula_link" -> "upper_left_arm_z_joint" [label="xyz: 14.108 0 0 \nrpy: 0 -0 0"]
+"upper_left_arm_z_joint" -> "upper_left_arm_z_link"
+"upper_left_arm_z_link" -> "upper_left_arm_y_joint" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"upper_left_arm_y_joint" -> "upper_left_arm_y_link"
+"upper_left_arm_y_link" -> "upper_left_arm_x_joint" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"upper_left_arm_x_joint" -> "upper_left_arm_x_link"
+"upper_left_arm_x_link" -> "lower_left_arm_joint" [label="xyz: 28.58 -0.095 -0.122 \nrpy: 0 -0 0"]
+"lower_left_arm_joint" -> "lower_left_arm_link"
+"lower_left_arm_link" -> "left_hand_z_joint" [label="xyz: 27.088 -0.416 -0.144 \nrpy: 0 -0 0"]
+"left_hand_z_joint" -> "left_hand_z_link"
+"left_hand_z_link" -> "left_hand_y_joint" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"left_hand_y_joint" -> "left_hand_y_link"
+"left_hand_y_link" -> "left_hand_x_joint" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"left_hand_x_joint" -> "left_hand_x_link"
+"left_hand_x_link" -> "left_hand_endeffector_joint" [label="xyz: 18.07 0.617 -0.818 \nrpy: 0 -0 0"]
+"left_hand_endeffector_joint" -> "left_hand_endeffector_link"
+"head_x_link" -> "upper_right_specula_joint" [label="xyz: -7.2821 3.175 -12.776 \nrpy: 0 -0 0"]
+"upper_right_specula_joint" -> "upper_right_arm_specula_link"
+"upper_right_arm_specula_link" -> "upper_right_arm_z_joint" [label="xyz: -14.105 0.314 -0.025 \nrpy: 0 -0 0"]
+"upper_right_arm_z_joint" -> "upper_right_arm_z_link"
+"upper_right_arm_z_link" -> "upper_right_arm_y_joint" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"upper_right_arm_y_joint" -> "upper_right_arm_y_link"
+"upper_right_arm_y_link" -> "upper_right_arm_x_joint" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"upper_right_arm_x_joint" -> "upper_right_arm_x_link"
+"upper_right_arm_x_link" -> "lower_right_arm_joint" [label="xyz: -28.569 -0.617 -0.466 \nrpy: 0 -0 0"]
+"lower_right_arm_joint" -> "lower_right_arm_link"
+"lower_right_arm_link" -> "right_hand_z_joint" [label="xyz: -27.088 -0.257 -0.394 \nrpy: 0 -0 0"]
+"right_hand_z_joint" -> "right_hand_z_link"
+"right_hand_z_link" -> "right_hand_y_joint" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"right_hand_y_joint" -> "right_hand_y_link"
+"right_hand_y_link" -> "right_hand_x_joint" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"right_hand_x_joint" -> "right_hand_x_link"
+"right_hand_x_link" -> "right_hand_endeffector_joint" [label="xyz: -18.07 0.907 -0.029 \nrpy: 0 -0 0"]
+"right_hand_endeffector_joint" -> "right_hand_endeffector_link"
+"torso_x_link" -> "upper_left_leg_z_joint" [label="xyz: 8.837 -0.857 -27.328 \nrpy: 0 -0 0"]
+"upper_left_leg_z_joint" -> "upper_left_leg_z_link"
+"upper_left_leg_z_link" -> "upper_left_leg_y_joint" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"upper_left_leg_y_joint" -> "upper_left_leg_y_link"
+"upper_left_leg_y_link" -> "upper_left_leg_x_joint" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"upper_left_leg_x_joint" -> "upper_left_leg_x_link"
+"upper_left_leg_x_link" -> "lower_left_leg_joint" [label="xyz: 2.111 -1.63 -39.814 \nrpy: 0 -0 0"]
+"lower_left_leg_joint" -> "lower_left_leg_link"
+"lower_left_leg_link" -> "left_foot_z_joint" [label="xyz: 0.749 3.083 -39.542 \nrpy: 0 -0 0"]
+"left_foot_z_joint" -> "left_foot_z_link"
+"left_foot_z_link" -> "left_foot_y_joint" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"left_foot_y_joint" -> "left_foot_y_link"
+"left_foot_y_link" -> "left_foot_x_joint" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"left_foot_x_joint" -> "left_foot_x_link"
+"left_foot_x_link" -> "left_foot2_z_joint" [label="xyz: 3.416 -13.378 -9.919 \nrpy: 0 -0 0"]
+"left_foot2_z_joint" -> "left_foot2_z_link"
+"left_foot2_z_link" -> "left_foot2_y_joint" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"left_foot2_y_joint" -> "left_foot2_y_link"
+"left_foot2_y_link" -> "left_foot2_x_joint" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"left_foot2_x_joint" -> "left_foot2_x_link"
+"left_foot2_x_link" -> "left_foot_endeffector_joint" [label="xyz: 2.077 -8.119 0.149 \nrpy: 0 -0 0"]
+"left_foot_endeffector_joint" -> "left_foot_endeffector_link"
+"torso_x_link" -> "upper_right_leg_z_joint" [label="xyz: -8.837 -0.857 -31.327 \nrpy: 0 -0 0"]
+"upper_right_leg_z_joint" -> "upper_right_leg_z_link"
+"upper_right_leg_z_link" -> "upper_right_leg_y_joint" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"upper_right_leg_y_joint" -> "upper_right_leg_y_link"
+"upper_right_leg_y_link" -> "upper_right_leg_x_joint" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"upper_right_leg_x_joint" -> "upper_right_leg_x_link"
+"upper_right_leg_x_link" -> "lower_right_leg_joint" [label="xyz: -2.111 -1.63 -35.815 \nrpy: 0 -0 0"]
+"lower_right_leg_joint" -> "lower_right_leg_link"
+"lower_right_leg_link" -> "right_foot_z_joint" [label="xyz: -0.749 3.083 -39.542 \nrpy: 0 -0 0"]
+"right_foot_z_joint" -> "right_foot_z_link"
+"right_foot_z_link" -> "right_foot_y_joint" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"right_foot_y_joint" -> "right_foot_y_link"
+"right_foot_y_link" -> "right_foot_x_joint" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"right_foot_x_joint" -> "right_foot_x_link"
+"right_foot_x_link" -> "right_foot2_z_joint" [label="xyz: -3.416 -13.378 -9.919 \nrpy: 0 -0 0"]
+"right_foot2_z_joint" -> "right_foot2_z_link"
+"right_foot2_z_link" -> "right_foot2_y_joint" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"right_foot2_y_joint" -> "right_foot2_y_link"
+"right_foot2_y_link" -> "right_foot2_x_joint" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"right_foot2_x_joint" -> "right_foot2_x_link"
+"right_foot2_x_link" -> "right_foot_endeffector_joint" [label="xyz: -2.077 -8.119 0.148 \nrpy: 0 -0 0"]
+"right_foot_endeffector_joint" -> "right_foot_endeffector_link"
+}

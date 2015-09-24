@@ -1,0 +1,6 @@
+MODEL = ../rocketboxmale/cenglobedt.obj ../rocketboxmale/cenglobing.obj
+OBJECT = ../tests/collision/chair.obj
+qs = ../tests/fullscenarios/zombi_room.prm
+PRMFIL = ../tests/race2.txt
+SIZE = 200 5 20
+VISIBILITY

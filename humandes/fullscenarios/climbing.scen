@@ -1,0 +1,12 @@
+PRMSCENARIO file="../rocketboxmale/climbing.txt"
+ROBOT_SKELETON file="../rocketboxmale/rocketbox_male.urdf"
+ROBOT_CONSTRAINTS file="../rocketboxmale/jointconstraints.txt"
+PATH_FROM matrix="1 0 0 0 0 1 0 0 0 0 1 2 0 0 0 1"
+PATH_TO matrix="1 0 0 0 0 1 0 8 0 0 1 5 0 0 0 1"
+CONSTANT_ROTATION matrix="1 0 0 0 0 1 0 -1 0"
+LIMB joint_name="upper_right_arm_z_joint"
+LIMB joint_name="upper_left_arm_z_joint"
+LIMB joint_name="upper_right_leg_z_joint"
+LIMB joint_name="upper_left_leg_z_joint"
+NBSAMPLES N="1"
+INITCONTACTS 2 3

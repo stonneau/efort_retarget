@@ -12,7 +12,7 @@ set(SRC_TOOLS_DIR "${PROJECT_SOURCE_DIR}/src/tools")
 set(EXTERNAL_LIBRARY_DIR "${PROJECT_SOURCE_DIR}/external/lib")
 set(EXTERNAL_LIBRARY_DIR "${PROJECT_SOURCE_DIR}/external/lib")
 
-if ( UNIX )  
+if ( UNIX )
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=gnu++0x")
 endif ()
 
@@ -32,10 +32,10 @@ if(OPENMP_FOUND)
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
 endif()
 
-#add_subdirectory (src/bvh_to_urdf)
+add_subdirectory (src/bvh_to_urdf)
 add_subdirectory (src/prm)
 add_subdirectory (src/prmpath)
 add_subdirectory (src/retarget)
 add_subdirectory (src/collision)
-#add_subdirectory (src/drawapp)
+add_subdirectory (src/drawapp)
 

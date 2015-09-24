@@ -1,0 +1,4 @@
+MODEL = ../tests/collision/cenglobed.obj ../tests/collision/cenglobing.obj
+OBJECT = ../tests/collision/entrance.obj
+PRMFILE = ../tests/entrance_path.txt
+VISIBILITY

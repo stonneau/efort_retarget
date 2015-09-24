@@ -45,22 +45,25 @@ namespace planner
             : planner_(objects, collisionObjects, *from)
         {
             Eigen::Matrix3d ori = from->GetOrientation();
+            Eigen::Matrix3d ori2 = to->GetOrientation();
             std::cout << "from orientation" << ori.eulerAngles(0, 1, 2) << std::endl;
+            std::cout << "to orientation" << ori2.eulerAngles(0, 1, 2) << std::endl;
             std::cout << "from position" << from->GetPosition() << std::endl;
             std::cout << "to position" << to->GetPosition() << std::endl;
              std::vector<double> bounds; // min max rotations
             //bounds.push_back(-3.72524);bounds.push_back(0.);
-            bounds.push_back(-2.3);bounds.push_back(-1.72524);
+            bounds.push_back(-1.29);bounds.push_back(-1.22);
+            //bounds.push_back(-3);bounds.push_back(3);
 
             //bounds.push_back(-3.1);bounds.push_back(3.);
-            bounds.push_back(-0.1);bounds.push_back(0.1);
+            bounds.push_back(-0.15);bounds.push_back(0.2);
 
-            //bounds.push_back(-3);bounds.push_back(3);
+           // bounds.push_back(-3);bounds.push_back(3);
             bounds.push_back(-1);bounds.push_back(1);
             const Eigen::Vector3d& pf = from->GetPosition();
             const Eigen::Vector3d& pt = to->GetPosition();
             bounds.push_back(std::min(pt.x(),pf.x()));bounds.push_back(std::max(pt.x(),pf.x()));
-            bounds.push_back(std::min(pt.y(),pf.y())-10);bounds.push_back(std::max(pt.y(),pf.y()) );
+            bounds.push_back(std::min(pt.y(),pf.y())-10);bounds.push_back(std::max(pt.y(),pf.y()+10) );
             bounds.push_back(std::min(pt.z(),pf.z()) );bounds.push_back(std::max(pt.z(),pf.z()));
             Generator* gen = new Generator(bounds, objects, collisionObjects, *from); // TODO MEME
             //Generator* gen = new Generator(objects, collisionObjects, *from); // TODO MEME

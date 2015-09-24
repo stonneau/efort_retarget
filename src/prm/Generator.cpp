@@ -277,6 +277,7 @@ if(CheckBoundsTranslation(bounds_, P))
                             return new Model(configuration);
 						break;
 					}
+                    dir = Eigen::Vector3d(0,1,0);
                     configuration.SetPosition(configuration.GetPosition() + (double) rand() / (double)(RAND_MAX)  * dir);
                     collisions = configuration.EnglobingCollisionGround(sampled.first);
 				}

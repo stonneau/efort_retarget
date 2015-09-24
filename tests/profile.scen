@@ -1,0 +1,12 @@
+PRMSCENARIO file="../tests/profile.txt"
+ROBOT_SKELETON file="../rocketboxmale/rocketbox_male.urdf"
+ROBOT_CONSTRAINTS file="../rocketboxmale/jointconstraints.txt"
+PATH_FROM matrix="-0.80842400000000003 -0.58860100000000004 0 -17.2 0.58860100000000004 -0.80842400000000003 0 0.6 0 0 1 -8.7 0 0 0 1"
+PATH_TO matrix="-0.80842400000000003 -0.58860100000000004 0 -13.2 0.58860100000000004 -0.80842400000000003 0 0.6 0 0 1 -8.7 0 0 0 1"
+CONSTANT_ROTATION matrix="0 1 0 0 0 1 1 0 0"
+LIMB joint_name="upper_right_arm_z_joint"
+LIMB joint_name="upper_left_arm_z_joint"
+LIMB joint_name="upper_right_leg_z_joint"
+LIMB joint_name="upper_left_leg_z_joint"
+NBSAMPLES N="10000"
+INITCONTACTS 2 3

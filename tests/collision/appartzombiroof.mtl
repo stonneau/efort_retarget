@@ -1,0 +1,275 @@
+
+newmtl Default-Diffuse
+Ka  0.6 0.6 0.6
+Kd  0.6 0.6 0.6
+Ks  0.9 0.9 0.9
+d  1.0
+Ns  0.0
+illum 2
+
+
+
+
+newmtl couch-couchfabricmaterial
+Ka  0.6 0.6 0.6
+Kd  0.6 0.6 0.6
+Ks  0.9 0.9 0.9
+d  1.0
+Ns  0.0
+illum 2
+map_Kd couchFabric.psd
+
+
+
+newmtl couch-kitchencountermaterial
+Ka  0.6 0.6 0.6
+Kd  0.6 0.6 0.6
+Ks  0.9 0.9 0.9
+d  1.0
+Ns  0.0
+illum 2
+map_Kd kitchenButcherBlock.psd
+
+
+
+newmtl loveseat-kitchencountermaterial
+Ka  0.6 0.6 0.6
+Kd  0.6 0.6 0.6
+Ks  0.9 0.9 0.9
+d  1.0
+Ns  0.0
+illum 2
+map_Kd kitchenButcherBlock.psd
+
+
+
+newmtl loveseat-couchfabricmaterial
+Ka  0.6 0.6 0.6
+Kd  0.6 0.6 0.6
+Ks  0.9 0.9 0.9
+d  1.0
+Ns  0.0
+illum 2
+map_Kd couchFabric.psd
+
+
+
+newmtl diningchair-kitchencountermaterial
+Ka  0.6 0.6 0.6
+Kd  0.6 0.6 0.6
+Ks  0.9 0.9 0.9
+d  1.0
+Ns  0.0
+illum 2
+map_Kd kitchenButcherBlock.psd
+
+
+
+newmtl diningtable-kitchencountermaterial
+Ka  0.6 0.6 0.6
+Kd  0.6 0.6 0.6
+Ks  0.9 0.9 0.9
+d  1.0
+Ns  0.0
+illum 2
+map_Kd kitchenButcherBlock.psd
+
+
+
+newmtl computerdesk-maplematerial
+Ka  0.6 0.6 0.6
+Kd  0.6 0.6 0.6
+Ks  0.9 0.9 0.9
+d  1.0
+Ns  0.0
+illum 2
+map_Kd mapleWood.psd
+
+
+
+newmtl apartmentstaticfbx-rugsmaterial
+Ka  0.6 0.6 0.6
+Kd  0.6 0.6 0.6
+Ks  0.9 0.9 0.9
+d  1.0
+Ns  0.0
+illum 2
+map_Kd persianRugs.psd
+
+
+
+newmtl apartmentstaticfbx-metalsmaterial
+Ka  0.6 0.6 0.6
+Kd  0.6 0.6 0.6
+Ks  0.9 0.9 0.9
+d  1.0
+Ns  0.0
+illum 2
+map_Kd metalTextures.psd
+
+
+
+newmtl apartmentstaticfbx-paint_paintingsmaterial
+Ka  0.6 0.6 0.6
+Kd  0.6 0.6 0.6
+Ks  0.9 0.9 0.9
+d  1.0
+Ns  0.0
+illum 2
+map_Kd thePaintings.psd
+
+
+
+newmtl apartmentstaticfbx-kitchenfloormaterial
+Ka  0.6 0.6 0.6
+Kd  0.6 0.6 0.6
+Ks  0.9 0.9 0.9
+d  1.0
+Ns  0.0
+illum 2
+map_Kd kitchenFloor.psd
+
+
+
+newmtl apartmentstaticfbx-bathroomfloormaterial
+Ka  0.6 0.6 0.6
+Kd  0.6 0.6 0.6
+Ks  0.9 0.9 0.9
+d  1.0
+Ns  0.0
+illum 2
+map_Kd bathroomFloor.psd
+
+
+
+newmtl apartmentstaticfbx-bricksmaterial
+Ka  0.6 0.6 0.6
+Kd  0.6 0.6 0.6
+Ks  0.9 0.9 0.9
+d  1.0
+Ns  0.0
+illum 2
+map_Kd indoorBrickWall.tif
+
+
+
+newmtl apartmentstaticfbx-lambert1
+Ka  0.6 0.6 0.6
+Kd  0.6 0.6 0.6
+Ks  0.9 0.9 0.9
+d  1.0
+Ns  0.0
+illum 2
+
+
+
+
+newmtl apartmentstaticfbx-bedmaterial
+Ka  0.6 0.6 0.6
+Kd  0.6 0.6 0.6
+Ks  0.9 0.9 0.9
+d  1.0
+Ns  0.0
+illum 2
+map_Kd bedSpread.psd
+
+
+
+newmtl apartmentstaticfbx-lightbulbs
+Ka  0.6 0.6 0.6
+Kd  0.6 0.6 0.6
+Ks  0.9 0.9 0.9
+d  1.0
+Ns  0.0
+illum 2
+
+
+
+
+newmtl apartmentstaticfbx-trimmaterial
+Ka  0.6 0.6 0.6
+Kd  0.6 0.6 0.6
+Ks  0.9 0.9 0.9
+d  1.0
+Ns  0.0
+illum 2
+
+
+
+
+newmtl apartmentstaticfbx-hardwoodfloor
+Ka  0.6 0.6 0.6
+Kd  0.6 0.6 0.6
+Ks  0.9 0.9 0.9
+d  1.0
+Ns  0.0
+illum 2
+map_Kd woodFloorTexture.tif
+
+
+
+newmtl apartmentstaticfbx-bathroomwalltwo
+Ka  0.6 0.6 0.6
+Kd  0.6 0.6 0.6
+Ks  0.9 0.9 0.9
+d  1.0
+Ns  0.0
+illum 2
+
+
+
+
+newmtl apartmentstaticfbx-sinkbasin
+Ka  0.6 0.6 0.6
+Kd  0.6 0.6 0.6
+Ks  0.9 0.9 0.9
+d  1.0
+Ns  0.0
+illum 2
+map_Kd sinkBase_UV.tif
+
+
+
+newmtl apartmentstaticfbx-kitchencountermaterial
+Ka  0.6 0.6 0.6
+Kd  0.6 0.6 0.6
+Ks  0.9 0.9 0.9
+d  1.0
+Ns  0.0
+illum 2
+map_Kd kitchenButcherBlock.psd
+
+
+
+newmtl apartmentstaticfbx-bathroomwallmaterial
+Ka  0.6 0.6 0.6
+Kd  0.6 0.6 0.6
+Ks  0.9 0.9 0.9
+d  1.0
+Ns  0.0
+illum 2
+map_Kd bathroomWall.psd
+
+
+
+newmtl apartmentstaticfbx-pillowmaterial
+Ka  0.6 0.6 0.6
+Kd  0.6 0.6 0.6
+Ks  0.9 0.9 0.9
+d  1.0
+Ns  0.0
+illum 2
+map_Kd bedSpread.psd
+
+
+
+newmtl apartmentstaticfbx-sinkhardware
+Ka  0.6 0.6 0.6
+Kd  0.6 0.6 0.6
+Ks  0.9 0.9 0.9
+d  1.0
+Ns  0.0
+illum 2
+map_Kd sinkHardware_UV.tif
+
+

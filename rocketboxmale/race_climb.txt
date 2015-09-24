@@ -1,0 +1,6 @@
+MODEL = ../rocketboxmale/cenglobedt.obj ../rocketboxmale/roms.obj
+DEL = ../rocketboxmale/cenglobedt.obj ../rocketboxmale/cenglobingt.obj
+OBJECT = ../rami/scenes/climb.obj
+PRMFILE = ../tests/climbingvisibillity.txt
+SIZ = 200 2 20
+VISIBILIT

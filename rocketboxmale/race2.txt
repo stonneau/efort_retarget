@@ -1,0 +1,7 @@
+MODEL = ../rocketboxmale/cenglobedd.obj ../rocketboxmale/roms.obj
+DEL = ../rocketboxmale/cenglobedt.obj ../rocketboxmale/cenglobingt.obj
+OBJECT = ../tests/collision/dodge_reverse.obj
+qs = ../tests/fullscenarios/zombi_room.prm
+PRMFILE = ../tests/testSerialization.txt
+SIZ = 200 2 20
+VISIBILIT

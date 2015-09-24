@@ -1,0 +1,8 @@
+MODEL = ../rocketboxmale/cenglobed.obj ../rocketboxmale/cenglobing.obj
+OBJECT = ../rocketboxmale/wall.obj
+OBJECTCONTACT = ../rocketboxmale/grasps.obj
+PRMFIL = ../rocketboxmale/prm.prm
+qs = ../tests/fullscenarios/zombi_room.prm
+PRMFIL = ../tests/climbingvisibillity.txt
+SIZE = 5 5 20
+VISIBILIT

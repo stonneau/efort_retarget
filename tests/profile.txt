@@ -1,0 +1,4 @@
+MODEL = ../rocketboxmale/cenglobed.obj ../rocketboxmale/cenglobing.obj
+OBJECT = ../tests/collision/appartzombi.obj
+SIZE = 2000 20 10 
+VISIBILITY

@@ -584,8 +584,9 @@ void start()
     //cScenario = planner::CompleteScenarioFromFile("../rami/scenarios/rami.scen");
     //cScenario = planner::CompleteScenarioFromFile("../rami/scenarios/stones.scen");
     //cScenario = planner::CompleteScenarioFromFile("../rami/scenarios/stonesprm.scen");
-    cScenario = planner::CompleteScenarioFromFile("../rami/scenarios/stonescrawl.scen");
+    //cScenario = planner::CompleteScenarioFromFile("../rami/scenarios/stonescrawl.scen");
     //cScenario = planner::CompleteScenarioFromFile("../rami/scenarios/table.scen");
+    cScenario = planner::CompleteScenarioFromFile("../rami/scenarios/tableprm.scen");
     //cScenario = planner::CompleteScenarioFromFile("../rami/scenarios/climb.scen");
     //cScenario = planner::CompleteScenarioFromFile("../rami/scenarios/statestest.scen");
     //cScenario = planner::CompleteScenarioFromFile("../humandes/fullscenarios/race_climb.scen");
@@ -651,7 +652,7 @@ void start()
 
     InitFullClampling();
     model = new planner::Model(cScenario->scenario->model_);
-//current = 77;
+current = 37;
 }
 
 void WriteNodeLine(const Eigen::Matrix3d& rotation, const Eigen::Vector3d& position, std::stringstream& outstream)
@@ -779,6 +780,82 @@ void Retarget(const Eigen::Vector3d& delta, const planner::Object* object)
     {
         delete states[current+i]->value;
         states[current+i]->value = robs[i];
+
+        planner::State state;
+            states[current+i]->contactLimbPositions.clear();
+            states[current+i]->contactLimbPositionsNormals.clear();
+            states[current+i]->contactLimbs.clear();
+
+    }
+    cScenario->robot = states[current]->value;
+    objectm->SetPosition(totalOffset);
+    objectMotion.PushFrame(objectm);
+    retargeter.PushFrame(cScenario->robot);
+}
+
+
+void Retarget(const int limbnum, const Eigen::Vector3d& delta, const planner::Object* object)
+{
+    totalOffset +=delta;
+    planner::Robot robik (*(cScenario->states[current]->value));
+    std::vector<planner::Node*> iksLimbs;
+    std::vector<Eigen::Vector3d> targets;
+    for(std::vector<Eigen::Vector3d>::const_iterator cit = cScenario->states[current]->contactLimbPositions.begin();
+        cit !=  cScenario->states[current]->contactLimbPositions.end(); ++cit)
+    {
+        targets.push_back(*cit + totalOffset);
+        //targets.push_back(*cit);
+    }
+    size_t id =0;
+    for(std::vector<planner::Node*>::const_iterator cit = cScenario->limbs.begin();
+        cit != cScenario->limbs.end(); ++cit, ++id)
+    {
+        if(cScenario->states[current]->InContact(id))
+        {
+            iksLimbs.push_back(planner::GetChild(&robik,(*cit)->id));
+        }
+    }
+    ik::IKSolver ik;
+    id =0;
+    for(std::vector<planner::Node*>::iterator cit = iksLimbs.begin();
+        cit != iksLimbs.end(); ++cit, ++id)
+    {
+        for(int i=0; i< 10; ++i)
+        {
+            ik.StepClamping(*cit,targets[id],targets[id]);
+        }
+    }
+
+    ///delete(states[current]);
+    //states[current] = motion->Retarget(current, targets, cScenario->scenario->contactObjects_);
+    //cScenario->robot = motion->Retarget(current, targets, cScenario->scenario->contactObjects_);
+    efort::T_PointReplacement replacement;
+    for(std::size_t i =0; i < 8; ++i)
+    {
+        Eigen::Vector3d res = cScenario->scenario->objDictionnary.points[i] + totalOffset;
+        replacement.push_back(std::make_pair(i, res));
+    }
+    std::vector<Eigen::VectorXd> res;
+    res.push_back(planner::AsPosition(robik.node));
+    for(int i = 1; i< states.size() - current - 1; ++i)
+    {
+        res.push_back(planner::AsPosition(states[current+i]->value->node));
+    }
+    //std::vector<planner::Robot*> robs = motion->RetargetMotionInternal(res, replacement, current, efort::collision, true);
+    std::vector<bool> forcemask;
+    for(int i =0; i<4; ++i)
+    {
+        if(i == limbnum)
+            forcemask.push_back(true);
+        else
+            forcemask.push_back(false);
+    }
+    std::vector<planner::Robot*> robs = motion->RetargetContactInternal(current, planner::AsPosition(robik.node), replacement, forcemask);
+    //states[current] = motion->Retarget(cScenario->robot, current, targets, cScenario->scenario->objects_);
+    for(int i =0; i< robs.size(); ++i)
+    {
+        delete states[current+i]->value;
+        states[current+i]->value = robs[i];
     }
     cScenario->robot = states[current]->value;
     objectm->SetPosition(totalOffset);
@@ -806,12 +883,12 @@ void InterpolateRRT()
 void Interpolate()
 {
     Eigen::VectorXd from = planner::AsPosition(states[current]->value->node);
-    Eigen::VectorXd to = planner::AsPosition(states[current+40]->value->node);
-    Eigen::VectorXd currentf = planner::AsPosition(states[current+20]->value->node);
+    Eigen::VectorXd to = planner::AsPosition(states[current+46]->value->node);
+    Eigen::VectorXd currentf = planner::AsPosition(states[current+23]->value->node);
     //motion->Interpolate(current,from,to,true,false);
     efort::T_PointReplacement replacement;
     std::vector<planner::Robot*> robs =
-            motion->RetargetTrunkInternal(current+20,current, current+40,currentf,from,to,replacement);
+            motion->RetargetTrunkInternal(current+23,current, current+46,currentf,from,to,replacement);
     for(int i =0; i< robs.size(); ++i)
     {
         delete states[current+i]->value;
@@ -898,9 +975,9 @@ void command(int cmd)   /**  key control function; */
         case 'f' :
         {
             std::cout << "computing animation " << std::endl;
-            Interpolate();
-            //planner::T_State res = planner::Animate(*cScenario, states[current], states[current+1], 24, true, false);
-            //states.insert(states.begin()+current+1,res.begin(),res.end());
+            //Interpolate();
+            planner::T_State res = planner::Animate(*cScenario, states[current], states[current+1], 24, true, false);
+            states.insert(states.begin()+current+1,res.begin(),res.end());
             //interpolaterrt();
             std::cout << "done " << std::endl;
             break;
@@ -972,19 +1049,19 @@ std::cout << "frame id" << current << std::endl;
         }
         case 'a' :
     {
-            cScenario->scenario->objects_[0]->SetPosition( cScenario->scenario->objects_[0]->GetPosition() + Eigen::Vector3d(0.1,0,0));
-            Retarget(Eigen::Vector3d(0.1,0,0), cScenario->scenario->objects_[0]);
+            //cScenario->scenario->objects_[0]->SetPosition( cScenario->scenario->objects_[0]->GetPosition() + Eigen::Vector3d(0.1,0,0));
+        Retarget(3, Eigen::Vector3d(0,0,0), cScenario->scenario->objects_[0]);
         break;
     }
         case 'z' :
     {
-            cScenario->scenario->objects_[0]->SetPosition( cScenario->scenario->objects_[0]->GetPosition() - Eigen::Vector3d(0.1,0,0));
-            Retarget(Eigen::Vector3d(-0.1,0,0), cScenario->scenario->objects_[0]);
+            cScenario->scenario->objects_[0]->SetPosition( cScenario->scenario->objects_[0]->GetPosition() - Eigen::Vector3d(0,0,0));
+            Retarget(2, Eigen::Vector3d(0,0,0), cScenario->scenario->objects_[0]);
         break;
     }
         case 'e' :
     {
-            cScenario->scenario->objects_[0]->SetPosition( cScenario->scenario->objects_[0]->GetPosition() + Eigen::Vector3d(0,0.1,0));
+            cScenario->scenario->objects_[0]->SetPosition( cScenario->scenario->objects_[0]->GetPosition() + Eigen::Vector3d(0,0,0));
             Retarget(Eigen::Vector3d(0,0.1,0), cScenario->scenario->objects_[0]);
         break;
     }

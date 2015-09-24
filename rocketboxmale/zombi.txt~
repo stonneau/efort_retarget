@@ -1,0 +1,6 @@
+MODEL = ../rocketboxmale/cenglobed.obj ../rocketboxmale/cenglobing.obj
+OBJECT = ../tests/collision/entrance.obj
+qs = ../rocketboxmale/prm.prm
+PRMFLE = ../tests/fullscenarios/zombi_room.prm
+SIZE 300 20 20
+VISIBILITY

@@ -1,0 +1,6 @@
+MODEL = ../rocketboxmale/cenglobedt.obj ../rocketboxmale/roms.obj
+OBJECT = ../tests/collision/truck_simple_09_up.obj
+qs = ../tests/fullscenarios/zombi_room.prm
+PRMFILE = ../tests/front.prm
+SIZ = 900 2 20
+VISBILIT

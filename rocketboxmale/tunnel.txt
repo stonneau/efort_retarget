@@ -1,0 +1,7 @@
+MODEL = ../rocketboxmale/cenglobed.obj ../rocketboxmale/cenglobing.obj
+OBJECT = ../tests/collision/tunnelsimpleplan.obj
+PRMFIL = ../rocketboxmale/prm.prm
+qs = ../tests/fullscenarios/zombi_room.prm
+PRMFILE = ../tests/tunnel.prm
+SIZ = 80 2 20
+VISIBILITY

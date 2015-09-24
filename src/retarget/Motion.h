@@ -200,6 +200,7 @@ struct Motion
 #if INTERNAL
     planner::Robot* RetargetInternal(const std::size_t frameid, const Eigen::VectorXd& framePositions, const T_PointReplacement& objectModifications) const;
     std::vector<planner::Robot*> RetargetContactInternal(const std::size_t frameid, const Eigen::VectorXd& framePositions, const T_PointReplacement& objectModifications, bool force = false) const;
+    std::vector<planner::Robot*> RetargetContactInternal(const std::size_t frameid, const Eigen::VectorXd& framePositions, const T_PointReplacement& objectModifications, const std::vector<bool>& forcemask) const;
     std::vector<planner::Robot*> RetargetMotionInternal(const std::vector<Eigen::VectorXd>& newPositions, const T_PointReplacement& objectModifications, const std::size_t frameStart, const int retargetType, bool force = false) const;
     std::vector<planner::Robot*> RetargetTrunkInternal(const std::size_t frameidCurrent, const std::size_t frameidFrom, const std::size_t frameidTo,
                                                const Eigen::VectorXd& frameCurrent, const Eigen::VectorXd& frameFrom,
