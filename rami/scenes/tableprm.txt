@@ -1,0 +1,5 @@
+MODEL = ../rami/model/roms/cenglobed102.obj ../rami/model/roms/roms10.obj
+OBJECT = ../rami/scenes/tableprm.obj
+PRMFILE = ../rami/prm/dummy.prm
+SIZE = 20000 2 20
+VISIBILIT
