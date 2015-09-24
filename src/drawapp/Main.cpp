@@ -583,8 +583,8 @@ void start()
     //cScenario = planner::CompleteScenarioFromFile("../humandes/fullscenarios/between.scen");
     //cScenario = planner::CompleteScenarioFromFile("../rami/scenarios/rami.scen");
     //cScenario = planner::CompleteScenarioFromFile("../rami/scenarios/stones.scen");
-    //cScenario = planner::CompleteScenarioFromFile("../rami/scenarios/stonesprm.scen");
-    cScenario = planner::CompleteScenarioFromFile("../rami/scenarios/stonescrawl.scen");
+    cScenario = planner::CompleteScenarioFromFile("../rami/scenarios/stonesprm.scen");
+    //cScenario = planner::CompleteScenarioFromFile("../rami/scenarios/stonescrawl.scen");
     //cScenario = planner::CompleteScenarioFromFile("../rami/scenarios/table.scen");
     //cScenario = planner::CompleteScenarioFromFile("../rami/scenarios/climb.scen");
     //cScenario = planner::CompleteScenarioFromFile("../rami/scenarios/statestest.scen");
@@ -651,7 +651,7 @@ void start()
 
     InitFullClampling();
     model = new planner::Model(cScenario->scenario->model_);
-//current = 77;
+//current = 25;
 }
 
 void WriteNodeLine(const Eigen::Matrix3d& rotation, const Eigen::Vector3d& position, std::stringstream& outstream)
@@ -795,7 +795,7 @@ void SaveRetarget()
 void InterpolateRRT()
 {
     Eigen::VectorXd from = planner::AsPosition(states[current]->value->node);
-    Eigen::VectorXd to = planner::AsPosition(states[current+30]->value->node);
+    Eigen::VectorXd to = planner::AsPosition(states[current+20]->value->node);
     //motion->Interpolate(current,from,to,true,false);
     efort::T_PointReplacement replacement;
     motion->DoRRT(current,from,to,replacement,false);
@@ -806,12 +806,12 @@ void InterpolateRRT()
 void Interpolate()
 {
     Eigen::VectorXd from = planner::AsPosition(states[current]->value->node);
-    Eigen::VectorXd to = planner::AsPosition(states[current+40]->value->node);
-    Eigen::VectorXd currentf = planner::AsPosition(states[current+20]->value->node);
+    Eigen::VectorXd to = planner::AsPosition(states[current+20]->value->node);
+    Eigen::VectorXd currentf = planner::AsPosition(states[current+10]->value->node);
     //motion->Interpolate(current,from,to,true,false);
     efort::T_PointReplacement replacement;
     std::vector<planner::Robot*> robs =
-            motion->RetargetTrunkInternal(current+20,current, current+40,currentf,from,to,replacement);
+            motion->RetargetTrunkInternal(current+10,current, current+20,currentf,from,to,replacement);
     for(int i =0; i< robs.size(); ++i)
     {
         delete states[current+i]->value;

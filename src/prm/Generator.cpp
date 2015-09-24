@@ -164,6 +164,8 @@ Model* Generator::operator()(std::vector<std::size_t>& limbs)
         double r1, r2;
         r1 = ((double) rand() / (RAND_MAX)); r2 = ((double) rand() / (RAND_MAX));
         Eigen::Vector3d P = (1 - sqrt(r1)) * A + (sqrt(r1) * (1 - r2)) * B + (sqrt(r1) * r2) * C;
+P(1)= 3.7;
+P(0)= -2.1;
 if(CheckBoundsTranslation(bounds_, P))
 		{
 			configuration.SetPosition(P);
@@ -244,7 +246,7 @@ if(CheckBoundsTranslation(bounds_, P))
 			while (limit2 >0)
 			{
                 Eigen::Vector3d dir((double) rand() / (double) (RAND_MAX) -0.5, (double) rand() / (double) (RAND_MAX) -0.5, (double) rand() / (double) (RAND_MAX) -0.5);
-				// if normal check colinearity
+                // if normal check colinearity
                 if(sampled.first->normals_.size() > sampled.second.second->id)
 				{
                     Eigen::Vector3d normal = sampled.first->normals_[sampled.second.second->id];
@@ -277,7 +279,12 @@ if(CheckBoundsTranslation(bounds_, P))
                             return new Model(configuration);
 						break;
 					}
+dir = Eigen::Vector3d(-1,0,0);
                     configuration.SetPosition(configuration.GetPosition() + (double) rand() / (double)(RAND_MAX)  * dir);
+Eigen::Vector3d pos = configuration.GetPosition();
+if(configuration.GetPosition().y() > 3.7) pos(1) = 3.7;
+if(configuration.GetPosition().y() < 3.68) pos(1) = 3.68;
+configuration.SetPosition(pos);
                     collisions = configuration.EnglobingCollisionGround(sampled.first);
 				}
 				--limit2;
