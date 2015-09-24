@@ -1,5 +1,5 @@
 
-#include "MatchTargetConstraint.h"
+#include "MatchTargetConstraintPos.h"
 #include "prmpath/Robot.h"
 
 #include <Eigen/Dense>
@@ -8,13 +8,13 @@ using namespace Eigen;
 using namespace ik;
 using namespace planner;
 
-MatchTargetConstraint::MatchTargetConstraint(const planner::Node*  target)
-    : target_(new planner::Node(*target))
+MatchTargetConstraintPos::MatchTargetConstraintPos(planner::Node*  target)
+    : target_(target)
 {
 	// NOTHING
 }
 
-MatchTargetConstraint::~MatchTargetConstraint()
+MatchTargetConstraintPos::~MatchTargetConstraintPos()
 {
 	// NOTHING
 }
@@ -29,6 +29,25 @@ namespace
             if(res) return res;
         }
         return limb->current;
+    }
+
+    planner::Object* GetEffectorUp(planner::Node* limb)
+    {
+        bool found1(false);
+        if(limb->children.size() == 0)
+        {
+            planner::Node* child = limb;
+            while(true)
+            {
+                if(child->current)
+                {
+                    if(found1) return child->current;
+                    else found1 = true;
+                }
+                child = child->parent;
+            }
+        }
+        return GetEffectorUp(limb->children[0]);
     }
 
     Eigen::Vector3d GetArmVector(planner::Node* limb)
@@ -80,18 +99,13 @@ namespace
         limb->Update();
     }
 
-    double distance(const sampling::Sample& a,  const sampling::Sample& b)
+    double distance(planner::Node* a,  planner::Node* b)
     {
-        double res = 0;
-        for(int i = 2; i< a.values.size()- 6; ++i)
-        {
-            res += (a.values[i] - b.values[i]) * (a.values[i] - b.values[i]);
-        }
-        return sqrt(res);
+        return (GetEffector(a)->GetPosition() - GetEffector(b)->GetPosition()).norm();
     }
 }
 
-double MatchTargetConstraint::Evaluate(planner::Node* limb, Eigen::VectorXd minDofs, Eigen::VectorXd maxDofs,  const int joint, Jacobian& jacobianMinus, Jacobian& jacobianPlus, float epsilon, const Vector3d& direction)
+double MatchTargetConstraintPos::Evaluate(planner::Node* limb, Eigen::VectorXd minDofs, Eigen::VectorXd maxDofs,  const int joint, Jacobian& jacobianMinus, Jacobian& jacobianPlus, float epsilon, const Vector3d& direction)
 {
     Vector3d dirNorm = direction;
     dirNorm.normalize();
@@ -100,10 +114,10 @@ double MatchTargetConstraint::Evaluate(planner::Node* limb, Eigen::VectorXd minD
     Eigen::VectorXd save = GetPose(limb);
     SetPose(limb, minDofs);
     planner::sampling::Sample minsample(limb);
-    valMin = distance(target_, minsample);
+    valMin = distance(target_, limb);
     SetPose(limb, maxDofs);
     planner::sampling::Sample maxsample(limb);
-    valPlus = distance(target_, maxsample);
+    valPlus = distance(target_, limb);
      double res = double (valPlus - valMin) / (epsilon * 2) ;
     SetPose(limb, save);
     return res;

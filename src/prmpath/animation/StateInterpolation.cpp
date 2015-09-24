@@ -179,9 +179,9 @@ namespace
                 collisionFree = true;
                 if(limbFrom->tag.find("arm") != std::string::npos)
                 {
-/*model.SetPosition(initpath->operator ()(0.5).first);
-model.SetPosition(model.GetPosition() + 1 * 3 * offset);
-res.push_back(MakeConfiguration(model.englobed));
+model.SetPosition(initpath->operator ()(0.5).first);
+model.SetPosition(model.GetPosition() + 1 * Eigen::Vector3d(0,1,0));
+//res.push_back(MakeConfiguration(model.englobed));
 model.SetPosition(initpath->operator ()(0.7).first);
 model.SetPosition(model.GetPosition() + 0.3 * 1 * offset);
 //res.push_back(MakeConfiguration(model.englobed));
@@ -189,7 +189,7 @@ delete initpath;
 initpath = new planner::InterpolatePath(MakeConfiguration(model.englobed),MakeConfiguration(limbTo->current),0,1);
 start = 0;
 stepsize = 0.05 * nbsteps / (nbsteps - step); // adjusting stepsize to reduced path
-collisionFree = true;*/
+collisionFree = true;
                 }
             }
             else // collision
@@ -204,11 +204,11 @@ collisionFree = true;*/
                 }
                 if(true)
                 {
-                    model.SetPosition(initpath->operator ()(0.5).first);
-                    model.SetPosition(model.GetPosition() + 0.3 * 1 * offset);
+                    model.SetPosition(initpath->operator ()(0.2).first);
+                    model.SetPosition(model.GetPosition() -  10 * Eigen::Vector3d(0,0,-1));
                     res.push_back(MakeConfiguration(model.englobed));
-                    model.SetPosition(initpath->operator ()(0.7).first);
-                    model.SetPosition(model.GetPosition() + 0.3 * 1 * offset);
+                    model.SetPosition(initpath->operator ()(0.5).first);
+                    model.SetPosition(model.GetPosition()- 0.01 * 1 * offset); // + 0.3 * 1 * offset);
                     //res.push_back(MakeConfiguration(model.englobed));
                     delete initpath;
                     initpath = new planner::InterpolatePath(MakeConfiguration(model.englobed),MakeConfiguration(limbTo->current),0,1);
@@ -241,9 +241,9 @@ collisionFree = true;*/
             {
                 planner::Node* limb =  planner::GetChild(state->value,scenario.limbs[i]->id);
                 std::vector<ik::PartialDerivativeConstraint*> constraints;
-                //ik::MatchTargetConstraint* constraint = new ik::MatchTargetConstraint(limb);
-ik::VectorAlignmentConstraint* constraint = new ik::VectorAlignmentConstraint(Eigen::Vector3d(0,1,0));
-//constraints.push_back(constraint);
+                ik::MatchTargetConstraint* constraint = new ik::MatchTargetConstraint(limb);
+//ik::VectorAlignmentConstraint* constraint = new ik::VectorAlignmentConstraint(Eigen::Vector3d(0,1,0));
+constraints.push_back(constraint);
                 allconstraints.push_back(constraints);
             }
             /*for(std::vector<int>::const_iterator cit = state->contactLimbs.begin();
@@ -270,7 +270,7 @@ ik::VectorAlignmentConstraint* constraint = new ik::VectorAlignmentConstraint(Ei
             }
         }
 
-        void operator ()(planner::State* state, int limit = 10)
+        void operator ()(planner::State* state, int limit = 30)
         {
             ik::IKSolver solver;
             std::map<int, Eigen::Vector3d>::iterator posit = state->targets.begin();

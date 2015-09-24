@@ -583,7 +583,8 @@ void start()
     //cScenario = planner::CompleteScenarioFromFile("../humandes/fullscenarios/between.scen");
     //cScenario = planner::CompleteScenarioFromFile("../rami/scenarios/rami.scen");
     //cScenario = planner::CompleteScenarioFromFile("../rami/scenarios/stones.scen");
-    cScenario = planner::CompleteScenarioFromFile("../rami/scenarios/stonesprm.scen");
+    //cScenario = planner::CompleteScenarioFromFile("../rami/scenarios/stonesprm.scen");
+    cScenario = planner::CompleteScenarioFromFile("../rami/scenarios/stonescrawl.scen");
     //cScenario = planner::CompleteScenarioFromFile("../rami/scenarios/table.scen");
     //cScenario = planner::CompleteScenarioFromFile("../rami/scenarios/climb.scen");
     //cScenario = planner::CompleteScenarioFromFile("../rami/scenarios/statestest.scen");
@@ -650,6 +651,7 @@ void start()
 
     InitFullClampling();
     model = new planner::Model(cScenario->scenario->model_);
+//current = 77;
 }
 
 void WriteNodeLine(const Eigen::Matrix3d& rotation, const Eigen::Vector3d& position, std::stringstream& outstream)
@@ -790,7 +792,7 @@ void SaveRetarget()
     retargeter.Save("./retarget.bvh");
 }
 
-void Interpolate()
+void InterpolateRRT()
 {
     Eigen::VectorXd from = planner::AsPosition(states[current]->value->node);
     Eigen::VectorXd to = planner::AsPosition(states[current+30]->value->node);
@@ -799,6 +801,23 @@ void Interpolate()
     motion->DoRRT(current,from,to,replacement,false);
     current += cScenario->states.size() - states.size() +1;
     states = cScenario->states;
+}
+
+void Interpolate()
+{
+    Eigen::VectorXd from = planner::AsPosition(states[current]->value->node);
+    Eigen::VectorXd to = planner::AsPosition(states[current+40]->value->node);
+    Eigen::VectorXd currentf = planner::AsPosition(states[current+20]->value->node);
+    //motion->Interpolate(current,from,to,true,false);
+    efort::T_PointReplacement replacement;
+    std::vector<planner::Robot*> robs =
+            motion->RetargetTrunkInternal(current+20,current, current+40,currentf,from,to,replacement);
+    for(int i =0; i< robs.size(); ++i)
+    {
+        delete states[current+i]->value;
+        states[current+i]->value = robs[i];
+    }
+    cScenario->robot = states[current]->value;
 }
 
 void InterpolateAll()
@@ -879,9 +898,9 @@ void command(int cmd)   /**  key control function; */
         case 'f' :
         {
             std::cout << "computing animation " << std::endl;
-            //Interpolate();
-            planner::T_State res = planner::Animate(*cScenario, states[current], states[current+1], 24, true, false);
-            states.insert(states.begin()+current+1,res.begin(),res.end());
+            Interpolate();
+            //planner::T_State res = planner::Animate(*cScenario, states[current], states[current+1], 24, true, false);
+            //states.insert(states.begin()+current+1,res.begin(),res.end());
             //interpolaterrt();
             std::cout << "done " << std::endl;
             break;
@@ -940,10 +959,10 @@ std::cout << "frame id" << current << std::endl;
         break;
         case '2' :
         {
-        std::cout << " SAMPLES" << cScenario->limbSamples[2].size() << std::endl;
+        std::cout << " SAMPLES" << cScenario->limbSamples[3].size() << std::endl;
             if(samples.empty()) return;
             currentSample ++; if(currentSample < 0) currentSample = 0;
-            planner::sampling::LoadSample(*(cScenario->limbSamples[2][currentSample]),planner::GetChild(cScenario->robot, "RightUpLeg_z_joint"));
+            planner::sampling::LoadSample(*(cScenario->limbSamples[3][currentSample]),planner::GetChild(cScenario->robot, "LeftUpLeg_z_joint"));
             break;
         }
         case 'm' :
@@ -981,29 +1000,29 @@ std::cout << "frame id" << current << std::endl;
         break;
     }
         case 'Z' :
-        planner::GetChild(cScenario->robot, "RightHand_y_joint")->SetRotation(planner::GetChild(cScenario->robot,"RightHand_y_joint")->value-0.1* dirIK);
+        planner::GetChild(cScenario->robot, "RightLeg_x_joint")->SetRotation(planner::GetChild(cScenario->robot,"RightLeg_x_joint")->value-0.1* dirIK);
         break;
         case 'E' :
-        planner::GetChild(cScenario->robot, "RightHand_x_joint")->SetRotation(planner::GetChild(cScenario->robot,"RightHand_x_joint")->value-0.1* dirIK);
+        planner::GetChild(cScenario->robot, "RightLeg_x_joint")->SetRotation(planner::GetChild(cScenario->robot,"RightLeg_x_joint")->value+0.1* dirIK);
         break;
         case 'R' :
             PerformIkStep(*cScenario, planner::GetChild(cScenario->robot, "RightShoulder_z_joint"));
         break;
 
         case 'u' :
-        planner::GetChild(cScenario->robot, "LeftShoulder1_z_joint")->SetRotation(planner::GetChild(cScenario->robot,"LeftShoulder1_z_joint")->value-0.1* dirIK);
+        planner::GetChild(cScenario->robot, "RightUpLeg_z_joint")->SetRotation(planner::GetChild(cScenario->robot,"RightUpLeg_z_joint")->value-0.1* dirIK);
         break;
         case 'i' :
-        planner::GetChild(cScenario->robot, "upper_left_arm_y_joint")->SetRotation(planner::GetChild(cScenario->robot,"upper_left_arm_y_joint")->value-0.1* dirIK);
+        planner::GetChild(cScenario->robot, "RightUpLeg_y_joint")->SetRotation(planner::GetChild(cScenario->robot,"RightUpLeg_y_joint")->value-0.1* dirIK);
         break;
         case 'o' :
-        planner::GetChild(cScenario->robot, "upper_left_arm_x_joint")->SetRotation(planner::GetChild(cScenario->robot,"upper_left_arm_x_joint")->value-0.1* dirIK);
+        planner::GetChild(cScenario->robot, "RightUpLeg_x_joint")->SetRotation(planner::GetChild(cScenario->robot,"RightUpLeg_x_joint")->value-0.1* dirIK);
         break;
         case 'p' :
         planner::GetChild(cScenario->robot, "lower_left_arm_joint")->SetRotation(planner::GetChild(cScenario->robot,"lower_left_arm_joint")->value-0.1* dirIK);
         break;
         case 'U' :
-        planner::GetChild(cScenario->robot, "left_hand_z_joint")->SetRotation(planner::GetChild(cScenario->robot,"left_hand_z_joint")->value-0.1* dirIK);
+        //planner::GetChild(cScenario->robot, "left_hand_z_joint")->SetRotation(planner::GetChild(cScenario->robot,"left_hand_z_joint")->value-0.1* dirIK);
         break;
         case 'I' :
         planner::GetChild(cScenario->robot, "left_hand_y_joint")->SetRotation(planner::GetChild(cScenario->robot,"left_hand_y_joint")->value-0.1* dirIK);

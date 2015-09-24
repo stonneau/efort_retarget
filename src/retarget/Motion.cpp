@@ -6,6 +6,8 @@
 #include "prmpath/CompleteScenario.h"
 #include "prmpath/ik/IKSolver.h"
 #include "prmpath/ik/VectorAlignmentConstraint.h"
+#include "prmpath/ik/MatchTargetConstraintPos.h"
+#include "prmpath/ik/MatchTargetConstraint.h"
 
 
 void KeptIndices(planner::Node* node, int& last, int& current, std::vector<std::pair<int, int> >& res)
@@ -176,6 +178,29 @@ namespace
         {
             limit2--;
             solver.StepClamping(limb, target, normal, constraints, true);
+        }
+    }
+
+    void SolveIk(Node* limb, const Eigen::Vector3d& target, Node* targetLimb, int limit=1000
+            , int limit2 = 200, bool normalconstraint = true)
+    {
+        ik::IKSolver solver;//(0.001f, 0.001f,0.1f);
+        //ik::VectorAlignmentConstraint constraint(normal);
+        ik::MatchTargetConstraint constraint(targetLimb);
+        ik::MatchTargetConstraintPos constraint2(targetLimb);
+        std::vector<ik::PartialDerivativeConstraint*> constraints;
+        /*int limit = 100;
+        int limit2 = 2;*/
+        while(limit > 0 && !solver.StepClamping(limb, target, target, constraints, true))
+        {
+            limit--;
+        }
+        //constraints.push_back(&constraint);
+        constraints.push_back(&constraint2);
+        while(limit2 > 0 &&  normalconstraint)
+        {
+            limit2--;
+            //solver.StepClamping(limb, target, target, constraints, true);
         }
     }
 
@@ -536,6 +561,113 @@ std::cout << "no contact found contact" << limb->tag << std::endl;
     }
     std::cout << "nbframes " << positions.size() << std::endl;
     return positions; // TODO
+}
+
+
+std::vector<Eigen::VectorXd> Motion::RetargetTrunk(const std::size_t frameidCurrent, const std::size_t frameidFrom, const std::size_t frameidTo,
+                                                   const Eigen::VectorXd& frameCurrent, const Eigen::VectorXd& frameFrom,
+                                                   const Eigen::VectorXd& frameTo,
+                                                   const T_PointReplacement& objectModifications)
+{
+    Eigen::VectorXd position;
+    Eigen::VectorXd positionFrom, positionTo;
+    if(pImpl_->useFantomJoints)
+    {
+        position = pImpl_->adaptVector(frameCurrent);
+        positionFrom = pImpl_->adaptVector(frameFrom);
+        positionTo = pImpl_->adaptVector(frameTo);
+    }
+    else
+    {
+        position = frameCurrent;
+        positionFrom = frameFrom;
+        positionTo = frameTo;
+    }
+
+    //retrieving updated objects
+    const ObjectDictionary& dictionnary = pImpl_->cScenario_->scenario->objDictionnary;
+    std::vector<std::size_t> newObjectIds;
+    planner::Object::T_Object objects =  dictionnary.recreate(objectModifications, pImpl_->cScenario_->scenario->objects_, newObjectIds);
+
+    // check how we are doing this frame
+    // retrieving frame
+    const Frame& cframe = frames_[frameidCurrent];
+    // cloning reference robot from frame.
+    planner::Robot* robot = new planner::Robot(*pImpl_->states_[frameidCurrent]->value);
+    // moving robot to new position
+    robot->SetPosition(position.head<3>(), true);
+    // performing ik to reconstruct joint variation:
+    PerformFullIk(*robot, position, pImpl_->fullBodyIkSolver_);
+
+    // Check whether box is in collision
+    Model* mCurrent = pImpl_->ModelFromRobot(robot);
+
+    bool retargeted = false;
+    std::vector<Eigen::VectorXd> positions;
+
+    if(mCurrent->englobed->IsColliding(objects))
+    {
+        // collision => start RRT
+        planner::State* sFrom = new planner::State(pImpl_->states_[frameidFrom]);
+        planner::State* sTo = new planner::State(pImpl_->states_[frameidTo]);
+        planner::Robot* robotFrom = sFrom->value;
+        planner::Robot* robotTo = sTo->value;
+        robotFrom->SetPosition(positionFrom.head<3>(), true);
+        robotTo->SetPosition(positionTo.head<3>(), true);
+        PerformFullIk(*robotFrom, positionFrom, pImpl_->fullBodyIkSolver_);
+        PerformFullIk(*robotTo, positionTo, pImpl_->fullBodyIkSolver_);
+
+        Model* mFrom = pImpl_->ModelFromRobot(robotFrom);
+        Model* mTo = pImpl_->ModelFromRobot(robotTo);
+
+        const ObjectDictionary& dictionnary = pImpl_->cScenario_->scenario->objDictionnary;
+        std::vector<std::size_t> newObjectIds;
+        planner::Object::T_Object objects =  dictionnary.recreate(objectModifications, pImpl_->cScenario_->scenario->objects_, newObjectIds);
+
+        SimpleRRT rrt(mFrom,mTo,objects,pImpl_->cScenario_->scenario->neighbourDistance_,
+                       pImpl_->cScenario_->scenario->size_, pImpl_->cScenario_->scenario->neighbours_);
+
+        CT_Model path(rrt.GetPath());
+
+        if(path.size() > 2)
+        {
+            retargeted = true;
+            InterpolatePath intPath(path);
+
+            // decompose path into as many frames
+            int nbFrames = frameidTo - frameidFrom +1;
+            double inc = 1 / nbFrames;
+
+            //#pragma omp parallel for
+            for(int i = frameidFrom; i<= frameidTo; ++i)
+            {
+                double currentInc = (i - frameidFrom)* inc;
+                if(i == frameidTo-1) currentInc = 1;
+                Configuration config = intPath.Evaluate(currentInc);
+                planner::Robot* current = new planner::Robot(*pImpl_->states_[i]->value);
+                current->SetPosition(config.first,false);
+                current->SetRotation(config.second,true);
+                Eigen::VectorXd res = frameCurrent;
+                res.head(3) = robot->currentPosition;
+                res.tail(frameCurrent.rows()-3) =planner::AsPosition(current->node->children[0], pImpl_->useFantomJoints);
+                delete current;
+                positions.push_back(res);
+            }
+        }
+    }
+    if(!retargeted)
+    {
+        for(int i = frameidFrom; i<= frameidTo; ++i)
+        {
+            planner::Robot* current = pImpl_->states_[i]->value;
+            Eigen::VectorXd res = frameCurrent;
+            res.head(3) = robot->currentPosition;
+            res.tail(frameCurrent.rows()-3) =planner::AsPosition(current->node->children[0], pImpl_->useFantomJoints);
+            positions.push_back(res);
+        }
+    }
+    delete robot;
+    return positions;
 }
 
 std::vector<Eigen::VectorXd> Motion::RetargetContact(const std::size_t frameid, const Eigen::VectorXd& framePositions,
@@ -1056,6 +1188,124 @@ std::cout << "size contacts" << failedContacts.size() << std::endl;
         delete objects[*cit];
     }
     return res;
+}
+
+std::vector<planner::Robot*> Motion::RetargetTrunkInternal(const std::size_t frameidCurrent, const std::size_t frameidFrom, const std::size_t frameidTo,
+                                                   const Eigen::VectorXd& frameCurrent, const Eigen::VectorXd& frameFrom,
+                                                   const Eigen::VectorXd& frameTo,
+                                                   const T_PointReplacement& objectModifications)
+{
+    Eigen::VectorXd position;
+    Eigen::VectorXd positionFrom, positionTo;
+    if(pImpl_->useFantomJoints)
+    {
+        position = pImpl_->adaptVector(frameCurrent);
+        positionFrom = pImpl_->adaptVector(frameFrom);
+        positionTo = pImpl_->adaptVector(frameTo);
+    }
+    else
+    {
+        position = frameCurrent;
+        positionFrom = frameFrom;
+        positionTo = frameTo;
+    }
+
+    //retrieving updated objects
+    const ObjectDictionary& dictionnary = pImpl_->cScenario_->scenario->objDictionnary;
+    std::vector<std::size_t> newObjectIds;
+    planner::Object::T_Object objects =  dictionnary.recreate(objectModifications, pImpl_->cScenario_->scenario->objects_, newObjectIds);
+
+    // check how we are doing this frame
+    // retrieving frame
+    const Frame& cframe = frames_[frameidCurrent];
+    // cloning reference robot from frame.
+    planner::Robot* robot = new planner::Robot(*pImpl_->states_[frameidCurrent]->value);
+    // moving robot to new position
+    robot->SetPosition(position.head<3>(), true);
+    // performing ik to reconstruct joint variation:
+    PerformFullIk(*robot, position, pImpl_->fullBodyIkSolver_);
+
+    // Check whether box is in collision
+    Model* mCurrent = pImpl_->ModelFromRobot(robot);
+
+    bool retargeted = false;
+    std::vector<planner::Robot*> robots;
+
+    if(mCurrent->englobed->IsColliding(objects))
+    {
+        // collision => start RRT
+        planner::State* sFrom = new planner::State(pImpl_->states_[frameidFrom]);
+        planner::State* sTo = new planner::State(pImpl_->states_[frameidTo]);
+        planner::Robot* robotFrom = sFrom->value;
+        planner::Robot* robotTo = sTo->value;
+        robotFrom->SetPosition(positionFrom.head<3>(), true);
+        robotTo->SetPosition(positionTo.head<3>(), true);
+        PerformFullIk(*robotFrom, positionFrom, pImpl_->fullBodyIkSolver_);
+        PerformFullIk(*robotTo, positionTo, pImpl_->fullBodyIkSolver_);
+
+        Model* mFrom = pImpl_->ModelFromRobot(robotFrom);
+        Model* mTo = pImpl_->ModelFromRobot(robotTo);
+
+        const ObjectDictionary& dictionnary = pImpl_->cScenario_->scenario->objDictionnary;
+        std::vector<std::size_t> newObjectIds;
+        planner::Object::T_Object objects =  dictionnary.recreate(objectModifications, pImpl_->cScenario_->scenario->objects_, newObjectIds);
+
+        SimpleRRT rrt(mFrom,mTo,objects,pImpl_->cScenario_->scenario->neighbourDistance_,
+                       pImpl_->cScenario_->scenario->size_, pImpl_->cScenario_->scenario->neighbours_);
+
+        CT_Model path(rrt.GetPath());
+        if(path.size() > 2)
+        {
+            std::cout << "retargeting root due to collision" << std::endl;
+            retargeted = true;
+            InterpolatePath intPath(path);
+
+            // decompose path into as many frames
+            int nbFrames = frameidTo - frameidFrom +1;
+            const double inc = 1. / (double)nbFrames;
+
+            //#pragma omp parallel for
+            for(int i = frameidFrom; i<= frameidTo; ++i)
+            {
+                double currentInc = (i - frameidFrom)* inc;
+                if(i == frameidTo-1) currentInc = 1;
+                Configuration config = intPath.Evaluate(currentInc * intPath.tmax());
+                planner::Robot* current = new planner::Robot(*pImpl_->states_[i]->value);
+                planner::Robot* old = pImpl_->states_[i]->value;
+                current->SetPosition(config.first,false);
+                current->SetRotation(config.second,true);
+
+                //go with ik for each limb
+                for(int i = 2; i < pImpl_->cScenario_->limbs.size(); ++i)
+                {
+                    planner::Node* limbTo = planner::GetChild(old, pImpl_->cScenario_->limbs[i]->id);
+                    planner::Node* limbFrom = planner::GetChild(current, pImpl_->cScenario_->limbs[i]->id);
+                    Eigen::Vector3d target = planner::GetEffectorCenter(limbTo);
+                    if(robots.size())
+                    {
+                        planner::Node* refLimb = planner::GetChild(robots.back(), pImpl_->cScenario_->limbs[i]->id);
+                        sampling::Sample s(refLimb);
+                        //planner::sampling::LoadSample(s,limbFrom);
+                    }
+                    Eigen::Vector3d normal(0,1,0);
+                    SolveIk(limbFrom, target, normal);
+                    //SolveIk(limbFrom, target, limbTo);
+                }
+
+                robots.push_back(current);
+            }
+        }
+    }
+    if(!retargeted)
+    {
+        for(int i = frameidFrom; i<= frameidTo; ++i)
+        {
+            planner::Robot* current = pImpl_->states_[i]->value;
+            robots.push_back(new planner::Robot(*current));
+        }
+    }
+    delete robot;
+    return robots;
 }
 
 std::vector<FrameReport> Motion::ReturnMotion() const

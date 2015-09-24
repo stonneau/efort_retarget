@@ -164,6 +164,20 @@ struct Motion
                                                  const T_PointReplacement& objectModifications, const std::vector<bool>& forcemask) const;
 
 
+    ///  \brief Retarget root position to collision free position.
+    /// !!!! DOES NOT RETARGET. CALL RETARGET BEHIND
+    ///  \param frameid : considered frame number
+    ///  \param framePositions : 3d location of each joint of the character, computed by
+    /// relationship descriptors.
+    /// \param objectModifications : std::vector of pair indicating for a given vertice id, its new location
+    /// As first version, PQP object is recreated and retargetting is performed based on this new list.
+    /// \param force : if set to true, force retargetting of all limbs
+    ///  \param return : The updated 3d joint location of each joint after retargetting if necessary.
+    std::vector<Eigen::VectorXd> RetargetTrunk(const std::size_t frameidCurrent, const std::size_t frameidFrom, const std::size_t frameidTo,
+                                               const Eigen::VectorXd& frameCurrent, const Eigen::VectorXd& frameFrom,
+                                               const Eigen::VectorXd& frameTo,
+                                               const T_PointReplacement& objectModifications);
+
 
     void DoRRT(const std::size_t frameidFrom, const Eigen::VectorXd& frameFrom, const Eigen::VectorXd& frameTo, const T_PointReplacement& objectModifications,
                                                  bool useSplines = true);
@@ -187,6 +201,10 @@ struct Motion
     planner::Robot* RetargetInternal(const std::size_t frameid, const Eigen::VectorXd& framePositions, const T_PointReplacement& objectModifications) const;
     std::vector<planner::Robot*> RetargetContactInternal(const std::size_t frameid, const Eigen::VectorXd& framePositions, const T_PointReplacement& objectModifications, bool force = false) const;
     std::vector<planner::Robot*> RetargetMotionInternal(const std::vector<Eigen::VectorXd>& newPositions, const T_PointReplacement& objectModifications, const std::size_t frameStart, const int retargetType, bool force = false) const;
+    std::vector<planner::Robot*> RetargetTrunkInternal(const std::size_t frameidCurrent, const std::size_t frameidFrom, const std::size_t frameidTo,
+                                               const Eigen::VectorXd& frameCurrent, const Eigen::VectorXd& frameFrom,
+                                               const Eigen::VectorXd& frameTo,
+                                               const T_PointReplacement& objectModifications);
 #endif
 
     std::vector<Frame> frames_;

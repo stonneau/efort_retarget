@@ -131,7 +131,7 @@ bool IKSolver::StepClamping(planner::Node* limb, const Eigen::Vector3d& target, 
 
     Vector3d force = target - planner::GetEffectorCenter(limb);
 	
-    if(force.norm () < treshold_) // reached treshold
+    if(force.norm () < treshold_ * 10) // reached treshold
     {
         ret = true;
         //return true;
