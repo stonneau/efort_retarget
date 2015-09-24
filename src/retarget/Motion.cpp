@@ -177,7 +177,7 @@ namespace
         while(limit2 > 0 &&  normalconstraint)
         {
             limit2--;
-            solver.StepClamping(limb, target, normal, constraints, true);
+            //solver.StepClamping(limb, target, normal, constraints, true);
         }
     }
 

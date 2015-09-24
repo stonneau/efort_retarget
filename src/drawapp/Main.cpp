@@ -651,7 +651,7 @@ void start()
 
     InitFullClampling();
     model = new planner::Model(cScenario->scenario->model_);
-//current = 77;
+current = 17;
 }
 
 void WriteNodeLine(const Eigen::Matrix3d& rotation, const Eigen::Vector3d& position, std::stringstream& outstream)
@@ -806,12 +806,12 @@ void InterpolateRRT()
 void Interpolate()
 {
     Eigen::VectorXd from = planner::AsPosition(states[current]->value->node);
-    Eigen::VectorXd to = planner::AsPosition(states[current+40]->value->node);
-    Eigen::VectorXd currentf = planner::AsPosition(states[current+20]->value->node);
+    Eigen::VectorXd to = planner::AsPosition(states[current+36]->value->node);
+    Eigen::VectorXd currentf = planner::AsPosition(states[current+18]->value->node);
     //motion->Interpolate(current,from,to,true,false);
     efort::T_PointReplacement replacement;
     std::vector<planner::Robot*> robs =
-            motion->RetargetTrunkInternal(current+20,current, current+40,currentf,from,to,replacement);
+            motion->RetargetTrunkInternal(current+36,current, current+36,currentf,from,to,replacement);
     for(int i =0; i< robs.size(); ++i)
     {
         delete states[current+i]->value;

@@ -232,6 +232,13 @@ if(CheckBoundsTranslation(bounds_, P))
 						break;
                     }
                     configuration.SetPosition(configuration.GetPosition() + (double) rand() / (RAND_MAX) / 8 * dir);
+Eigen::Vector3d pos = configuration.GetPosition();
+pos(0)=-1.47636;
+if(pos(1)<-3.74584)
+{
+    pos(1)= -3.74584;
+}
+configuration.SetPosition(pos);
                     collisions = configuration.EnglobingCollisionClimb(contactObjects_, 0.3);
 //collisions = configuration.EnglobingCollisionGround(sampled.first);
                     maxStep--;
