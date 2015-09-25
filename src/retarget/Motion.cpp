@@ -1288,7 +1288,7 @@ std::vector<planner::Robot*> Motion::RetargetTrunkInternal(const std::size_t fra
                         //planner::sampling::LoadSample(s,limbFrom);
                     }
                     Eigen::Vector3d normal(0,1,0);
-                    //SolveIk(limbFrom, target, normal);
+                    SolveIk(limbFrom, target, normal);
                     //SolveIk(limbFrom, target, limbTo);
                 }
 

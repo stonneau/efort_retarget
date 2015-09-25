@@ -63,7 +63,7 @@ namespace planner
             const Eigen::Vector3d& pf = from->GetPosition();
             const Eigen::Vector3d& pt = to->GetPosition();
             bounds.push_back(std::min(pt.x(),pf.x()));bounds.push_back(std::max(pt.x(),pf.x()));
-            bounds.push_back(std::min(pt.y(),pf.y())-10);bounds.push_back(std::max(pt.y(),pf.y()+10) );
+            bounds.push_back(std::min(pt.y(),pf.y())-10);bounds.push_back(std::max(pt.y(),pf.y()) );
             bounds.push_back(std::min(pt.z(),pf.z()) );bounds.push_back(std::max(pt.z(),pf.z()));
             Generator* gen = new Generator(bounds, objects, collisionObjects, *from); // TODO MEME
             //Generator* gen = new Generator(objects, collisionObjects, *from); // TODO MEME

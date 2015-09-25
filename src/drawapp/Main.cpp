@@ -514,7 +514,7 @@ static void simLoop (int pause)
     DrawObjects();
     dsSetColorAlpha(0,0, 0.7,1);
     DrawNode(cScenario->robot->node);
-    //DrawModel(ModelFromRobot(cScenario->robot));
+    DrawModel(ModelFromRobot(cScenario->robot));
     DrawPoint(itompTransform * cScenario->robot->currentPosition);
     const planner::T_State& tstates = states;
     std::vector<Eigen::Vector3d>::iterator nit = states[current]->contactLimbPositionsNormals.begin();
@@ -652,7 +652,7 @@ void start()
 
     InitFullClampling();
     model = new planner::Model(cScenario->scenario->model_);
-current = 37;
+current = 51;
 }
 
 void WriteNodeLine(const Eigen::Matrix3d& rotation, const Eigen::Vector3d& position, std::stringstream& outstream)
@@ -883,12 +883,12 @@ void InterpolateRRT()
 void Interpolate()
 {
     Eigen::VectorXd from = planner::AsPosition(states[current]->value->node);
-    Eigen::VectorXd to = planner::AsPosition(states[current+46]->value->node);
-    Eigen::VectorXd currentf = planner::AsPosition(states[current+23]->value->node);
+    Eigen::VectorXd to = planner::AsPosition(states[current+26]->value->node);
+    Eigen::VectorXd currentf = planner::AsPosition(states[current+13]->value->node);
     //motion->Interpolate(current,from,to,true,false);
     efort::T_PointReplacement replacement;
     std::vector<planner::Robot*> robs =
-            motion->RetargetTrunkInternal(current+23,current, current+46,currentf,from,to,replacement);
+            motion->RetargetTrunkInternal(current+13,current, current+26,currentf,from,to,replacement);
     for(int i =0; i< robs.size(); ++i)
     {
         delete states[current+i]->value;
@@ -975,9 +975,9 @@ void command(int cmd)   /**  key control function; */
         case 'f' :
         {
             std::cout << "computing animation " << std::endl;
-            //Interpolate();
-            planner::T_State res = planner::Animate(*cScenario, states[current], states[current+1], 24, true, false);
-            states.insert(states.begin()+current+1,res.begin(),res.end());
+            Interpolate();
+            //planner::T_State res = planner::Animate(*cScenario, states[current], states[current+1], 24, true, false);
+            //states.insert(states.begin()+current+1,res.begin(),res.end());
             //interpolaterrt();
             std::cout << "done " << std::endl;
             break;

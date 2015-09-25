@@ -279,6 +279,9 @@ if(CheckBoundsTranslation(bounds_, P))
 					}
                     dir = Eigen::Vector3d(0,1,0);
                     configuration.SetPosition(configuration.GetPosition() + (double) rand() / (double)(RAND_MAX)  * dir);
+Eigen::Vector3d pos = configuration.GetPosition();
+if(pos(1) < 3.4) pos(1) = 3.5;
+else if (pos(1) > 3.65) pos(1) = 3.6;
                     collisions = configuration.EnglobingCollisionGround(sampled.first);
 				}
 				--limit2;
